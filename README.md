@@ -14,4 +14,4 @@ I added a System Administrator Login, which will bypass account authentication w
 
 
 # Running the Server
-To start the server, use "nodemon server.js" in your terminal. Nodemon makes it so you don't have to restart the server every time you change server.js, you can just refresh the webpage.
+To start the server, use "nodemon server.js" in your terminal. Nodemon makes it so you don't have to restart the server every time you change server.js, you can just refresh the webpage. Currently, the port is hardcoded as port 3001, so to access the webpage, go to localhost:3001
