@@ -11,3 +11,7 @@ Node_Modules was auto populated by installing Node, Express, and Nodemon. You wi
 I added a System Administrator Login, which will bypass account authentication when that is implemented
 * Username: sysadmin
 * Password: sys1234
+
+
+# Running the Server
+To start the server, use "nodemon server.js" in your terminal. Nodemon makes it so you don't have to restart the server every time you change server.js, you can just refresh the webpage.
