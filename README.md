@@ -9,5 +9,5 @@ Node_Modules was auto populated by installing Node, Express, and Nodemon. You wi
 
 # Login
 I added a System Administrator Login, which will bypass account authentication when that is implemented
-Username: sysadmin
-Password: sys1234
+* Username: sysadmin
+* Password: sys1234
