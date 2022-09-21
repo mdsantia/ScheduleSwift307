@@ -1,0 +1,27 @@
+{
+  "name": "scheduleswift",
+  "version": "1.0.0",
+  "description": "CS307 Semester Project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JamesCorder/ScheduleSwift.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JamesCorder/ScheduleSwift/issues"
+  },
+  "homepage": "https://github.com/JamesCorder/ScheduleSwift#readme",
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "express": "^4.18.1",
+    "nodemon": "^2.0.20"
+  }
+  
+}
