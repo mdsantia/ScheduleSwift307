@@ -2,6 +2,6 @@
 CS307 Semester Project
 
 
-#Running React App
+# Running React App
 * cd scheduleswift
 * npm start
