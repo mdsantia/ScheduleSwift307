@@ -7,3 +7,7 @@ CS307 Semester Project
 # Running React App
 * cd scheduleswift
 * npm start
+
+# Installed Module
+* run npm i to install all modules in the package.json
+
