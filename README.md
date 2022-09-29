@@ -10,4 +10,4 @@ CS307 Semester Project
 
 # Installed Module
 * run npm i to install all modules in the package.json
-
+* note there is an package.json is both the server folder and the scheduleswift folder
