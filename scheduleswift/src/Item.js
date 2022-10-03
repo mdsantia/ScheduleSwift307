@@ -7,7 +7,24 @@ class Item {
         this.price= 0;
     }
 
+    setName(string) {
+        this.name = string;
+    }
+
+    setType(num) {
+        this.type = num;
+    }
+
     setDescription(string) {
         this.description= string;
     }
+
+    setInputType(num) {
+        this.inputType = num;
+    }
+    
+    setPrice(num) {
+        this.price = price;
+    }
+
 }
