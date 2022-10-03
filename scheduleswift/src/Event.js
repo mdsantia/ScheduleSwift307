@@ -1,17 +1,34 @@
 class Event {
     constructor() {
-        this.confirmation_id= "";
+        this.confirmationID= "";
         this.organizers= {};
-        this.num_organizers= 0;
-        this.host_id= "";
+        this.numOrganizers= 0;
+        this.hostID= "";
         this.items= {};
-        this.num_items= 0;
-        this.total_price= 0; 
+        this.numItems= 0;
+        this.totalPrice= 0; 
     }
 
-    add_item(item) {
-        this.items[this.num_items]= item;
-        this.num_items++;
+    setConfirmationID(confirmationID) {
+        this.confirmationID = confirmationID;
+    }
+
+    setHostID(hostID) {
+        this.hostID = hostID
+    }
+
+    setTotalPrice(totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    addOrganizer(organizer) {
+        this.organizers[this.numOrganizers] = organizer;
+        this.numItems++;
+    }
+
+    addItem(item) {
+        this.items[this.numItems]= item;
+        this.numItems++;
     }
 
 }
