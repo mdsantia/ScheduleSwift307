@@ -1,25 +1,44 @@
 import React, { Component } from 'react';
 export default class MakeReservation extends Component {
     render() {
-        <form>
-            <h1>Reservation Form</h1>
-            <div className="form-row">
-                <div className="form-group col-md-7">
-                    <label for="inputFirstName">First Name</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="inputFirstName"
-                        placeholder="Enter Your First Name"
-                    />
+        return (
+            <form class="reservation-form">
+                <div class="form-header">
+                    <h1>Reservation Form</h1>
                 </div>
-                <div className="form-group col-md-7">
-                    <label for="inputLastName">Last Name</label>
+                <div className="form-body">
+                    <div className="horizontal-group">
+                        <div className="form-group left">
+                            <label for="firstname" className="label-title">First Name *</label>
+                            <input 
+                                type="text"
+                                className="form-input" 
+                                id="firstname"
+                                placeholder="Enter Your First Name" 
+                                required="required"
+                            />
+                        </div>
+                        <div className="form-group right">
+                            <label for="lastname" className="label-title">Last Name *</label>
+                            <input
+                                type="text"
+                                className="form-input"
+                                id="lastname"
+                                placeholder="Enter Your First Name"
+                                requried="required"
+                            />   
+                        </div>
+                    </div>
+                </div>
+
+
+                {/* <label for="inputFullName" className="col-sm-2 col-form-label">Full Name:</label>
+                <div className="col-sm-10">
                     <input
                         type="text"
                         className="form-control"
-                        id="inputLastName"
-                        placeholder="Enter Your Last Name"
+                        id="inputFullName"
+                        placeholder="Enter Your First and Last Name"
                     />
                 </div>
             </div>
@@ -108,14 +127,15 @@ export default class MakeReservation extends Component {
             </div>
             <div className="form-row">
                 <label for="inputAdditionalInfo">Additional Information</label>
-                <input
+                <textarea
                     type="text"
                     className="form-control"
                     id="inputAdditionalInfo"
                     placeholder="If there is any other additional information we should know about your 
                     reservation, please feel free to write it here."
                 />
-            </div>
+            </div> */}
         </form>
+        ) 
     }
 }

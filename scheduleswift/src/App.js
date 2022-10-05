@@ -6,7 +6,6 @@ import ReservationForm from './ReservationForm';
 function App() {
   return (
     <div className="App">
-      <ReservationForm />
       <Registration />
     </div>
   );
