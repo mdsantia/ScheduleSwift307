@@ -1,12 +1,11 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import './App.css';
+import Axios from "axios";
 import Registration from './Registration';
 
 function App() {
   return (
-    <div className="App">
-      <Registration />
-    </div>
+    <Registration />
   );
 }
 
