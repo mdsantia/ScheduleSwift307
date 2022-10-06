@@ -6,6 +6,7 @@ export default class MakeReservation extends Component {
                 <div class="form-header">
                     <h1>Reservation Form</h1>
                 </div>
+                {/* First Name and Last Name Fields */}
                 <div className="form-body">
                     <div className="horizontal-group">
                         <div className="form-group left">
@@ -29,112 +30,90 @@ export default class MakeReservation extends Component {
                             />   
                         </div>
                     </div>
-                </div>
 
+                    {/* Email and Phone Number Fields */}
+                    <div className="horizontal-group">
+                        <div className="form-group left">
+                            <label for="email" className="label-title">Email *</label>
+                            <input
+                                type="email"
+                                className="form-input"
+                                id="email"
+                                placeholder="email@example.com"
+                                required="required"
+                            />
+                        </div>
+                        <div className="form-group right">
+                            <label for="phone" className="label-title">Phone Number *</label>
+                            <input
+                                type="tel"
+                                className="form-input"
+                                id="phone"
+                                placeholder="(XXX) XXX-XXXX"
+                                pattern="([0-9]{3})-[0-9]{2}-[0-9]"
+                                required="required"
+                            />
+                        </div>
+                    </div>
 
-                {/* <label for="inputFullName" className="col-sm-2 col-form-label">Full Name:</label>
-                <div className="col-sm-10">
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="inputFullName"
-                        placeholder="Enter Your First and Last Name"
-                    />
+                    {/* Date and Time Fields */}
+                    <div className="horizontal-group">
+                        <div className="form-group left">
+                            <label for="date" className="label-title">Date *</label>
+                            <input
+                                type="date"
+                                className="form-input"
+                                id="date"
+                                required="required"
+                            />
+                        </div>
+                        <div className="form-group right">
+                            <label for="time" className="label-title">Time *</label>
+                            <input
+                                type="time"
+                                className="form-input"
+                                id="time"
+                                required="required"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Item Fields */}
+                    <div className="horizontal-group">
+                        <div className="form-group left">
+                            <label for="item1" className="label-title">Item #1</label>
+                            <input
+                                type="text"
+                                className="form-input"
+                                id="item1"
+                            />
+                        </div>
+                        <div className="form-group right">
+                            <label for="item2" className="label-title">Item #2</label>
+                            <input
+                                type="text"
+                                className="form-input"
+                                id="item2"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Additional Information Field */}
+                    <div className="form-group">
+                        <label for="additionalinfo" className="label-title">Additional Information</label>
+                        <textarea
+                            type="text"
+                            className="form-input"
+                            id="additionalinfo"
+                            placeholder="Please include any important additional information about your reservation here."
+                        />
+                    </div>
+
+                    {/* Reservation Notification Options */}
+
+                    {/* Submit and Cancel Buttons */}
+
                 </div>
-            </div>
-            <div className="form-row">
-                <div className="form-group col-md-7">
-                    <label form="inputEmailAddress">Email Address</label>
-                    <input 
-                        type="text"
-                        className="form-control"
-                        id="inputEmailAddress"
-                        placeholder="email@example.com"
-                    />
-                </div>
-                <div className="form-group col-md-7">
-                    <label for="inputPhoneNumber">Phone Number</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="inputPhoneNumber"
-                        placeholder="(XXX) XXX-XXXX"
-                    />
-                </div>
-            </div>
-            <div className="form-row">
-                <div className="form-group col-md-7">
-                    <label for="inputMonth">Date</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="inputMonth"
-                        placeholder="MM"
-                    />
-                </div>
-                <div className="form-group col-md-7">
-                    <label for="inputDay">/</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="inputDay"
-                        placeholder="DD"
-                    />
-                </div>
-                <div className="form-group col-md-7">
-                    <label for="inputYear">/</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="inputYear"
-                        placeholder="YYYY"
-                    />    
-                </div>
-                <div className="form-group col-md-7">
-                    <label for="inputStartTime">Time</label>
-                    <input 
-                        type="text"
-                        className="form-control"
-                        id="inputStartTime"
-                        placeholder="X:XX"
-                    />
-                </div>
-                <div className="form-group col-md-7">
-                    <label for="inputEndTime">to</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="inputEndTime"
-                        placeholder="X:XX"
-                    />
-                </div>
-            </div>
-            <div className="form-row">
-                <label for="inputItem1">Item</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    id="inputItem1"
-                />
-            </div>
-            <div className="form-row">
-                <label for="inputItem2">Item</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    id="inputItem2"
-                />
-            </div>
-            <div className="form-row">
-                <label for="inputAdditionalInfo">Additional Information</label>
-                <textarea
-                    type="text"
-                    className="form-control"
-                    id="inputAdditionalInfo"
-                    placeholder="If there is any other additional information we should know about your 
-                    reservation, please feel free to write it here."
-                />
-            </div> */}
         </form>
         ) 
     }

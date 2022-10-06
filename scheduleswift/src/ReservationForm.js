@@ -7,13 +7,9 @@ function ReservationForm() {
     return (
         <Router>
             <div className="Reservation Form">
-                <div className="auth-wrapper">
-                    <div className="auth-inner">
                     <Routes>
                             <Route exact path="/" element={<MakeReservation />} />
                     </Routes>
-                    </div>
-                </div>
             </div>
         </Router>
     )
