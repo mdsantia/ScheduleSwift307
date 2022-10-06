@@ -6,7 +6,7 @@
 }
 
 body {
-    /* background: #1C8EF9; */
+    background: #8d6a3f !important;
     /* background: linear-gradient(to right, #78a7ba 0%, #385D6C 50%, #78a7ba 99%); */
     height: 100vh;
     display: flex;
@@ -81,4 +81,20 @@ textarea {
     text-align: left;
     border-radius: 5px;
     resize: none;
+}
+
+.btn {
+    display: inline-block;
+    width: 30%;
+    padding: 10px 25px;
+    background: #8d6a3f !important;
+    font-size: 18px;
+    border-radius: 10px;
+    color: white;
+ }
+
+ .divider {
+    width: 30px;
+    height: auto;
+    display: inline-block;
 }
