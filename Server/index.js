@@ -44,9 +44,9 @@ function encrypt(text) {
 app.post('/api/login', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
-    console.log(password);
+    console.log(`Entered Password: ${password}\n`);
     var encryptedPassword = encrypt(password);
-    console.log(encryptedPassword);
+    console.log(`Encrypted Password: ${encryptedPassword}\n`);
     db.query(
         "SELECT * FROM userData WHERE username = ? AND password = ?",
         [username, encryptedPassword],
@@ -55,10 +55,12 @@ app.post('/api/login', (req, res) => {
                 res.send({ err: err })
             }
             if (result.length > 0) {
+                console.log("Found a match \n");
+                console.log("Query Result: \n")
                 console.log(result);
-                console.log("Found a match");
                 res.send({ result });
             } else {
+                console.log("No match. \n");
                 res.send({ message: "Wrong username/password combination" });
             }
         }
