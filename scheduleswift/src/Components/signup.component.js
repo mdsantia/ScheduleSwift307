@@ -140,10 +140,8 @@ const SignUp = () => {
                             />
                             <div className="invalid-feedback">{errors.yupConfirmPassword?.message}</div>
                         </div>
-                        <div className="form-group">
-                            <button type="submit" className="btn btn-primary">
-                                Sign Up
-                            </button>
+                        <div className='d-grid'>
+                            <button type='submit' className='btn btn-primary'>Submit</button>
                         </div>
                         <p className="forgot-password text-right">
                             Already registered: <a href="/sign-in"> Sign In</a>
