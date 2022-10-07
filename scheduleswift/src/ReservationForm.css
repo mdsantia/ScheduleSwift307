@@ -25,11 +25,28 @@ body {
 /* Reservation Form Header */
 .form-header h1 {
     font-size: 35px;
+    text-align: left;
+    color: black;
+    padding: 15px 15px;
+    font-weight: bold;
+}
+
+/* Header for Name of Business Name */
+.form-header h2 {
+    font-size: 30px;
     text-align: center;
     color: black;
-    padding: 20px 0;
+    font-weight: bold;
+}
+
+/* Header for Name of Reservation/Event */
+.form-header h3 {
+    font-size: 15px;
+    text-align: center;
+    color: black;
     border-bottom: 1px solid #cccccc;
     font-weight: bold;
+    font-style: italic;
 }
 
 .form-body {

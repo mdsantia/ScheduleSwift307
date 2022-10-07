@@ -5,6 +5,8 @@ export default class MakeReservation extends Component {
             <form className="reservation-form">
                 <div className="form-header">
                     <h1>Reservation Form</h1>
+                    <h2>[Business Name]</h2>
+                    <h3>[Name of Reservation/Event]</h3>
                 </div>
                 {/* First Name and Last Name Fields */}
                 <div className="form-body">
