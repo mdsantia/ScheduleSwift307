@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 export default class MakeReservation extends Component {
     render() {
         return (
-            <form class="reservation-form">
-                <div class="form-header">
+            <form className="reservation-form">
+                <div className="form-header">
                     <h1>Reservation Form</h1>
                 </div>
                 {/* First Name and Last Name Fields */}
@@ -37,7 +37,7 @@ export default class MakeReservation extends Component {
                             <label for="email" className="label-title">Email</label>
                             <input
                                 type="email"
-                                className="form-input"
+                                className="form-input-email"
                                 id="email"
                                 placeholder="email@example.com"
                                 required="required"
@@ -50,7 +50,7 @@ export default class MakeReservation extends Component {
                                 className="form-input"
                                 id="phone"
                                 placeholder="(XXX) XXX-XXXX"
-                                pattern="([0-9]{3})-[0-9]{2}-[0-9]"
+                                pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
                                 required="required"
                             />
                         </div>
@@ -91,19 +91,27 @@ export default class MakeReservation extends Component {
                     {/* Item Fields */}
                     <div className="horizontal-group">
                         <div className="form-group left">
-                            <label for="item1" className="label-title">Item #1</label>
-                            <input
-                                type="text"
-                                className="form-input"
-                                id="item1"
-                            />
+                            <div className="two-column">
+                                <label for="item1" className="label-title">Number Of Item #1:</label>
+                                <div className="divider"></div>
+                                <input
+                                    type="number"
+                                    className="form-input-item"
+                                    id="item1"
+                                    min="0"
+                                    max="10"
+                                />
+                            </div>
                         </div>
                         <div className="form-group right">
-                            <label for="item2" className="label-title">Item #2</label>
+                            <label for="item2" className="label-title">Number Of Item #2:</label>
+                            <div className="divider"></div>
                             <input
                                 type="text"
-                                className="form-input"
+                                className="form-input-item"
                                 id="item2"
+                                min="0"
+                                max="10"
                             />
                         </div>
                     </div>
@@ -129,6 +137,7 @@ export default class MakeReservation extends Component {
                             name="communication"
                             id="option1"
                             value="email"
+                            required="required"
                         />
                         <label className="input-group-label">Email</label>
                     </div>
@@ -139,6 +148,7 @@ export default class MakeReservation extends Component {
                             name="communication"
                             id="option2"
                             value="txtmessage"
+                            required="required"
                         />
                         <label className="input-group-label">Text Message</label>
                     </div>
