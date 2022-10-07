@@ -69,15 +69,25 @@ export default class MakeReservation extends Component {
                         </div>
                         <div className="form-group right">
                             <label for="time" className="label-title">Time</label>
-                            <input
-                                type="time"
-                                className="form-input"
-                                id="time"
-                                required="required"
-                            />
+                            <div className="two-column">
+                                <input
+                                    type="time"
+                                    className="form-input"
+                                    id="starttime"
+                                    required="required"
+                                />
+                                <div className="divider"></div>
+                                <label for="endtime" className="label-title">to</label>
+                                <div className="divider"></div>
+                                <input
+                                    type="time"                                        className="form-input"
+                                    id="endtime"
+                                    required="required"
+                                />                                    
+                            </div>
                         </div>
                     </div>
-
+                    
                     {/* Item Fields */}
                     <div className="horizontal-group">
                         <div className="form-group left">
@@ -133,7 +143,7 @@ export default class MakeReservation extends Component {
                     </div>
                     <br></br>
 
-                    {/* Submit and Cancel Buttons */}
+                    {/* Make Reservation and Cancel Buttons */}
                     <div class="form-footer">
                         <center>
                             <button type="submit" className="btn">Make Reservation</button>
