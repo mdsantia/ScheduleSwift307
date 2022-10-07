@@ -112,10 +112,9 @@ export default class MakeReservation extends Component {
                     <div className="form-group">
                         <label for="additionalinfo" className="label-title">Additional Information</label>
                         <textarea
-                            // type="text"
-                            className="form-input"
                             rows="4"
                             cols="50"
+                            className="form-input"
                             id="additionalinfo"
                             placeholder="Please include any important additional information about your reservation here."
                         />

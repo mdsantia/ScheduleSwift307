@@ -22,6 +22,7 @@ body {
     border-radius: 10px;
 }
 
+/* Reservation Form Header */
 .form-header h1 {
     font-size: 30px;
     text-align: center;
@@ -38,14 +39,16 @@ body {
 
 .form-group {
     background: white;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
+/* Label Titles --> Name of Fields */
 .form-body .label-title {
     color: black;
     font-weight: bold;
 }
 
+/* Field Input Boxes --> Everything the User Must Fill Out */
 .form-body .form-input {
     width: 100%;
     height: 30px;
@@ -55,24 +58,28 @@ body {
     border-radius: 5px;
 }
 
+/* Left Columns of Fields w/ Two Columns */
 .horizontal-group .left {
     float: left;
     width: 42%;
 }
 
+/* Right Columns of Fields w/ Two Columns */
 .horizontal-group .right {
     float: right;
     width: 42%;
 }
 
+/* For Time Field */
 .two-column {
     display: flex;
     width: 80%;
 }
 
-textarea {
-    width: 200px;
-    height: 800px;
+/* For Additional Information */
+.form-body .form-group textarea {
+    width: 100%;
+    height: 150px;
     padding-left: 10px;
     padding-right: 10px;
     text-align: left;
@@ -80,6 +87,7 @@ textarea {
     resize: none;
 }
 
+/* Buttons */
 .btn {
     display: inline-block;
     width: 30%;
@@ -90,6 +98,7 @@ textarea {
     color: white;
  }
 
+ /* To Add Space Between Elements (Input Boxes, Labels, Buttons) */
  .divider {
     width: 30px;
     height: auto;
