@@ -27,7 +27,7 @@ export default class MakeReservation extends Component {
                                 type="text"
                                 className="form-input"
                                 id="lastname"
-                                placeholder="Enter Your First Name"
+                                placeholder="Enter Your Last Name"
                                 requried="required"
                             />   
                         </div>
@@ -51,7 +51,7 @@ export default class MakeReservation extends Component {
                                 type="tel"
                                 className="form-input"
                                 id="phone"
-                                placeholder="(XXX) XXX-XXXX"
+                                placeholder="XXX-XXX-XXXX"
                                 pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
                                 required="required"
                             />
