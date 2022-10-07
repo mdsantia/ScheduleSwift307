@@ -121,24 +121,26 @@ export default class MakeReservation extends Component {
                     </div>
 
                     {/* Reservation Notification Options */}
-                    <label className="label-title">Please select at least one way in which you would like to receive notifications and reminders about this reservation.</label>
-                    <div className="form-check">
+                    <label className="label-title">Please select your preferred method of communication for receiving notifications and reminders about this reservation.</label>
+                    <div className="input-group">
                         <input
-                            type="checkbox"
-                            className="form-check-input"
+                            type="radio"
+                            className="input-group-input"
+                            name="communication"
                             id="option1"
                             value="email"
                         />
-                        <label className="form-check-label">Email</label>
+                        <label className="input-group-label">Email</label>
                     </div>
-                    <div className="form-check">
+                    <div className="input-group">
                     <input
-                            type="checkbox"
-                            className="form-check-input"
+                            type="radio"
+                            className="input-group-input"
+                            name="communication"
                             id="option2"
                             value="txtmessage"
                         />
-                        <label className="form-check-label">Text Message</label>
+                        <label className="input-group-label">Text Message</label>
                     </div>
                     <br></br>
 
