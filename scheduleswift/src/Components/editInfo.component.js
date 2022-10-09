@@ -9,6 +9,14 @@ export default class EditInfo extends Component {
                         <form>
                             <div className="user-details">
                                 <div className="input-box">
+                                    <span className="details">First Name</span>
+                                    <input type="text" placeholder="Change First Name"/>
+                                </div>
+                                <div className="input-box">
+                                    <span className="details">Last Name</span>
+                                    <input type="text" placeholder="Change Last Name"/>
+                                </div>
+                                <div className="input-box">
                                     <span className="details">Username</span>
                                     <input type="text" placeholder="Change Username"/>
                                 </div>
