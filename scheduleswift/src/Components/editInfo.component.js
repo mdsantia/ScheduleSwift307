@@ -2,41 +2,36 @@ import React, { Component } from 'react';
 export default class EditInfo extends Component {
     render() {
         return (
-            <form>
-                <div className=''>
-                    <h3>Username</h3>
-                    <input
-                        type="text"
-                        className='edit-form'
-                        placeholder='Change Username'
-                    />
-                </div>
-                <div className=''>
-                    <h3>Password</h3>
-                    <input
-                        type="text"
-                        className='edit-form'
-                        placeholder='Change Password'
-                    />
-                </div>
-                <div className=''>
-                    <h3>Email Address</h3>
-                    <input
-                        type="text"
-                        className='edit-form'
-                        placeholder='Change email'
-                    />
-                </div>
-                <div className=''>
-                    <h3>Phone Number</h3>
-                    <input
-                        type="text"
-                        className='edit-form'
-                        placeholder='Change Phone Number'
-                    />
-                </div>
-
-            </form>
+            <div>
+                <body>
+                    <div className="container">
+                        <div className="title">Edit Information</div>
+                        <form>
+                            <div className="user-details">
+                                <div className="input-box">
+                                    <span className="details">Username</span>
+                                    <input type="text" placeholder="Change Username"/>
+                                </div>
+                                <div className="input-box">
+                                    <span className="details">Password</span>
+                                    <input type="text" placeholder="Change Password"/>
+                                </div>
+                                <div className="input-box">
+                                    <span className="details">Email</span>
+                                    <input type="text" placeholder="Change Email"/>
+                                </div>
+                                <div className="input-box">
+                                    <span className="details">Phone Number</span>
+                                    <input type="text" placeholder="Change Phone Number"/>
+                                </div>
+                                <div className="button">
+                                    <input type="submit" value="Change Information"/>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </body>
+            </div>
         )
     }
 }
