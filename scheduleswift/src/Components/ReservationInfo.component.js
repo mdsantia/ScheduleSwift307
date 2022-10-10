@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import Event from '../Event.js';
+import ReservationForm from '../ReservationForm';
+import Registration from '../Registration';
 
 export default class ReservationInfo extends Component {
     render() {
@@ -14,23 +16,13 @@ export default class ReservationInfo extends Component {
                         <div className="form-group left">
                             <label for="Host" className="label-title">Host</label>
                             <div className="form-body">
-                                <div className='form group left'>
                                 <field-info for="Host" className="label">[Host name]</field-info>
-                                </div>
-                                <div className='form group right'>
-                                <button>Edit</button>
-                                </div>
                             </div>
                         </div>
                         <div className="form-group right">
                         <label for="Organizers" className="label-title">Organizers</label>
                             <div className="form-body">
-                                <div className='form group left'>
                                 <field-info for="Organizers" className="label">[User Organizers]</field-info>
-                                </div>
-                                <div className='form group right'>
-                                <button>Edit</button>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -39,24 +31,15 @@ export default class ReservationInfo extends Component {
                     <div className="horizontal-group">
                         <div className="form-group left">
                             <label for="email" className="label-title">Email</label>
-                            <input
-                                type="email"
-                                className="form-input"
-                                id="email"
-                                placeholder="email@example.com"
-                                required="required"
-                            />
+                            <div className="form-body">
+                                <field-info for="Email" className="label">email@example.com</field-info>
+                            </div>
                         </div>
                         <div className="form-group right">
                             <label for="phone" className="label-title">Phone Number</label>
-                            <input
-                                type="tel"
-                                className="form-input"
-                                id="phone"
-                                placeholder="(XXX) XXX-XXXX"
-                                pattern="([0-9]{3})-[0-9]{2}-[0-9]"
-                                required="required"
-                            />
+                            <div className="form-body">
+                                <field-info for="Telephone" className="label">(XXX) XXX-XXXX</field-info>
+                            </div>
                         </div>
                     </div>
 
@@ -64,21 +47,15 @@ export default class ReservationInfo extends Component {
                     <div className="horizontal-group">
                         <div className="form-group left">
                             <label for="date" className="label-title">Date</label>
-                            <input
-                                type="date"
-                                className="form-input"
-                                id="date"
-                                required="required"
-                            />
+                            <div className="form-body">
+                                <field-info for="Date" className="label">mm/dd/yyyy</field-info>
+                            </div>
                         </div>
                         <div className="form-group right">
                             <label for="time" className="label-title">Time</label>
-                            <input
-                                type="time"
-                                className="form-input"
-                                id="time"
-                                required="required"
-                            />
+                            <div className="form-body">
+                                <field-info for="Time" className="label">--:--AM - --:--PM</field-info>
+                            </div>
                         </div>
                     </div>
 
@@ -86,33 +63,24 @@ export default class ReservationInfo extends Component {
                     <div className="horizontal-group">
                         <div className="form-group left">
                             <label for="item1" className="label-title">Item #1</label>
-                            <input
-                                type="text"
-                                className="form-input"
-                                id="item1"
-                            />
+                            <div className="form-body">
+                                <field-info for="item1" className="label">Selected/Quantity</field-info>
+                            </div>
                         </div>
                         <div className="form-group right">
                             <label for="item2" className="label-title">Item #2</label>
-                            <input
-                                type="text"
-                                className="form-input"
-                                id="item2"
-                            />
+                            <div className="form-body">
+                                <field-info for="item2" className="label">Selected/Quantity</field-info>
+                            </div>
                         </div>
                     </div>
 
                     {/* Additional Information Field */}
                     <div className="form-group">
                         <label for="additionalinfo" className="label-title">Additional Information</label>
-                        <textarea
-                            // type="text"
-                            className="form-input"
-                            rows="4"
-                            cols="50"
-                            id="additionalinfo"
-                            placeholder="Please include any important additional information about your reservation here."
-                        />
+                        <div className="form-body">
+                                <field-info for="addinfo" className="label">Please include any important additional information about your reservation here.</field-info>
+                        </div>
                     </div>
 
                     {/* Reservation Notification Options */}
@@ -123,6 +91,8 @@ export default class ReservationInfo extends Component {
                             className="form-check-input"
                             id="option1"
                             value="email"
+                            // TODO change to be true if the box was selected
+                            checked="true"
                         />
                         <label className="form-check-label">Email</label>
                     </div>
@@ -132,6 +102,8 @@ export default class ReservationInfo extends Component {
                             className="form-check-input"
                             id="option2"
                             value="txtmessage"
+                            // TODO change to be true if the box was selected
+                            checked="true"
                         />
                         <label className="form-check-label">Text Message</label>
                     </div>
@@ -140,9 +112,9 @@ export default class ReservationInfo extends Component {
                     {/* Submit and Cancel Buttons */}
                     <div class="form-footer">
                         <center>
-                            <button type="submit" className="btn">Make Reservation</button>
+                            <button type="submit" className="btn" onClick={<Registration />}>Close</button>
                             <div className="divider"/>
-                            <button type="submit" className="btn">Cancel</button>
+                            <button type="submit" className="btn" onClick={<ReservationForm />}>Edit</button>
                         </center>
                     </div>
                 </div>
