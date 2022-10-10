@@ -1,5 +1,5 @@
 class Event {
-    Event() {
+    constructor() {
         this.confirmationID= "";
         this.organizers= {};
         this.numOrganizers= 0;
