@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 export default class MakeReservation extends Component {
     render() {
         return (
-            <form class="reservation-form">
-                <div class="form-header">
+            <form className="reservation-form">
+                <div className="form-header">
                     <h1>Reservation Form</h1>
+                    <h2>[Business Name]</h2>
+                    <h3>[Name of Reservation/Event]</h3>
                 </div>
                 {/* First Name and Last Name Fields */}
                 <div className="form-body">
@@ -25,7 +27,7 @@ export default class MakeReservation extends Component {
                                 type="text"
                                 className="form-input"
                                 id="lastname"
-                                placeholder="Enter Your First Name"
+                                placeholder="Enter Your Last Name"
                                 requried="required"
                             />   
                         </div>
@@ -37,7 +39,7 @@ export default class MakeReservation extends Component {
                             <label for="email" className="label-title">Email</label>
                             <input
                                 type="email"
-                                className="form-input"
+                                className="form-input-email"
                                 id="email"
                                 placeholder="email@example.com"
                                 required="required"
@@ -49,8 +51,8 @@ export default class MakeReservation extends Component {
                                 type="tel"
                                 className="form-input"
                                 id="phone"
-                                placeholder="(XXX) XXX-XXXX"
-                                pattern="([0-9]{3})-[0-9]{2}-[0-9]"
+                                placeholder="XXX-XXX-XXXX"
+                                pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
                                 required="required"
                             />
                         </div>
@@ -69,31 +71,49 @@ export default class MakeReservation extends Component {
                         </div>
                         <div className="form-group right">
                             <label for="time" className="label-title">Time</label>
-                            <input
-                                type="time"
-                                className="form-input"
-                                id="time"
-                                required="required"
-                            />
+                            <div className="two-column">
+                                <input
+                                    type="time"
+                                    className="form-input"
+                                    id="starttime"
+                                    required="required"
+                                />
+                                <div className="divider"></div>
+                                <label for="endtime" className="label-title">to</label>
+                                <div className="divider"></div>
+                                <input
+                                    type="time"                                        className="form-input"
+                                    id="endtime"
+                                    required="required"
+                                />                                    
+                            </div>
                         </div>
                     </div>
-
+                    
                     {/* Item Fields */}
                     <div className="horizontal-group">
                         <div className="form-group left">
-                            <label for="item1" className="label-title">Item #1</label>
-                            <input
-                                type="text"
-                                className="form-input"
-                                id="item1"
-                            />
+                            <div className="two-column">
+                                <label for="item1" className="label-title">Number Of Item #1:</label>
+                                <div className="divider"></div>
+                                <input
+                                    type="number"
+                                    className="form-input-item"
+                                    id="item1"
+                                    min="0"
+                                    max="10"
+                                />
+                            </div>
                         </div>
                         <div className="form-group right">
-                            <label for="item2" className="label-title">Item #2</label>
+                            <label for="item2" className="label-title">Number Of Item #2:</label>
+                            <div className="divider"></div>
                             <input
                                 type="text"
-                                className="form-input"
+                                className="form-input-item"
                                 id="item2"
+                                min="0"
+                                max="10"
                             />
                         </div>
                     </div>
@@ -102,38 +122,41 @@ export default class MakeReservation extends Component {
                     <div className="form-group">
                         <label for="additionalinfo" className="label-title">Additional Information</label>
                         <textarea
-                            // type="text"
-                            className="form-input"
                             rows="4"
                             cols="50"
+                            className="form-input"
                             id="additionalinfo"
                             placeholder="Please include any important additional information about your reservation here."
                         />
                     </div>
 
                     {/* Reservation Notification Options */}
-                    <label className="label-title">Please select at least one way in which you would like to receive notifications and reminders about this reservation.</label>
-                    <div className="form-check">
+                    <label className="label-title">Please select your preferred method of communication for receiving notifications and reminders about this reservation.</label>
+                    <div className="input-group">
                         <input
-                            type="checkbox"
-                            className="form-check-input"
+                            type="radio"
+                            className="input-group-input"
+                            name="communication"
                             id="option1"
                             value="email"
+                            required="required"
                         />
-                        <label className="form-check-label">Email</label>
+                        <label className="input-group-label">Email</label>
                     </div>
-                    <div className="form-check">
+                    <div className="input-group">
                     <input
-                            type="checkbox"
-                            className="form-check-input"
+                            type="radio"
+                            className="input-group-input"
+                            name="communication"
                             id="option2"
                             value="txtmessage"
+                            required="required"
                         />
-                        <label className="form-check-label">Text Message</label>
+                        <label className="input-group-label">Text Message</label>
                     </div>
                     <br></br>
 
-                    {/* Submit and Cancel Buttons */}
+                    {/* Make Reservation and Cancel Buttons */}
                     <div class="form-footer">
                         <center>
                             <button type="submit" className="btn">Make Reservation</button>

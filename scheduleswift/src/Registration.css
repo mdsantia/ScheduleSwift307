@@ -83,3 +83,11 @@ html,
 .forgot-password a {
     color: #167bff;
 }
+
+.wrong-pass {
+    text-align: center;
+    font-size: 13px;
+    padding-top: 0px;
+    color: red;
+    margin: 0;
+}
