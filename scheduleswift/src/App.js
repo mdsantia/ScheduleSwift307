@@ -7,7 +7,7 @@ import ReservationInfo from './ReservationInfo';
 
 function App() {
   return (
-    <ReservationInfo />
+    <Registration />
   );
 }
 
