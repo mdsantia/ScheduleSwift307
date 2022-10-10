@@ -3,6 +3,8 @@ import Event from '../Event.js';
 import ReservationForm from '../ReservationForm';
 import Registration from '../Registration';
 
+///TODO : Missing event Listener to buttons and access event information from the database
+
 export default class ReservationInfo extends Component {
     render() {
         return (
