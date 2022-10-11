@@ -93,3 +93,12 @@
     
   }
   
+  .info {
+    text-align: left;
+    padding: 10px;
+    font-size: 20px;
+  }
+  
+  .info .information {
+    padding: 5px;
+  }
