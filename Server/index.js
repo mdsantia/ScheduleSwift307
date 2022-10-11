@@ -67,6 +67,48 @@ app.post('/api/login', (req, res) => {
     )
 })
 
+app.post('/api/verify', (req, res) => {
+    const username = req.body.username;
+    const email = req.body.email;
+    console.log(`Username: ${username} \n Email: ${email} \n`);
+    db.query(
+        "SELECT * FROM userData WHERE username = ? AND emailAddress = ?",
+        [username, email],
+        (err, result) => {
+            if (err) {
+                res.send({ err: err })
+            }
+            if (result.length > 0) {
+                console.log("Found a match \n");
+                console.log("Query Result: \n");
+                console.log(result);
+                res.send({ result });
+            } else {
+                console.log("No match \n");
+                res.send({ message: "No Account with that username and email found." });
+            }
+        }
+    )
+})
+
+app.post('/api/forgot', (req, res) => {
+    const username = req.body.username;
+    const email = req.body.email;
+    const newPassword = req.body.newPassword;
+    var encryptedPassword = encrypt(newPassword);
+    console.log(`Username: ${username} \n Email: ${email} \n New Password: ${newPassword}`);
+    db.query(
+        "UPDATE userData SET password = ? WHERE username = ? AND emailAddress = ?",
+        [encryptedPassword, username, email],
+        (err, result) => {
+            if (err) {
+                res.send({ err: err })
+            }
+            res.send({ result });
+        }
+    )
+})
+
 app.listen(3001, () => {
     console.log("Running on Port 3001");
 });
