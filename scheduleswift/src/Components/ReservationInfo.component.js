@@ -24,7 +24,7 @@ const ReservationInfo = () => {
                     <div className="form-group left">
                         <label for="Host" className="label-title">Host</label>
                         <div className="form-body">
-                            <field-info for="Host" className="label">[Host name]</field-info>
+                            <field-info for="Host" className="label">[Host/Facility name]</field-info>
                         </div>
                     </div>
                     <div className="form-group right">
@@ -64,6 +64,14 @@ const ReservationInfo = () => {
                         <div className="form-body">
                             <field-info for="Time" className="label">--:--AM - --:--PM</field-info>
                         </div>
+                    </div>
+                </div>
+
+                {/* Confirmation Number Field */}
+                <div className="form-group">
+                    <label for="confid" className="label-title">Confirmation Number</label>
+                    <div className="form-body">
+                        <field-info for="confid" className="label">[Confirmation ID [A-z0-9]*]</field-info>
                     </div>
                 </div>
 
