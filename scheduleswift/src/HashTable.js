@@ -33,7 +33,7 @@ class HashTable {
         if (this.idUnique(result)) {
             return result;
         } else {
-            if (attempt >= maxAttempts) {
+            if (attempt > this.maxAttempts) {
             // The hash is not unique so it cannot be added
                 return this.makeUniqueID(attempt++);
             } else {
@@ -82,13 +82,14 @@ class HashTable {
 
 /** Example of how to initialize a hashtable to contain different values */
 
-/**
+/***
 const hashtable = new HashTable();
 hashtable.addPair("Alex", hashtable.makeUniqueID("Bert"));
 console.log(hashtable.searchFunction("Alex"));
 hashtable.addPair("Bert", hashtable.makeUniqueID("Bert"));
 console.log(hashtable.searchFunction("Bert"));
 console.log(hashtable.idUnique(hashtable.searchFunction("Alex")));
+console.log(hashtable.idUnique(hashtable.searchFunction("Bert")));
 console.log(hashtable.idUnique("10"));
 */
 

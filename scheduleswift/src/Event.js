@@ -1,9 +1,10 @@
 class Event {
-    constructor() {
-        this.confirmationID= "";
+    constructor(creatorUsername, facilityId, confId) {
+        this.confirmationID= confId;
         this.organizers= {};
-        this.numOrganizers= 0;
-        this.hostID= "";
+        this.organizers[0] = creatorUsername;
+        this.numOrganizers= 1;
+        this.hostID= facilityId;
         this.items= {};
         this.numItems= 0;
         this.totalPrice= 0; 
@@ -13,17 +14,14 @@ class Event {
         this.confirmationID = confirmationID;
     }
 
-    setHostID(hostID) {
-        this.hostID = hostID
-    }
-
-    setTotalPrice(totalPrice) {
-        this.totalPrice = totalPrice;
+    calculateTotalPrice(){
+        // TODO Function to calculate per items
+        return this.totalPrice;
     }
 
     addOrganizer(organizer) {
         this.organizers[this.numOrganizers] = organizer;
-        this.numItems++;
+        this.numOrganizers++;
     }
 
     addItem(item) {

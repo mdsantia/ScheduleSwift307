@@ -68,10 +68,18 @@ const ReservationInfo = () => {
                 </div>
 
                 {/* Confirmation Number Field */}
-                <div className="form-group">
-                    <label for="confid" className="label-title">Confirmation Number</label>
-                    <div className="form-body">
-                        <field-info for="confid" className="label">[Confirmation ID [A-z0-9]*]</field-info>
+                <div className="horizontal-group">
+                    <div className="form-group left">
+                        <label for="confid" className="label-title">Confirmation Number</label>
+                        <div className="form-body">
+                            <field-info for="confid" className="label">[Confirmation ID [A-z0-9]*]</field-info>
+                        </div>
+                    </div>
+                    <div className="form-group right">
+                        <label for="Payment" className="label-title">Payment Status</label>
+                        <div className="form-body">
+                            <field-info for="confid" className="label">[$Paid/$Owed]</field-info>
+                        </div>
                     </div>
                 </div>
 
