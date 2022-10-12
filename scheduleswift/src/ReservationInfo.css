@@ -89,6 +89,14 @@ textarea {
     resize: none;
 }
 
+/** First attempt at implementation of the scroll bar 
+.growth {
+    color: black;
+    font-weight: bold;
+    overflow-y: scroll;
+}
+*/
+
 .btn {
     display: inline-block;
     width: 30%;

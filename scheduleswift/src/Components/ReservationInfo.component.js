@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component, ReactDOM } from 'react';
 import Event from '../Event.js';
-import ReservationForm from '../ReservationForm';
+import ReservationForm from './makeReservation.component';
 import Registration from '../Registration';
 
 ///TODO : Missing event Listener to buttons and access event information from the database
@@ -77,11 +77,40 @@ export default class ReservationInfo extends Component {
                         </div>
                     </div>
 
+                    <div className="horizontal-group">
+                        <div className="form-group left">
+                            <label for="item3" className="label-title">Item #3</label>
+                            <div className="form-body">
+                                <field-info for="item3" className="label">Selected/Quantity</field-info>
+                            </div>
+                        </div>
+                        <div className="form-group right">
+                            <label for="item4" className="label-title">Item #4</label>
+                            <div className="form-body">
+                                <field-info for="item4" className="label">Selected/Quantity</field-info>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="horizontal-group">
+                        <div className="form-group left">
+                            <label for="item5" className="label-title">Item #5</label>
+                            <div className="form-body">
+                                <field-info for="item5" className="label">Selected/Quantity</field-info>
+                            </div>
+                        </div>
+                        <div className="form-group right">
+                            <label for="item6" className="label-title">Item #6</label>
+                            <div className="form-body">
+                                <field-info for="item6" className="label">Selected/Quantity</field-info>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Additional Information Field */}
                     <div className="form-group">
                         <label for="additionalinfo" className="label-title">Additional Information</label>
                         <div className="form-body">
-                                <field-info for="addinfo" className="label">Please include any important additional information about your reservation here.</field-info>
+                            <field-info for="addinfo" className="label">Please include any important additional information about your reservation here.</field-info>
                         </div>
                     </div>
 
@@ -124,3 +153,6 @@ export default class ReservationInfo extends Component {
         ) 
     }
 }
+
+/** Initial attempt to incorporate scroll bar */
+// ReactDOM.render(<ReservationInfo/>, document.querySelector('#growth'));
