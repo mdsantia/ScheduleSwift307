@@ -3,6 +3,7 @@ import './ReservationInfo.css';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import ReservationInfo from "./Components/ReservationInfo.component";
+
 function Reservationinfo() {
     return (
         <Router>
@@ -12,10 +13,11 @@ function Reservationinfo() {
                     </Routes>
             </div>
         </Router>
-    )
+
+    );
 }
 
-export default ReservationInfo;
+export default Reservationinfo;
 
 
 
