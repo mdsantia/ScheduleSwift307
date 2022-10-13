@@ -23,11 +23,11 @@ async function hashPassword(password) {
     return hash;
 }
 
-app.post('/api/eventSelect', (req, res) => {
+app.post('/api/eventselect', (req, res) => {
     const confID = req.body.confID;
     console.log(`Searching by ID: ${confID}\n`);
     db.query(
-        "SELECT * FROM eventData WHERE confID = ?",
+        "SELECT * FROM events WHERE confID = ?",
         [confID],
         (err, result) => {
             if (err) {
@@ -36,8 +36,8 @@ app.post('/api/eventSelect', (req, res) => {
             if (result.length > 0) {
                 console.log("Found a match \n");
                 console.log("Query Result: \n")
-                console.log(JSON.stringify(result[0]));
-                res.send(JSON.stringify(result[0]));
+                console.log(result);
+                res.send({ result });
             } else {
                 console.log("No match. \n");
                 res.send({ message: "Event with that confirmation ID does not exist!" });
@@ -46,13 +46,16 @@ app.post('/api/eventSelect', (req, res) => {
     )
 })
 
+// TODO JENNY DELETE * WHERE Delete an event from database
+
 app.post('/api/eventInsert', (req, res) => {
+    // TODO JENNY
     const organizers = req.body.organizers;
     const date = req.body.lastName;
     const username = req.body.username;
     const emailAddress = req.body.emailAddress;
     var encryptedPassword = encrypt(req.body.password);
-    const sqlInsert = "INSERT INTO eventData (organizers, date, username, emailAddress, password) VALUES (?,?,?,?,?)"
+    const sqlInsert = "INSERT INTO events (organizers, date, username, emailAddress, password) VALUES (?,?,?,?,?)"
     db.query(sqlInsert, [organizers, date, username, emailAddress, encryptedPassword], (err, result) => {
         console.log(err);
     })
