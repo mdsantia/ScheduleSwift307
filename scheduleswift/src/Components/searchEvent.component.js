@@ -2,6 +2,7 @@ import Axios from 'axios';
 import React, { Component, useState } from 'react';
 import { set } from 'react-hook-form';
 import { Navigate, useNavigate } from 'react-router-dom';
+
 const Search = () => {
     const [organizers, setOrganizers] = useState('');
     const [date, setDate] = useState('');
@@ -16,20 +17,28 @@ const Search = () => {
         navigate("/info");
     }
 
+    const getInfo = (result) => {
+        alert(result.substring(result.indexOf('organizers'), result.indexOf('date')));
+        setOrganizers(result.substring(result.indexOf('organizers'), result.indexOf('date')));
+        alert(organizers);
+    }
+
     const fillInfo = e => {
         e.preventDefault();
         Axios.post("http://localhost:3001/api/eventSelect", {
             confID : confID,
         }).then((result) => {
+            alert(JSON.stringify(result.data));
+            getInfo(JSON.stringify(result.data));
             if (result.data.message) {
                 setError(`${confID} is invalid!`)
             } else {
                 setError("")
-                setOrganizers({result});
                 // setDate(result);
                 // setStartTime(result);
                 // setEndTime(result);
                 // setOrganizers("mdsantia");
+                alert(JSON.stringify(organizers));
                 setDate("10/10/22");
                 setStartTime("1010");
                 setEndTime("2100");
