@@ -23,6 +23,42 @@ async function hashPassword(password) {
     return hash;
 }
 
+app.post('/api/eventSelect', (req, res) => {
+    const confID = req.body.confID;
+    console.log(`Searching by ID: ${confID}\n`);
+    db.query(
+        "SELECT * FROM eventData WHERE confID = ?",
+        [confID],
+        (err, result) => {
+            if (err) {
+                res.send({ err: err })
+            }
+            if (result.length > 0) {
+                console.log("Found a match \n");
+                console.log("Query Result: \n")
+                console.log(JSON.stringify(result[0]));
+                res.send(JSON.stringify(result[0]));
+            } else {
+                console.log("No match. \n");
+                res.send({ message: "Event with that confirmation ID does not exist!" });
+            }
+        }
+    )
+})
+
+app.post('/api/eventInsert', (req, res) => {
+    const organizers = req.body.organizers;
+    const date = req.body.lastName;
+    const username = req.body.username;
+    const emailAddress = req.body.emailAddress;
+    var encryptedPassword = encrypt(req.body.password);
+    const sqlInsert = "INSERT INTO eventData (organizers, date, username, emailAddress, password) VALUES (?,?,?,?,?)"
+    db.query(sqlInsert, [organizers, date, username, emailAddress, encryptedPassword], (err, result) => {
+        console.log(err);
+    })
+
+})
+
 app.post('/api/insert', (req, res) => {
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
@@ -63,6 +99,48 @@ app.post('/api/login', (req, res) => {
                 console.log("No match. \n");
                 res.send({ message: "Wrong username/password combination" });
             }
+        }
+    )
+})
+
+app.post('/api/verify', (req, res) => {
+    const username = req.body.username;
+    const email = req.body.email;
+    console.log(`Username: ${username} \n Email: ${email} \n`);
+    db.query(
+        "SELECT * FROM userData WHERE username = ? AND emailAddress = ?",
+        [username, email],
+        (err, result) => {
+            if (err) {
+                res.send({ err: err })
+            }
+            if (result.length > 0) {
+                console.log("Found a match \n");
+                console.log("Query Result: \n");
+                console.log(result);
+                res.send({ result });
+            } else {
+                console.log("No match \n");
+                res.send({ message: "No Account with that username and email found." });
+            }
+        }
+    )
+})
+
+app.post('/api/forgot', (req, res) => {
+    const username = req.body.username;
+    const email = req.body.email;
+    const newPassword = req.body.newPassword;
+    var encryptedPassword = encrypt(newPassword);
+    console.log(`Username: ${username} \n Email: ${email} \n New Password: ${newPassword}`);
+    db.query(
+        "UPDATE userData SET password = ? WHERE username = ? AND emailAddress = ?",
+        [encryptedPassword, username, email],
+        (err, result) => {
+            if (err) {
+                res.send({ err: err })
+            }
+            res.send({ result });
         }
     )
 })

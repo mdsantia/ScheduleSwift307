@@ -24,7 +24,7 @@ class Item {
     }
     
     setPrice(num) {
-        this.price = price;
+        this.price = num;
     }
 
 }
