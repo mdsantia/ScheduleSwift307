@@ -27,7 +27,7 @@ app.post('/api/eventSelect', (req, res) => {
     const confID = req.body.confID;
     console.log(`Searching by ID: ${confID}\n`);
     db.query(
-        "SELECT * FROM userData WHERE confID = ?",
+        "SELECT * FROM eventData WHERE confID = ?",
         [confID],
         (err, result) => {
             if (err) {
@@ -36,8 +36,8 @@ app.post('/api/eventSelect', (req, res) => {
             if (result.length > 0) {
                 console.log("Found a match \n");
                 console.log("Query Result: \n")
-                console.log(result);
-                res.send({ result });
+                console.log(JSON.stringify(result[0]));
+                res.send(JSON.stringify(result[0]));
             } else {
                 console.log("No match. \n");
                 res.send({ message: "Event with that confirmation ID does not exist!" });

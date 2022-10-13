@@ -41,7 +41,7 @@ const ReservationInfo = () => {
                     <div className="form-group right">
                     <label for="Organizers" className="label-title">Organizers</label>
                         <div className="form-body">
-                            <field-info for="Organizers" className="label">[User Organizers]</field-info>
+                            <field-info for="Organizers" className="label">{organizers}</field-info>
                         </div>
                     </div>
                 </div>
@@ -67,7 +67,7 @@ const ReservationInfo = () => {
                     <div className="form-group left">
                         <label for="date" className="label-title">Date</label>
                         <div className="form-body">
-                            <field-info for="Date" className="label">mm/dd/yyyy</field-info>
+                            <field-info for="Date" className="label">{date}</field-info>
                         </div>
                     </div>
                     <div className="form-group right">
@@ -83,7 +83,7 @@ const ReservationInfo = () => {
                     <div className="form-group left">
                         <label for="confid" className="label-title">Confirmation Number</label>
                         <div className="form-body">
-                            <field-info for="confid" className="label">[Confirmation ID [A-z0-9]*]</field-info>
+                            <field-info for="confid" className="label">[{confID} Confirmation ID [A-z0-9]*]</field-info>
                         </div>
                     </div>
                     <div className="form-group right">

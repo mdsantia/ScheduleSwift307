@@ -1,5 +1,6 @@
 import Axios from 'axios';
 import React, { Component, useState } from 'react';
+import { set } from 'react-hook-form';
 import { Navigate, useNavigate } from 'react-router-dom';
 const Search = () => {
     const [organizers, setOrganizers] = useState('');
@@ -11,10 +12,6 @@ const Search = () => {
 
     const navigate = useNavigate();
 
-    let inputHandler = (e) => {
-        setConfID(e.target.value);
-      };
-
     const send = () => {
         navigate("/info");
     }
@@ -22,15 +19,29 @@ const Search = () => {
     const fillInfo = e => {
         e.preventDefault();
         Axios.post("http://localhost:3001/api/eventSelect", {
-            confID : confID
+            confID : confID,
         }).then((result) => {
             if (result.data.message) {
-                setDate(result.data.date);
-                setOrganizers(result.data.organizers);
-                setStartTime(result.data.starttime);
-                setEndTime(result.data.endtime);
+                setError(`${confID} is invalid!`)
             } else {
-                navigate("/info");
+                setError("")
+                setOrganizers({result});
+                // setDate(result);
+                // setStartTime(result);
+                // setEndTime(result);
+                // setOrganizers("mdsantia");
+                setDate("10/10/22");
+                setStartTime("1010");
+                setEndTime("2100");
+                navigate("/info", {
+                state: {
+                    date : date,
+                    starttime : starttime,
+                    endtime : endtime,
+                    organizers : organizers,
+                    confID : confID,
+                }
+                });
             }
         })
     }
@@ -48,9 +59,18 @@ const Search = () => {
                         type="text"
                         className='form-control'
                         placeholder='Enter Confirmation ID for your event'
+                        onChange={(e) => {setConfID(e.target.value)} }
                         />
                     </div>
+                    <br></br>
+                    <div className='d-grid'>
+                        <button onClick={fillInfo}>
+                            Submit
+                        </button>
+                    </div>
+                    <div className="wrong-confid">{error}</div>
                 </form>
+                <h3>{organizers} {date} {starttime} {endtime}</h3> 
             </div>
         </div>
     )
