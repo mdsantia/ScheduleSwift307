@@ -1,5 +1,24 @@
 import React, { Component } from 'react';
 export default class MakeReservation extends Component {
+    /** TODO Implement insert event */
+    // const [username, setUsername] = useState("");
+    // const [password, setPassword] = useState("");
+    // const [loginStatus, setLoginStatus] = useState("");
+    // const navigate = useNavigate();
+    // const login = e => {
+    //     e.preventDefault();
+    //     Axios.post("http://localhost:3001/api/login", {
+    //         username: username,
+    //         password: password,
+    //     }).then((result) => {
+    //         if (result.data.message) {
+    //             setLoginStatus(result.data.message);
+    //         } else {
+    //             navigate("/main");
+    //         }
+    //     })
+    // }
+
     render() {
         return (
             <form className="reservation-form">

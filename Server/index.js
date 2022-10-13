@@ -23,6 +23,42 @@ async function hashPassword(password) {
     return hash;
 }
 
+app.post('/api/eventSelect', (req, res) => {
+    const confID = req.body.confID;
+    console.log(`Searching by ID: ${confID}\n`);
+    db.query(
+        "SELECT * FROM userData WHERE confID = ?",
+        [confID],
+        (err, result) => {
+            if (err) {
+                res.send({ err: err })
+            }
+            if (result.length > 0) {
+                console.log("Found a match \n");
+                console.log("Query Result: \n")
+                console.log(result);
+                res.send({ result });
+            } else {
+                console.log("No match. \n");
+                res.send({ message: "Event with that confirmation ID does not exist!" });
+            }
+        }
+    )
+})
+
+app.post('/api/eventInsert', (req, res) => {
+    const organizers = req.body.organizers;
+    const date = req.body.lastName;
+    const username = req.body.username;
+    const emailAddress = req.body.emailAddress;
+    var encryptedPassword = encrypt(req.body.password);
+    const sqlInsert = "INSERT INTO eventData (organizers, date, username, emailAddress, password) VALUES (?,?,?,?,?)"
+    db.query(sqlInsert, [organizers, date, username, emailAddress, encryptedPassword], (err, result) => {
+        console.log(err);
+    })
+
+})
+
 app.post('/api/insert', (req, res) => {
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;

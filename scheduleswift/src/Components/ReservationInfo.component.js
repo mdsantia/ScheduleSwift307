@@ -1,16 +1,27 @@
-import React, { Component, ReactDOM } from 'react';
+import Axios from 'axios';
+import React, { Component, ReactDOM, useState } from 'react';
 import Event from '../Event.js';
-import Reservationinfo from '../Reservationinfo';
-import ReservationForm from './makeReservation.component';
 import Registration from '../Registration';
 import { useNavigate } from "react-router-dom";
 
-///TODO : Missing event Listener to buttons and access event information from the database
+///TODO : access event information from the database
 
 const ReservationInfo = () => {
+    const [organizers, setOrganizers] = useState('');
+    const [date, setDate] = useState('');
+    const [starttime, setStartTime] = useState('');
+    const [endtime, setEndTime] = useState('');
+    const [confID, setConfID] = useState('');
+    const [error, setError] = useState(null);
+
     const navigate = useNavigate();
-    const login = () => {
-        return (<ReservationForm/>);
+
+    const main = () => {
+        navigate("/");
+    }
+
+    const edit = () => {
+        navigate("/edit-info");
     }
 
     return (
@@ -165,9 +176,9 @@ const ReservationInfo = () => {
                 {/* Submit and Cancel Buttons */}
                 <div class="form-footer">
                     <center>
-                        <button type="submit" className="btn" onClick={<Registration />}>Close</button>
+                        <button type="submit" className="btn" onClick={main}>Close</button>
                         <div className="divider"/>
-                        <button type="submit" className="btn" onClick={login}>Edit</button>
+                        <button type="submit" className="btn" onClick={edit}>Edit</button>
                     </center>
                 </div>
             </div>
