@@ -4,8 +4,8 @@ import Axios from 'axios';
 import HashTable from '../HashTable';
 
 const MakeReservation = () => {
-    const [confID, setConfID] = useState('');
-    const [firstName, setFirstName] = useState('');
+    const [confID=location.state.confID, setConfID] = useState('');
+    const [firstName=location.state.firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [emailAddress, setEmailAddress] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
@@ -20,21 +20,35 @@ const MakeReservation = () => {
 
     const navigate = useNavigate();
 
+    const handleChange=(evnt, value)=>{  
+        if (evnt.currentTarget.id == "firstnameinput") {
+            setFirstName(`${value}`);
+        } else if (evnt.currentTarget.id == "lastname") {
+            setLastName(`${value}`);
+        } else if (evnt.currentTarget.id == "email") {
+            setEmailAddress(`${value}`);
+        } else if (evnt.currentTarget.id == "date") {
+            setDate(`${value}`);
+        } else if (evnt.currentTarget.id == "phone") {
+            setPhoneNumber(`${value}`);
+        } else if (evnt.currentTarget.id == "starttime") {
+            setStartTime(`${value}`);
+        } else if (evnt.currentTarget.id == "endtime") {
+            setEndTime(`${value}`);
+        } else if (evnt.currentTarget.id == "item1") {
+            setNumItem1(`${value}`);
+        } else if (evnt.currentTarget.id == "item2") {
+            setNumItem2(`${value}`);
+        } else if (evnt.currentTarget.id == "additionalinfo") {
+            setAdditionalInfo(`${value}`);
+        }
+    }
+
     const main = () => {
         navigate("/main");
     }
 
     let location = useLocation();
-
-    // const email = document.getElementById("mail");
-    // email.addEventListener("input", (event) => {
-    // if (email.validity.typeMismatch) {
-    //     email.setCustomValidity("I am expecting an e-mail address!");
-    //     email.reportValidity();
-    // } else {
-    //     email.setCustomValidity("");
-    // }
-    // });
 
     const info = () => {
         navigate("/info", {
@@ -66,23 +80,28 @@ const MakeReservation = () => {
         var result = makeUniqueID();
         // TODO GET INPUT TO INSERT TO DATABASE
         Axios.post('http://localhost:3001/api/eventInsert', {
+            username : 'jpha',
             confID: result,
-            firstName: 'Jenny',
-            lastName: 'Ha',
-            emailAddress: 'jpha@purdue.edu',
-            phoneNumber: '5743547966',
-            date: '2020-10-12',
-            startTime: '01:00',
-            endTime: '01:45',
-            numItem1: 2,
-            numItem2: 3,
-            additionalInfo: 'this is additional info',
-            communicationMethod: 'Email'
+            firstName: firstName,
+            lastName: lastName,
+            emailAddress: emailAddress,
+            phoneNumber: phoneNumber,
+            // TODO CONVERT DATE FORMAT TO DATABASE
+            date: 2020-22-12,
+            startTime: startTime,
+            endTime: endTime,
+            numItem1: numItem1,
+            numItem2: numItem2,
+            additionalInfo: additionalInfo,
+            communicationMethod: communicationMethod
         }).then((result) => {
             if (!result.data.err) {
                 alert(`Successful Insert! Your Confirmation ID is ${result}`);
                 // TODO OPEN THE ACTUAL MADE RESERVATION
+                //'ER_TRUNCATED_WRONG_VALUE'
                 info();
+            } if (result.data.err === "ER_TRUNCATED_WRONG_VALUE") {
+                // break
             } else {
                 onSubmit();
             }
@@ -102,7 +121,8 @@ const MakeReservation = () => {
                     <div className="form-group left">
                         <label for="firstname" className="label-title">First Name</label>
                         <input 
-                            // value={location.state.firstName}
+                            onChange={e => handleChange(e, e.target.value)}
+                            value={firstName}
                             type="text"
                             className="form-input" 
                             id="firstnameinput"
@@ -113,7 +133,8 @@ const MakeReservation = () => {
                     <div className="form-group right">
                         <label for="lastname" className="label-title">Last Name</label>
                         <input
-                            // value={location.state.lastName}
+                            onChange={e => handleChange(e, e.target.value)}
+                            value={lastName}
                             type="text"
                             className="form-input"
                             id="lastname"
@@ -128,7 +149,8 @@ const MakeReservation = () => {
                     <div className="form-group left">
                         <label for="email" className="label-title">Email</label>
                         <input
-                            // value={location.state.emailAddress}
+                            onChange={e => handleChange(e, e.target.value)}
+                            value={emailAddress}
                             type="email"
                             className="form-input-email"
                             id="email"
@@ -139,7 +161,8 @@ const MakeReservation = () => {
                     <div className="form-group right">
                         <label for="phone" className="label-title">Phone Number</label>
                         <input
-                            // value={location.state.phoneNumber}
+                            onChange={e => handleChange(e, e.target.value)}
+                            value={phoneNumber}
                             type="tel"
                             className="form-input"
                             id="phone"
@@ -155,7 +178,8 @@ const MakeReservation = () => {
                     <div className="form-group left">
                         <label for="date" className="label-title">Date</label>
                         <input
-                            // value={location.state.date}
+                            onChange={e => handleChange(e, e.target.value)}
+                            value={date}
                             type="date"
                             className="form-input"
                             id="date"
@@ -166,7 +190,8 @@ const MakeReservation = () => {
                         <label for="time" className="label-title">Time</label>
                         <div className="two-column">
                             <input
-                                // value={location.state.startTime}
+                                onChange={e => handleChange(e, e.target.value)}
+                                value={startTime}
                                 type="time"
                                 className="form-input"
                                 id="starttime"
@@ -176,7 +201,8 @@ const MakeReservation = () => {
                             <label for="endtime" className="label-title">to</label>
                             <div className="divider"></div>
                             <input
-                                // value={location.state.endTime}
+                                onChange={e => handleChange(e, e.target.value)}
+                                value={endTime}
                                 type="time" 
                                 className="form-input"
                                 id="endtime"
@@ -193,7 +219,8 @@ const MakeReservation = () => {
                             <label for="item1" className="label-title">Number Of Item #1:</label>
                             <div className="divider"></div>
                             <input
-                                // value={location.state.numItem1}
+                                onChange={e => handleChange(e, e.target.value)}
+                                value={numItem1}
                                 type="number"
                                 className="form-input-item"
                                 id="item1"
@@ -206,7 +233,8 @@ const MakeReservation = () => {
                         <label for="item2" className="label-title">Number Of Item #2:</label>
                         <div className="divider"></div>
                         <input
-                            // value={location.state.numItem2}
+                            onChange={e => handleChange(e, e.target.value)}
+                            value={numItem2}
                             type="number"
                             className="form-input-item"
                             id="item2"
@@ -220,7 +248,8 @@ const MakeReservation = () => {
                 <div className="form-group">
                     <label for="additionalinfo" className="label-title">Additional Information</label>
                     <textarea
-                        // value={location.state.additionalInfo}
+                        onChange={e => handleChange(e, e.target.value)}
+                        value={additionalInfo}
                         rows="4"
                         cols="50"
                         className="form-input"

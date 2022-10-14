@@ -144,8 +144,9 @@ app.post('/api/eventInsert', (req, res) => {
     const communicationMethod = req.body.communicationMethod;
     const sqlInsert = "INSERT INTO events (confID, username, firstName, lastName, emailAddress, phoneNumber, date, startTime, endTime, numItem1, numItem2, additionalInfo, communicationMethod) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)"
     db.query(sqlInsert, [confID, username, firstName, lastName, emailAddress, phoneNumber, date, startTime, endTime, numItem1, numItem2, additionalInfo, communicationMethod], (err) => {
-        res.send({err : err});
-        console.log(err);
+        res.send({err : err["code"]});
+        console.log({err : err["code"]});
+        // console.log(err);
     })
 })
 

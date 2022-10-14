@@ -22,7 +22,7 @@ CREATE TABLE scheduleSwift.events(
     username VARCHAR(200) NOT NULL,
     firstName VARCHAR(200) NOT NULL,
     lastName VARCHAR(200) NOT NULL,
-    email VARCHAR(200) NOT NULL,
+    emailAddress VARCHAR(200) NOT NULL,
     phoneNumber VARCHAR(12) NOT NULL,
     date DATE NOT NULL,
     startTime TIME NOT NULL,
