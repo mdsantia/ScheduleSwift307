@@ -127,6 +127,34 @@ app.post('/api/eventDelete', (req, res) => {
     )
 })
 
+app.post('/api/eventChange', (req, res) => {
+    const confID = req.body.confID;
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    const emailAddress = req.body.emailAddress;
+    const phoneNumber = req.body.phoneNumber;
+    const date = req.body.date;
+    const startTime = req.body.startTime;
+    const endTime = req.body.endTime;
+    const numItem1 = req.body.numItem1;
+    const numItem2 = req.body.numItem2;
+    const additionalInfo = req.body.additionalInfo;
+    const communicationMethod = req.body.communicationMethod;
+    db.query(
+        "UPDATE events SET firstName = ? lastName = ? emailAddress = ? phoneNumber = ? date = ? startTime = ? endTime = ? numItem1 = ? numItem2 = ? additionalInfo = ? communicationMethod = ? WHERE confID = ?",
+        [firstName, lastName, emailAddress, phoneNumber, date, startTime, endTime, numItem1, numItem2, additionalInfo, communicationMethod, confID],
+        (err, result) => {
+            if (err) {
+                console.log("Error updating reservation details\n.");
+                console.log(err);
+            } else {
+                console.log("Successfully updated reservation details.\n");
+                console.log("Number of Columns Changed " + result.affectedColumns);
+            }
+        }
+    )
+})
+
 app.post('/api/eventInsert', (req, res) => {
     /* TODO Add Username & Host/Facility Once Everything is Connected */
     const username = 'mdsan';
