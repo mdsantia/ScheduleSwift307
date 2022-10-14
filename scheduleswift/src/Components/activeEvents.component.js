@@ -45,11 +45,11 @@ const ActiveEvents = () => {
         {
             const newData = (data)=>([...data, formInputData])
             setTableData(newData);
-            const emptyInput= {date:'', starttime:'', endtime:'', confID: ''}
+            const emptyInput= {facility:'[Host Facility]', date:'', starttime:'', endtime:'', confID: ''}
             setformInputData(emptyInput)
         }
     } else {
-        view(evnt.currentTarget.id);
+        view(evnt, evnt.currentTarget.id);
     }
     }
 
@@ -68,19 +68,28 @@ const ActiveEvents = () => {
         navigate("/");
     }
 
-    const view = (data) => {
+    const view = (evnt, data) => {
+        evnt.preventDefault();
         alert(data);
-        navigate("/info", {
-            state: {
-                date : 'result.data.date',
-                email : 'result.data.email',
-                phone : 'result.data.phone',
-                starttime : 'result.data.starttime',
-                endtime : 'result.data.endtime',
-                organizers : 'result.data.organizers',
-                confID : 'confID',
+        Axios.post("http://localhost:3001/api/eventSelect", {
+            confID : data,
+        }).then((result) => {
+            if (result.data.message) {
+                //nothing
+            } else {
+                navigate("/info", {
+                    state: {
+                        date : result.data.date,
+                        email : result.data.email,
+                        phone : result.data.phone,
+                        starttime : result.data.starttime,
+                        endtime : result.data.endtime,
+                        organizers : result.data.organizers,
+                        confID : data,
+                    }
+                });
             }
-        });
+        })
     }
 
     return (
