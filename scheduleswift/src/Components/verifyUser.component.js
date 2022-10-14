@@ -10,6 +10,7 @@ const VerifyUser = () => {
     const [username, setUsername] = useState('');
     const [error, setError] = useState(null);
     const [verifyStatus, setVerifyStatus] = useState("");
+    const [userType, setUserType] = useState('');
     const navigate = useNavigate();
 
     const verify = e => {
@@ -17,6 +18,7 @@ const VerifyUser = () => {
         Axios.post("http://localhost:3001/api/verify", {
             username: username,
             email: email,
+            userType: userType,
         }).then((result) => {
             if (result.data.message) {
                 setVerifyStatus(result.data.message);
@@ -24,7 +26,8 @@ const VerifyUser = () => {
                 navigate('/forgot', {
                     state: {
                         username: username,
-                        email: email
+                        email: email,
+                        userType: userType
                     }
                 });
             }
@@ -52,6 +55,34 @@ const VerifyUser = () => {
                             placeholder="Enter Email Address"
                             onChange={(e) => setEmail(e.target.value)}
                         />
+                    </div>
+                    <div class="form-check">
+                        <input
+                            type="radio"
+                            class="form-check-input"
+                            id="radio1"
+                            name="optradio"
+                            value="customer"
+                            onChange={(e) => setUserType(e.target.value)} />I'm a Customer
+                        <label class="form-check-label" for="radio1"></label>
+                    </div>
+                    <div class="form-check">
+                        <input
+                            type="radio"
+                            class="form-check-input"
+                            id="radio2" name="optradio"
+                            value="employee"
+                            onChange={(e) => setUserType(e.target.value)} />I'm an Employee
+                        <label class="form-check-label" for="radio2"></label>
+                    </div>
+                    <div class="form-check">
+                        <input
+                            type="radio"
+                            class="form-check-input"
+                            id="radio3" name="optradio"
+                            value="manager"
+                            onChange={(e) => setUserType(e.target.value)} />I'm a Manager
+                        <label class="form-check-label" for="radio3"></label>
                     </div>
                     <div className='wrong-pass'>
                         <p>{verifyStatus}</p>

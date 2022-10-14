@@ -37,6 +37,7 @@ const Password = () => {
             username: state.username,
             email: state.email,
             newPassword: password,
+            userType: state.userType,
         }).then((result) => {
             if (result.data.message) {
                 setStatus(result.data.message);

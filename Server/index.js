@@ -60,70 +60,185 @@ function encrypt(text) {
 app.post('/api/login', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
+    const userType = req.body.userType;
     console.log(`Username: ${username}\n`);
+    console.log(`User Type: ${userType}\n`)
     console.log(`Entered Password: ${password}\n`);
     var encryptedPassword = encrypt(password);
     console.log(`Encrypted Password: ${encryptedPassword}\n`);
-    db.query(
-        "SELECT * FROM userData WHERE username = ? AND password = ?",
-        [username, encryptedPassword],
-        (err, result) => {
-            if (err) {
-                res.send({ err: err })
+    if (userType == "customer") {
+        db.query(
+            "SELECT * FROM userData WHERE username = ? AND password = ?",
+            [username, encryptedPassword],
+            (err, result) => {
+                if (err) {
+                    res.send({ err: err })
+                }
+                if (result.length > 0) {
+                    console.log("Found a match \n");
+                    console.log("Query Result: \n")
+                    console.log(result);
+                    res.send({ result });
+                } else {
+                    console.log("No match. \n");
+                    res.send({ message: "Wrong username/password combination" });
+                }
             }
-            if (result.length > 0) {
-                console.log("Found a match \n");
-                console.log("Query Result: \n")
-                console.log(result);
-                res.send({ result });
-            } else {
-                console.log("No match. \n");
-                res.send({ message: "Wrong username/password combination" });
+        )
+    }
+    if (userType == "employee") {
+        db.query(
+            "SELECT * FROM employeeData WHERE username = ? AND password = ?",
+            [username, encryptedPassword],
+            (err, result) => {
+                if (err) {
+                    res.send({ err: err })
+                }
+                if (result.length > 0) {
+                    console.log("Found a match \n");
+                    console.log("Query Result: \n")
+                    console.log(result);
+                    res.send({ result });
+                } else {
+                    console.log("No match. \n");
+                    res.send({ message: "Wrong username/password combination" });
+                }
             }
-        }
-    )
+        )
+    }
+    if (userType == "manager") {
+        db.query(
+            "SELECT * FROM managerData WHERE username = ? AND password = ?",
+            [username, encryptedPassword],
+            (err, result) => {
+                if (err) {
+                    res.send({ err: err })
+                }
+                if (result.length > 0) {
+                    console.log("Found a match \n");
+                    console.log("Query Result: \n")
+                    console.log(result);
+                    res.send({ result });
+                } else {
+                    console.log("No match. \n");
+                    res.send({ message: "Wrong username/password combination" });
+                }
+            }
+        )
+    }
 })
 
 app.post('/api/verify', (req, res) => {
     const username = req.body.username;
     const email = req.body.email;
+    const userType = req.body.userType;
     console.log(`Username: ${username} \n Email: ${email} \n`);
-    db.query(
-        "SELECT * FROM userData WHERE username = ? AND emailAddress = ?",
-        [username, email],
-        (err, result) => {
-            if (err) {
-                res.send({ err: err })
+    if (userType == "customer") {
+        db.query(
+            "SELECT * FROM userData WHERE username = ? AND emailAddress = ?",
+            [username, email],
+            (err, result) => {
+                if (err) {
+                    res.send({ err: err })
+                }
+                if (result.length > 0) {
+                    console.log("Found a match \n");
+                    console.log("Query Result: \n");
+                    console.log(result);
+                    res.send({ result });
+                } else {
+                    console.log("No match \n");
+                    res.send({ message: "No Account with that username and email found." });
+                }
             }
-            if (result.length > 0) {
-                console.log("Found a match \n");
-                console.log("Query Result: \n");
-                console.log(result);
-                res.send({ result });
-            } else {
-                console.log("No match \n");
-                res.send({ message: "No Account with that username and email found." });
+        )
+    }
+    if (userType == "employee") {
+        db.query(
+            "SELECT * FROM employeeData WHERE username = ? AND emailAddress = ?",
+            [username, email],
+            (err, result) => {
+                if (err) {
+                    res.send({ err: err })
+                }
+                if (result.length > 0) {
+                    console.log("Found a match \n");
+                    console.log("Query Result: \n");
+                    console.log(result);
+                    res.send({ result });
+                } else {
+                    console.log("No match \n");
+                    res.send({ message: "No Account with that username and email found." });
+                }
             }
-        }
-    )
+        )
+    }
+    if (userType == "manager") {
+        db.query(
+            "SELECT * FROM managerData WHERE username = ? AND emailAddress = ?",
+            [username, email],
+            (err, result) => {
+                if (err) {
+                    res.send({ err: err })
+                }
+                if (result.length > 0) {
+                    console.log("Found a match \n");
+                    console.log("Query Result: \n");
+                    console.log(result);
+                    res.send({ result });
+                } else {
+                    console.log("No match \n");
+                    res.send({ message: "No Account with that username and email found." });
+                }
+            }
+        )
+    }
 })
 
 app.post('/api/forgot', (req, res) => {
     const username = req.body.username;
     const email = req.body.email;
     const newPassword = req.body.newPassword;
+    const userType = req.body.userType;
     var encryptedPassword = encrypt(newPassword);
     console.log(`Username: ${username} \n Email: ${email} \n New Password: ${newPassword}`);
-    db.query(
-        "UPDATE userData SET password = ? WHERE username = ? AND emailAddress = ?",
-        [encryptedPassword, username, email],
-        (err, result) => {
-            if (err) {
-                res.send({ err: err })
+    if (userType == "customer") {
+        db.query(
+            "UPDATE userData SET password = ? WHERE username = ? AND emailAddress = ?",
+            [encryptedPassword, username, email],
+            (err, result) => {
+                if (err) {
+                    res.send({ err: err })
+                }
+                res.send({ result });
             }
-            res.send({ result });
-        }
-    )
+        )
+    }
+    if (userType == "employee") {
+        db.query(
+            "UPDATE employeeData SET password = ? WHERE username = ? AND emailAddress = ?",
+            [encryptedPassword, username, email],
+            (err, result) => {
+                if (err) {
+                    res.send({ err: err })
+                }
+                res.send({ result });
+            }
+        )
+    }
+    if (userType == "manager") {
+        db.query(
+            "UPDATE managerData SET password = ? WHERE username = ? AND emailAddress = ?",
+            [encryptedPassword, username, email],
+            (err, result) => {
+                if (err) {
+                    res.send({ err: err })
+                }
+                res.send({ result });
+            }
+        )
+    }
+
 })
 
 app.listen(3001, () => {
