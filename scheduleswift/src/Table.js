@@ -1,3 +1,5 @@
+// All the implementation was accessed from https://codingstatus.com/how-to-display-form-data-in-table-using-react-js/
+
 function Table({tableData, handleSubmit}){
     return(
         <table className="table">
@@ -21,7 +23,7 @@ function Table({tableData, handleSubmit}){
                             <td>{data.date}</td>
                             <td>{data.starttime}</td>
                             <td>{data.endtime}</td>
-                            <td><button id={data.confID}  onClick={handleSubmit}>View</button></td>
+                            <td><button id={data.confID}  onClick={handleSubmit}>View: {data.confID}</button></td>
                         </tr>
                     )
                 })
