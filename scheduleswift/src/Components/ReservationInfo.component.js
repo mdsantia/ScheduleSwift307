@@ -28,6 +28,16 @@ const ReservationInfo = () => {
     const edit = () => {
         navigate("/form");
     }
+    
+    const cancelReservation = () => {
+        Axios.post('http://localhost:3001/api/eventDelete', {
+            confID: location.state.confID
+        }).then(() => {
+            alert("Successful Delete");
+        })
+        alert("You have successfully cancelled your reservation.");
+        navigate("/main");
+    };
 
     return (
         <form class="reservation-info">
