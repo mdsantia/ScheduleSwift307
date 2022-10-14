@@ -19,6 +19,7 @@ const ActiveEvents = () => {
     const [entries, setEntries] = useState();
     const [startEntry, setStartEntry] = useState();
     const [numEntries, setNumEntries] = useState();
+    const [username, setUsername] = useState();
 
     const [tableData, setTableData] = useState([])
     const [formInputData, setformInputData] = useState(
@@ -59,11 +60,29 @@ const ActiveEvents = () => {
 
     const addRow = (e) => {
         e.preventDefault();
-        const filled= {facility:'[Host Facility]', date:'20211221', starttime:'1200', endtime:'1234', confID: 'mdas'}
-        const newData = (data)=>([...data, filled])
-         setTableData(newData);
-         const emptyInput= {date:'', startime:'', endtime:'', confID: ''}
-         setformInputData(emptyInput)
+        Axios.post("http://localhost:3001/api/activeEvents", {
+            username : location.state.username,
+            entry : location.state.entries,
+        }).then((result) => {
+            if (result.data.message) {
+                alert(`There is no associated entries to the username ${location.state.username}.`);
+            } else {
+                location.state.entries++;
+                const filled = {facility:'[Host Facility]', 
+                date : result.data.date,
+                starttime : result.data.starttime,
+                endtime : result.data.endtime,
+                confID : result.data.confID.split('"')[1]
+                }
+                // alert(filled.confID.split('"')[1]);
+                const newData = (data)=>([...data, filled])
+                setTableData(newData);
+                const emptyInput= {date:'', startime:'', endtime:'', confID: ''}
+                setformInputData(emptyInput)
+            }
+        })
+        setUsername(location.state.username);
+        setEntries(location.state.entries);
     }
 
     const location = useLocation();
