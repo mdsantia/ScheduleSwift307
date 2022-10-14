@@ -2,6 +2,19 @@ import React, { Component } from 'react';
 import { useNavigate } from "react-router-dom";
 
 const MakeReservation = () => {
+    const [confID, setConfID] = useState('');
+    const [firstName, setFirstName] = useState(0);
+    const [lastName, setLastName] = useState('');
+    const [emailAddress, setEmailAddress] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [date, setDate] = useState('');
+    const [startTime, setStartTime] = useState('');
+    const [endTime, setEndTime] = useState('');
+    const [numItem1, setNumItem1] = useState(0);
+    const [numItem2, setNumItem2] = useState(0);
+    const [additionalInfo, setAdditionalInfo] = useState('');
+    const [communicationMethod, setCommunicationMethod] = useState('');
+    const [error, setError] = useState(null);
 
     const navigate = useNavigate();
 
@@ -33,6 +46,26 @@ const MakeReservation = () => {
     const main = () => {
         navigate("/main");
     }
+    
+    const onSubmit = () => {
+        Axios.post('http://localhost:3001/api/eventInsert', {
+            confID: '1234567890',
+            firstName: 'Jenny',
+            lastName: 'Ha',
+            emailAddress: 'jpha@purdue.edu',
+            phoneNumber: '5743547966',
+            date: '2020-10-12',
+            startTime: '01:00',
+            endTime: '01:45',
+            numItem1: 2,
+            numItem2: 3,
+            additionalInfo: 'this is additional info',
+            communicationMethod: 'Email'
+        }).then(() => {
+            alert("Successful Insert");
+        })
+        navigate("/info");
+    };
 
     return (
         <form className="reservation-form" id="makeform">
