@@ -17,7 +17,33 @@ const Login = () => {
             if (result.data.message) {
                 setLoginStatus(result.data.message);
             } else {
-                navigate("/main");
+                if (userType == "customer") {
+                    navigate("/customer", {
+                        state: {
+                            username: username,
+                            password: password,
+                            userType: userType
+                        }
+                    })
+                }
+                if (userType == "employee") {
+                    navigate("/employee", {
+                        state: {
+                            username: username,
+                            password: password,
+                            userType: userType
+                        }
+                    })
+                }
+                if (userType == "manager") {
+                    navigate("/manager", {
+                        state: {
+                            username: username,
+                            password: password,
+                            userType: userType
+                        }
+                    });
+                }
             }
         })
     }

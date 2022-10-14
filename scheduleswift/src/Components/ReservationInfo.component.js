@@ -1,6 +1,6 @@
 import Axios from 'axios';
 import React, { Component, ReactDOM, useState } from 'react';
-import {useLocation} from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import Event from '../Event.js';
 import Registration from '../Registration';
 import { useNavigate } from "react-router-dom";
@@ -45,7 +45,7 @@ const ReservationInfo = () => {
             }
         });
     }
-    
+
     const cancelReservation = () => {
         Axios.post('http://localhost:3001/api/eventDelete', {
             confID: location.state.confID
@@ -71,7 +71,7 @@ const ReservationInfo = () => {
                         </div>
                     </div>
                     <div className="form-group right">
-                    <label for="Organizers" className="label-title">Organizers</label>
+                        <label for="Organizers" className="label-title">Organizers</label>
                         <div className="form-body">
                             <field-info for="Organizers" className="label">{location.state.organizers}</field-info>
                         </div>
@@ -190,14 +190,14 @@ const ReservationInfo = () => {
                 <div class="form-footer">
                     <center>
                         <button type="submit" className="btn" onClick={main}>Close</button>
-                        <div className="divider"/>
+                        <div className="divider" />
                         <button type="submit" className="btn" onClick={edit}>Edit</button>
-                        <div className="divider"/>
+                        <div className="divider" />
                         <button type="submit" className="btn" onClick={cancelReservation}>Cancel Reservation</button>
                     </center>
                 </div>
             </div>
-    </form>
+        </form>
     );
 }
 
