@@ -24,6 +24,33 @@ async function hashPassword(password) {
     return hash;
 }
 
+app.post('/api/activeEvents', (req, res) => {
+    const username = req.body.username;
+    console.log(`Searching by ID: ${confID}\n`);
+    db.query(
+        // TODO get facility too by checking all facility databases
+        // TODO get start and end time as well
+        "SELECT confID, date FROM events WHERE username = ?",
+        [username],
+        (err, result) => {
+            if (err) {
+                res.send({ err: err })
+            }
+            if (result.length > 0) {
+                console.log("Found a match \n");
+                console.log("Query Result: \n")
+                console.log(result);
+                const organizer = `${result[0]["firstName"]} ${result[0]["lastName"]}`;
+                res.send( {organizers : organizer, phone : JSON.stringify(result[0]["phoneNumber"]), email : JSON.stringify(result[0]["emailAddress"]),
+                            date : JSON.stringify(result[0]["date"]), starttime : JSON.stringify(result[0]["startTime"]), endtime: JSON.stringify(result[0]["endTime"])} );
+            } else {
+                console.log("No match. \n");
+                res.send({ message: "Event with that confirmation ID does not exist!" });
+            }
+        }
+    )
+})
+
 app.post('/api/eventselect', (req, res) => {
     const confID = req.body.confID;
     console.log(`Searching by ID: ${confID}\n`);

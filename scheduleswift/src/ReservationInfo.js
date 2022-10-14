@@ -7,6 +7,7 @@ import ReservationInfo from "./Components/ReservationInfo.component";
 import ReservationForm from "./Components/makeReservation.component";
 import Search from "./Components/searchEvent.component";
 import MainPage from "./Components/mainPage.component";
+import ActiveEvents from "./Components/activeEvents.component";
 
 function Reservationinfo() {
     return (
@@ -17,6 +18,7 @@ function Reservationinfo() {
                             <Route exact path="/main" element={<MainPage />} />
                             <Route exact path="/form" element={<ReservationForm />} />
                             <Route exact path="/info" element={<ReservationInfo />} />
+                            <Route exact path="/active" element={<ActiveEvents />} />
                     </Routes>
             </div>
         </Router>
