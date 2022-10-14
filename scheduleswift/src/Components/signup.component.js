@@ -57,18 +57,6 @@ const SignUp = () => {
         navigate("/main");
     };
 
-    const submitSignup = () => {
-        Axios.post('http://localhost:3001/api/insert', {
-            firstName: firstName,
-            lastName: lastName,
-            username: username,
-            emailAddress: emailAddress,
-            password: password
-        }).then(() => {
-            alert("Successful Insert");
-        })
-        navigate("/sign-in");
-    }
     return (
         <div className="auth-wrapper">
             <div className="auth-inner">

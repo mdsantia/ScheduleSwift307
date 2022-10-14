@@ -52,7 +52,7 @@ const Login = () => {
                         </button>
                     </div>
                     <p className='forgot-password text-right'>
-                        Need to <a href="/sign-up">create account?</a> | Forgot <a href="#">password?</a>
+                        Need to <a href="/sign-up">create account?</a> | Forgot <a href="/password">password?</a>
                     </p>
                 </form>
             </div>

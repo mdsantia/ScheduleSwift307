@@ -93,3 +93,17 @@
     
   }
   
+  .info {
+    text-align: left;
+    padding: 10px;
+    font-size: 20px;
+  }
+  
+  .info .information {
+    margin: 10px;
+    border: 1px solid #8d6a3f;
+    border-radius: 5px;
+    padding: 10px;
+    border-bottom-width: 2px;
+    transition: all 0.3 ease; 
+  }

@@ -36,6 +36,9 @@ export default class EditInfo extends Component {
                                     <input type="submit" value="Change Information"/>
                                 </div>
                             </div>
+                            <p className="go-back">
+                                <a href='/viewInfo'>Cancel Changes</a>
+                            </p>
                         </form>
                     </div>
                 </body>
