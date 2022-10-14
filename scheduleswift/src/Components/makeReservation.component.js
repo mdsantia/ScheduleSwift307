@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
+import React, { useState, Component, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Axios from 'axios';
 
 const MakeReservation = () => {
     const [confID, setConfID] = useState('');
@@ -17,17 +18,19 @@ const MakeReservation = () => {
     const [error, setError] = useState(null);
 
     const navigate = useNavigate();
-
-    const email = document.getElementById("mail");
-
-    email.addEventListener("input", (event) => {
-    if (email.validity.typeMismatch) {
-        email.setCustomValidity("I am expecting an e-mail address!");
-        email.reportValidity();
-    } else {
-        email.setCustomValidity("");
+    const main = () => {
+        navigate("/main");
     }
-    });
+
+    // const email = document.getElementById("mail");
+    // email.addEventListener("input", (event) => {
+    // if (email.validity.typeMismatch) {
+    //     email.setCustomValidity("I am expecting an e-mail address!");
+    //     email.reportValidity();
+    // } else {
+    //     email.setCustomValidity("");
+    // }
+    // });
 
     const info = () => {
         navigate("/info", {
@@ -41,10 +44,6 @@ const MakeReservation = () => {
                     confID : 'confID',
             }
         });
-    }
-
-    const main = () => {
-        navigate("/main");
     }
     
     const onSubmit = () => {
