@@ -52,17 +52,23 @@ app.post('/api/eventselect', (req, res) => {
 // TODO JENNY DELETE * WHERE Delete an event from database
 
 app.post('/api/eventInsert', (req, res) => {
-    // TODO JENNY
-    const organizers = req.body.organizers;
-    const date = req.body.lastName;
-    const username = req.body.username;
+    /* TODO Add Username & Host/Facility Once Everything is Connected */
+    const confID = req.body.confID;
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
     const emailAddress = req.body.emailAddress;
-    var encryptedPassword = encrypt(req.body.password);
-    const sqlInsert = "INSERT INTO events (organizers, date, username, emailAddress, password) VALUES (?,?,?,?,?)"
-    db.query(sqlInsert, [organizers, date, username, emailAddress, encryptedPassword], (err, result) => {
+    const phoneNumber = req.body.phoneNumber;
+    const date = req.body.date;
+    const startTime = req.body.startTime;
+    const endTime = req.body.endTime;
+    const numItem1 = req.body.numItem1;
+    const numItem2 = req.body.numItem2;
+    const additionalInfo = req.body.additionalInfo;
+    const communicationMethod = req.body.communicationMethod;
+    const sqlInsert = "INSERT INTO events (confID, firstName, lastName, emailAddress, phoneNumber, date, startTime, endTime, numItem1, numItem2, additionalInfo, communicationMethod) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"
+    db.query(sqlInsert, [confID, firstName, lastName, emailAddress, phoneNumber, date, startTime, endTime, numItem1, numItem2, additionalInfo, communicationMethod], (err) => {
         console.log(err);
     })
-
 })
 
 app.post('/api/insert', (req, res) => {
