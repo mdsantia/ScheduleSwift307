@@ -7,6 +7,7 @@ const algorithm = "des-ede3";
 const initVector = crypto.randomBytes(16);
 const SecurityKey = "abcdefghijklmnopqrstuvwx";
 const mysql = require("mysql");
+const { format } = require("path");
 
 const db = mysql.createPool({
     host: "localhost",
@@ -23,6 +24,160 @@ async function hashPassword(password) {
     const hash = await bcrypt.hash(password, salt);
     return hash;
 }
+
+app.post('/api/confIDHash', (req, res) => {
+    const entry = req.body.entry;
+    console.log(`Building HashTable\n`);
+    db.query(
+        // TODO get facility too by checking all facility databases
+        // TODO get start and end time as well
+        // TODO Read multiple entries at once
+        // "SELECT confID, date FROM events WHERE username = ?",
+        // "SELECT confID, date, startTime, endTime FROM events WHERE username = ?",
+        "SELECT ID, confID FROM events",
+        (err, result) => {
+            if (err) {
+                res.send({ err: err })
+            }
+            console.log(entry);
+            if (result.length > entry) {
+                console.log("Found a match \n");
+                console.log("Query Result: \n")
+                console.log(result[entry]);
+                res.send( {confID : result[entry]["confID"],
+                    ID : result[entry]["ID"]});
+            } else {
+                console.log("No match. \n");
+                res.send({ message: "Event with that confirmation ID does not exist!" });
+            }
+        }
+    )
+})
+
+app.post('/api/activeEvents', (req, res) => {
+    const username = req.body.username;
+    const entry = req.body.entry;
+    console.log(`Searching by username: ${username}\n`);
+    db.query(
+        // TODO get facility too by checking all facility databases
+        // TODO get start and end time as well
+        // TODO Read multiple entries at once
+        // "SELECT confID, date FROM events WHERE username = ?",
+        // "SELECT confID, date, startTime, endTime FROM events WHERE username = ?",
+        "SELECT * FROM events WHERE username = ?",
+        [username],
+        (err, result) => {
+            if (err) {
+                res.send({ err: err })
+            }
+            console.log(entry);
+            if (result.length > entry) {
+                console.log("Found a match \n");
+                console.log("Query Result: \n")
+                console.log(result);
+                res.send( {confID : JSON.stringify(result[entry]["confID"]),
+                    date : JSON.stringify(result[entry]["date"]), 
+                    starttime : JSON.stringify(result[entry]["startTime"]), endtime: JSON.stringify(result[entry]["endTime"])} );
+            } else {
+                console.log("No match. \n");
+                res.send({ message: "Event with that confirmation ID does not exist!" });
+            }
+        }
+    )
+})
+
+app.post('/api/eventselect', (req, res) => {
+    const confID = req.body.confID;
+    console.log(`Searching by ID: ${confID}\n`);
+    db.query(
+        "SELECT * FROM events WHERE confID = ?",
+        [confID],
+        (err, result) => {
+            console.log(result);
+            if (err) {
+                res.send({ err: err })
+            }
+            if (result.length > 0) {
+                console.log("Found a match \n");
+                console.log("Query Result: \n")
+                console.log(result);
+                const organizer = `${result[0]["firstName"]} ${result[0]["lastName"]}`;
+                res.send( {organizers : organizer, phone : JSON.stringify(result[0]["phoneNumber"]), email : JSON.stringify(result[0]["emailAddress"]),
+                            date : JSON.stringify(result[0]["date"]), starttime : JSON.stringify(result[0]["startTime"]), endtime: JSON.stringify(result[0]["endTime"])} );
+            } else {
+                console.log("No match. \n");
+                res.send({ message: "Event with that confirmation ID does not exist!" });
+            }
+        }
+    )
+})
+
+app.post('/api/eventDelete', (req, res) => {
+    const confID = req.body.confID;
+    db.query(
+        "DELETE FROM events WHERE confID = ?", 
+        [confID],
+        (err, result) => {
+            if (err) {
+                console.log("Failed to remove reservaton.\n");
+                console.log(err);
+            } else {
+                console.log("Successfully removed reservation.\n");
+            }
+        }
+    )
+})
+
+app.post('/api/eventChange', (req, res) => {
+    const confID = req.body.confID;
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    const emailAddress = req.body.emailAddress;
+    const phoneNumber = req.body.phoneNumber;
+    const date = req.body.date;
+    const startTime = req.body.startTime;
+    const endTime = req.body.endTime;
+    const numItem1 = req.body.numItem1;
+    const numItem2 = req.body.numItem2;
+    const additionalInfo = req.body.additionalInfo;
+    const communicationMethod = req.body.communicationMethod;
+    db.query(
+        "UPDATE events SET firstName = ? lastName = ? emailAddress = ? phoneNumber = ? date = ? startTime = ? endTime = ? numItem1 = ? numItem2 = ? additionalInfo = ? communicationMethod = ? WHERE confID = ?",
+        [firstName, lastName, emailAddress, phoneNumber, date, startTime, endTime, numItem1, numItem2, additionalInfo, communicationMethod, confID],
+        (err, result) => {
+            if (err) {
+                console.log("Error updating reservation details\n.");
+                console.log(err);
+            } else {
+                console.log("Successfully updated reservation details.\n");
+                console.log("Number of Columns Changed " + result.affectedColumns);
+            }
+        }
+    )
+})
+
+app.post('/api/eventInsert', (req, res) => {
+    /* TODO Add Username & Host/Facility Once Everything is Connected */
+    const username = 'mdsan';
+    const confID = req.body.confID;
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    const emailAddress = req.body.emailAddress;
+    const phoneNumber = req.body.phoneNumber;
+    const date = req.body.date;
+    const startTime = req.body.startTime;
+    const endTime = req.body.endTime;
+    const numItem1 = req.body.numItem1;
+    const numItem2 = req.body.numItem2;
+    const additionalInfo = req.body.additionalInfo;
+    const communicationMethod = req.body.communicationMethod;
+    const sqlInsert = "INSERT INTO events (confID, username, firstName, lastName, emailAddress, phoneNumber, date, startTime, endTime, numItem1, numItem2, additionalInfo, communicationMethod) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)"
+    db.query(sqlInsert, [confID, username, firstName, lastName, emailAddress, phoneNumber, date, startTime, endTime, numItem1, numItem2, additionalInfo, communicationMethod], (err) => {
+        res.send({err : err["code"]});
+        console.log({err : err["code"]});
+        // console.log(err);
+    })
+})
 
 app.post('/api/insert', (req, res) => {
     const firstName = req.body.firstName;
