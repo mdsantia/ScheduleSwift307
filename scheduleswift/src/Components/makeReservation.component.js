@@ -1,14 +1,41 @@
-import React, { Component, ReactDOM, useState } from 'react';
+import React, { Component } from 'react';
 import { useNavigate } from "react-router-dom";
 
 const MakeReservation = () => {
+
     const navigate = useNavigate();
+
+    const email = document.getElementById("mail");
+
+    email.addEventListener("input", (event) => {
+    if (email.validity.typeMismatch) {
+        email.setCustomValidity("I am expecting an e-mail address!");
+        email.reportValidity();
+    } else {
+        email.setCustomValidity("");
+    }
+    });
+
+    const info = () => {
+        navigate("/info", {
+            state : {
+                date : 'result.data.date',
+                    email : 'result.data.email',
+                    phone : 'result.data.phone',
+                    starttime : 'result.data.starttime',
+                    endtime : 'result.data.endtime',
+                    organizers : 'result.data.organizers',
+                    confID : 'confID',
+            }
+        });
+    }
+
     const main = () => {
-        navigate("/main-page");
+        navigate("/main");
     }
 
     return (
-        <form className="reservation-form">
+        <form className="reservation-form" id="makeform">
             <div className="form-header">
                 <h1>Reservation Form</h1>
                 <h2>[Business Name]</h2>
@@ -22,7 +49,7 @@ const MakeReservation = () => {
                         <input 
                             type="text"
                             className="form-input" 
-                            id="firstname"
+                            id="firstnameinput"
                             placeholder="Enter Your First Name" 
                             required="required"
                         />
@@ -57,8 +84,8 @@ const MakeReservation = () => {
                             type="tel"
                             className="form-input"
                             id="phone"
-                            placeholder="XXX-XXX-XXXX"
-                            pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                            placeholder="XXXXXXXXXX"
+                            pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
                             required="required"
                         />
                     </div>
@@ -81,16 +108,15 @@ const MakeReservation = () => {
                             <input
                                 type="time"
                                 className="form-input"
-                                id="time"
+                                id="starttime"
                                 required="required"
                             />
                             <div className="divider"></div>
                             <label for="endtime" className="label-title">to</label>
                             <div className="divider"></div>
                             <input
-                                type="time"                                        
-                                className="form-input"
-                                id="time"
+                                type="time" className="form-input"
+                                id="endtime"
                                 required="required"
                             />                                    
                         </div>
@@ -106,10 +132,9 @@ const MakeReservation = () => {
                             <input
                                 type="number"
                                 className="form-input-item"
-                                id="item"
+                                id="item1"
                                 min="0"
                                 max="10"
-                                required="required"
                             />
                         </div>
                     </div>
@@ -117,12 +142,11 @@ const MakeReservation = () => {
                         <label for="item2" className="label-title">Number Of Item #2:</label>
                         <div className="divider"></div>
                         <input
-                            type="text"
+                            type="number"
                             className="form-input-item"
-                            id="item"
+                            id="item2"
                             min="0"
                             max="10"
-                            required="required"
                         />
                     </div>
                 </div>
@@ -168,14 +192,14 @@ const MakeReservation = () => {
                 {/* Make Reservation and Cancel Buttons */}
                 <div class="form-footer">
                     <center>
-                        <button id="reserveButton" type="submit" className="btn">Make Reservation</button>
+                        <button type="submit" className="btn" id="make" onClick={info}>Make Reservation</button>
                         <div className="divider"/>
-                        <button id="cancelButton" type="submit" className="btn" onClick={main}>Cancel</button>
+                        <button type="submit" className="btn" onClick={main}>Cancel</button>
                     </center>
                 </div>
             </div>
     </form>
-    ); 
+    ) 
 }
 
 export default MakeReservation;

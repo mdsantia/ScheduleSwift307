@@ -9,18 +9,16 @@ const Search = () => {
     const [starttime, setStartTime] = useState('');
     const [endtime, setEndTime] = useState('');
     const [confID, setConfID] = useState('');
-    const [error, setError] = useState(null);
+    const [error, setError] = useState('');
 
     const navigate = useNavigate();
 
-    const send = () => {
-        navigate("/info");
+    const events = () => {
+        navigate('/main');
     }
 
-    const getInfo = (result) => {
-        alert(result.substring(result.indexOf('organizers'), result.indexOf('date')));
-        setOrganizers(result.substring(result.indexOf('organizers'), result.indexOf('date')));
-        alert(organizers);
+    const main = () => {
+        navigate('/main');
     }
 
     const fillInfo = e => {
@@ -28,29 +26,20 @@ const Search = () => {
         Axios.post("http://localhost:3001/api/eventSelect", {
             confID : confID,
         }).then((result) => {
-            alert(JSON.stringify(result.data));
-            getInfo(JSON.stringify(result.data));
             if (result.data.message) {
-                setError(`${confID} is invalid!`)
+                setError(`${confID} Is invalid!`)
             } else {
-                setError("")
-                // setDate(result);
-                // setStartTime(result);
-                // setEndTime(result);
-                // setOrganizers("mdsantia");
-                alert(JSON.stringify(organizers));
-                setDate("10/10/22");
-                setStartTime("1010");
-                setEndTime("2100");
                 navigate("/info", {
-                state: {
-                    date : date,
-                    starttime : starttime,
-                    endtime : endtime,
-                    organizers : organizers,
-                    confID : confID,
-                }
-                });
+                    state: {
+                        date : result.data.date,
+                        email : result.data.email,
+                        phone : result.data.phone,
+                        starttime : result.data.starttime,
+                        endtime : result.data.endtime,
+                        organizers : result.data.organizers,
+                        confID : confID,
+                    }
+                    });
             }
         })
     }
@@ -58,11 +47,9 @@ const Search = () => {
     return (
         <div className="auth-wrapper">
             <div className="auth-inner">
+                {/* Search an event by their unique confirmation ID */}
                 <form>
                     <h3> Search</h3>
-                    <div>
-                    <button onClick={send}>info</button>
-                    </div>
                     <div className="search">
                         <input
                         type="text"
@@ -78,8 +65,23 @@ const Search = () => {
                         </button>
                     </div>
                     <div className="wrong-confid">{error}</div>
+
+                {/* Button to show all the events from the user */}
+                <br></br>
+                    <div className='d-grid'>
+                        <button onClick={events}>
+                            Show all my events
+                        </button>
+                    </div>
+
+                {/* Button to return back to the main page */}
+                <br></br>
+                    <div className='d-grid'>
+                        <button onClick={main}>
+                            Cancel
+                        </button>
+                    </div>
                 </form>
-                <h3>{organizers} {date} {starttime} {endtime}</h3> 
             </div>
         </div>
     )

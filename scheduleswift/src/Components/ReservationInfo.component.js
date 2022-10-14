@@ -1,18 +1,19 @@
 import Axios from 'axios';
 import React, { Component, ReactDOM, useState } from 'react';
+import {useLocation} from 'react-router-dom';
 import Event from '../Event.js';
 import Registration from '../Registration';
 import { useNavigate } from "react-router-dom";
 
-///TODO : access event information from the database
-
 const ReservationInfo = () => {
-    const [organizers, setOrganizers] = useState('');
-    const [date, setDate] = useState('');
-    const [starttime, setStartTime] = useState('');
-    const [endtime, setEndTime] = useState('');
-    const [confID, setConfID] = useState('');
-    const [error, setError] = useState(null);
+    // const [organizers, setOrganizers] = useState('');
+    // const [date, setDate] = useState('');
+    // const [starttime, setStartTime] = useState('');
+    // const [endtime, setEndTime] = useState('');
+    // const [confID, setConfID] = useState('');
+    // const [error, setError] = useState(null);
+
+    const location = useLocation();
 
     const navigate = useNavigate();
 
@@ -21,7 +22,7 @@ const ReservationInfo = () => {
     }
 
     const edit = () => {
-        navigate("/edit-info");
+        navigate("/Form");
     }
 
     return (
@@ -41,7 +42,7 @@ const ReservationInfo = () => {
                     <div className="form-group right">
                     <label for="Organizers" className="label-title">Organizers</label>
                         <div className="form-body">
-                            <field-info for="Organizers" className="label">{organizers}</field-info>
+                            <field-info for="Organizers" className="label">{location.state.organizers}</field-info>
                         </div>
                     </div>
                 </div>
@@ -51,13 +52,13 @@ const ReservationInfo = () => {
                     <div className="form-group left">
                         <label for="email" className="label-title">Email</label>
                         <div className="form-body">
-                            <field-info for="Email" className="label">email@example.com</field-info>
+                            <field-info for="Email" className="label">{location.state.email}</field-info>
                         </div>
                     </div>
                     <div className="form-group right">
                         <label for="phone" className="label-title">Phone Number</label>
                         <div className="form-body">
-                            <field-info for="Telephone" className="label">(XXX) XXX-XXXX</field-info>
+                            <field-info for="Telephone" className="label">{location.state.phone}</field-info>
                         </div>
                     </div>
                 </div>
@@ -67,13 +68,13 @@ const ReservationInfo = () => {
                     <div className="form-group left">
                         <label for="date" className="label-title">Date</label>
                         <div className="form-body">
-                            <field-info for="Date" className="label">{date}</field-info>
+                            <field-info for="Date" className="label">{location.state.date}</field-info>
                         </div>
                     </div>
                     <div className="form-group right">
                         <label for="time" className="label-title">Time</label>
                         <div className="form-body">
-                            <field-info for="Time" className="label">--:--AM - --:--PM</field-info>
+                            <field-info for="Time" className="label">{location.state.starttime} - {location.state.endtime}</field-info>
                         </div>
                     </div>
                 </div>
@@ -83,7 +84,7 @@ const ReservationInfo = () => {
                     <div className="form-group left">
                         <label for="confid" className="label-title">Confirmation Number</label>
                         <div className="form-body">
-                            <field-info for="confid" className="label">[{confID} Confirmation ID [A-z0-9]*]</field-info>
+                            <field-info for="confid" className="label">[Confirmation ID [A-z0-9]*]: {location.state.confID}</field-info>
                         </div>
                     </div>
                     <div className="form-group right">
@@ -92,7 +93,7 @@ const ReservationInfo = () => {
                             <field-info for="confid" className="label">[$Paid/$Owed]</field-info>
                         </div>
                     </div>
-                </div>
+                </div>.
 
                 {/* Item Fields */}
                 <div className="horizontal-group">
