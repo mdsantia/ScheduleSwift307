@@ -14,7 +14,12 @@ const Search = () => {
     const navigate = useNavigate();
 
     const events = () => {
-        navigate('/active');
+        navigate('/active', {
+            state : {
+                username : "mdsan",
+                entries : 0
+            }
+        });
     }
 
     const main = () => {

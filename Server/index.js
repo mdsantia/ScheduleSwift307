@@ -26,23 +26,28 @@ async function hashPassword(password) {
 
 app.post('/api/activeEvents', (req, res) => {
     const username = req.body.username;
-    console.log(`Searching by ID: ${confID}\n`);
+    const entry = req.body.entry;
+    console.log(`Searching by username: ${username}\n`);
     db.query(
         // TODO get facility too by checking all facility databases
         // TODO get start and end time as well
-        "SELECT confID, date FROM events WHERE username = ?",
+        // TODO Read multiple entries at once
+        // "SELECT confID, date FROM events WHERE username = ?",
+        // "SELECT confID, date, startTime, endTime FROM events WHERE username = ?",
+        "SELECT * FROM events WHERE username = ?",
         [username],
         (err, result) => {
             if (err) {
                 res.send({ err: err })
             }
-            if (result.length > 0) {
+            console.log(entry);
+            if (result.length > entry) {
                 console.log("Found a match \n");
                 console.log("Query Result: \n")
                 console.log(result);
-                const organizer = `${result[0]["firstName"]} ${result[0]["lastName"]}`;
-                res.send( {organizers : organizer, phone : JSON.stringify(result[0]["phoneNumber"]), email : JSON.stringify(result[0]["emailAddress"]),
-                            date : JSON.stringify(result[0]["date"]), starttime : JSON.stringify(result[0]["startTime"]), endtime: JSON.stringify(result[0]["endTime"])} );
+                res.send( {confID : JSON.stringify(result[entry]["confID"]),
+                    date : JSON.stringify(result[entry]["date"]), 
+                    starttime : JSON.stringify(result[entry]["startTime"]), endtime: JSON.stringify(result[entry]["endTime"])} );
             } else {
                 console.log("No match. \n");
                 res.send({ message: "Event with that confirmation ID does not exist!" });
@@ -58,6 +63,7 @@ app.post('/api/eventselect', (req, res) => {
         "SELECT * FROM events WHERE confID = ?",
         [confID],
         (err, result) => {
+            console.log(result);
             if (err) {
                 res.send({ err: err })
             }
