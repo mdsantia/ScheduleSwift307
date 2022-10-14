@@ -2,80 +2,9 @@ import React, { Component, ReactDOM, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
 const MakeReservation = () => {
-    // const [organizers, setOrganizers] = useState('');
-    // const [date, setDate] = useState('');
-    // const [starttime, setStartTime] = useState('');
-    // const [endtime, setEndTime] = useState('');
-    // const [confID, setConfID] = useState('');
-    // const [error, setError] = useState(null);
-    
     const navigate = useNavigate();
-
     const main = () => {
         navigate("/main-page");
-    }
-
-    function checkInfo() {
-        let allAreFilled = true;
-        document.getElementById("reservation-form").querySelectorAll("[required]").forEach(function(i) {
-            // if (!allAreFilled) {
-            //     return;
-            // }
-        //     if (i.type === "email") {
-        //         let emailValueCheck = false;
-        //         document.getElementById("reservation-form").querySelectorAll(`[form-group-input=${i.email}]`).forEach(function(e) {
-        //             if (e.checked) emailValueCheck = true;
-        //         })
-        //         allAreFilled = emailValueCheck;
-        //         return;
-        //     }
-        //     if (i.type === "tel") {
-        //         let phoneValueCheck = false;
-        //         document.getElementById("reservation-form").querySelectorAll(`[form-group-input=${i.phone}]`).forEach(function(p) {
-        //             if (p.checked) phoneValueCheck = true;
-        //         })
-        //         allAreFilled = phoneValueCheck;
-        //         return;
-        //     }
-        //     if (i.type === "date") {
-        //         let dateValueCheck = false;
-        //         document.getElementById("reservation-form").querySelectorAll(`[form-group-input=${i.date}]`).forEach(function(d) {
-        //             if (d.checked) dateValueCheck = true;
-        //         })
-        //         allAreFilled = dateValueCheck;
-        //         return;
-        //     }
-        //     if (i.type === "time") {
-        //         let timeValueCheck = false;
-        //         document.getElementById("reservation-form").querySelectorAll(`[form-group-input=${i.time}]`).forEach(function(t) {
-        //             if (t.checked) timeValueCheck = true;
-        //         })
-        //         allAreFilled = timeValueCheck;
-        //         return;
-        //     }
-        //     if (i.type === "number") {
-        //         let itemValueCheck = false;
-        //         document.getElementById("reservation-form").querySelectorAll(`[form-group-input=${i.item}]`).forEach(function(n) {
-        //             if (n.checked) itemValueCheck = true;
-        //         })
-        //         allAreFilled = itemValueCheck;
-        //         return;
-        //     }
-        //     if (i.type === "radio") {
-        //         let radioValueCheck = false;
-        //         document.getElementById("reservationForm").querySelectorAll(`[input-group-input=${i.item}]`).forEach(function(r) {
-        //             if (r.checked) radioValueCheck = true;
-        //           })
-        //           allAreFilled = radioValueCheck;
-        //           return;
-        //     }
-        //     if (!i.value) { allAreFilled = false;  return; }
-        })
-        if (!allAreFilled) {
-            alert('Fill all the fields');
-        } else {
-            navigate("/info");
-        }
     }
 
     return (
@@ -239,7 +168,7 @@ const MakeReservation = () => {
                 {/* Make Reservation and Cancel Buttons */}
                 <div class="form-footer">
                     <center>
-                        <button id="reserveButton" type="submit" className="btn" onClick={checkInfo}>Make Reservation</button>
+                        <button id="reserveButton" type="submit" className="btn">Make Reservation</button>
                         <div className="divider"/>
                         <button id="cancelButton" type="submit" className="btn" onClick={main}>Cancel</button>
                     </center>
