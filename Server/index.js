@@ -24,6 +24,35 @@ async function hashPassword(password) {
     return hash;
 }
 
+app.post('/api/confIDHash', (req, res) => {
+    const entry = req.body.entry;
+    console.log(`Building HashTable\n`);
+    db.query(
+        // TODO get facility too by checking all facility databases
+        // TODO get start and end time as well
+        // TODO Read multiple entries at once
+        // "SELECT confID, date FROM events WHERE username = ?",
+        // "SELECT confID, date, startTime, endTime FROM events WHERE username = ?",
+        "SELECT ID, confID FROM events",
+        (err, result) => {
+            if (err) {
+                res.send({ err: err })
+            }
+            console.log(entry);
+            if (result.length > entry) {
+                console.log("Found a match \n");
+                console.log("Query Result: \n")
+                console.log(result[entry]);
+                res.send( {confID : result[entry]["confID"],
+                    ID : result[entry]["ID"]});
+            } else {
+                console.log("No match. \n");
+                res.send({ message: "Event with that confirmation ID does not exist!" });
+            }
+        }
+    )
+})
+
 app.post('/api/activeEvents', (req, res) => {
     const username = req.body.username;
     const entry = req.body.entry;
@@ -100,6 +129,7 @@ app.post('/api/eventDelete', (req, res) => {
 
 app.post('/api/eventInsert', (req, res) => {
     /* TODO Add Username & Host/Facility Once Everything is Connected */
+    const username = 'mdsan';
     const confID = req.body.confID;
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
@@ -112,8 +142,8 @@ app.post('/api/eventInsert', (req, res) => {
     const numItem2 = req.body.numItem2;
     const additionalInfo = req.body.additionalInfo;
     const communicationMethod = req.body.communicationMethod;
-    const sqlInsert = "INSERT INTO events (confID, firstName, lastName, emailAddress, phoneNumber, date, startTime, endTime, numItem1, numItem2, additionalInfo, communicationMethod) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"
-    db.query(sqlInsert, [confID, firstName, lastName, emailAddress, phoneNumber, date, startTime, endTime, numItem1, numItem2, additionalInfo, communicationMethod], (err) => {
+    const sqlInsert = "INSERT INTO events (confID, username, firstName, lastName, emailAddress, phoneNumber, date, startTime, endTime, numItem1, numItem2, additionalInfo, communicationMethod) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)"
+    db.query(sqlInsert, [confID, username, firstName, lastName, emailAddress, phoneNumber, date, startTime, endTime, numItem1, numItem2, additionalInfo, communicationMethod], (err) => {
         console.log(err);
     })
 })

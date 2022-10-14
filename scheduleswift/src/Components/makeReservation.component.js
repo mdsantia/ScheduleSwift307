@@ -1,6 +1,7 @@
 import React, { useState, Component, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Axios from 'axios';
+import HashTable from '../HashTable';
 
 const MakeReservation = () => {
     const [confID, setConfID] = useState('');
@@ -49,9 +50,50 @@ const MakeReservation = () => {
         });
     }
     
+    const makeUniqueID = (attempt) => {
+        // Reference to ran string https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
+        var result           = '';
+        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < this.hashLength; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        if (this.idUnique(result)) {
+            return result;
+        } else {
+            if (attempt > this.maxAttempts) {
+            // The hash is not unique so it cannot be added
+                return this.makeUniqueID(attempt++);
+            } else {
+                this.incHashLength();
+                this.makeUniqueID();
+            }
+        }
+    }
+
     const onSubmit = () => {
+        // const hash = new HashTable();
+        // const i = 0;
+        // const boo = true;
+        const uniqueID = makeUniqueID(0);
+        // alert(uniqueID);
+        // while (boo) {
+        //     Axios.post('http://localhost:3001/api/confIDHash', {
+        //         entry : i,
+        //     }).then((result) => {
+        //         if (result.data.message) {
+        //             boo = false
+        //         } else {
+        //             i++;
+        //             hash.addPair(result.data.ID, result.data.confID);
+        //         }
+        //     })
+        //     // TODO catch exception where it takes too long
+        //     uniqueID = hash.makeUniqueID(0);
+        //     alert(`Reservation confirmation ID is ${uniqueID}`);
+        // }
         Axios.post('http://localhost:3001/api/eventInsert', {
-            confID: '1234567890',
+            confID: uniqueID,
             firstName: 'Jenny',
             lastName: 'Ha',
             emailAddress: 'jpha@purdue.edu',
@@ -65,8 +107,8 @@ const MakeReservation = () => {
             communicationMethod: 'Email'
         }).then(() => {
             alert("Successful Insert");
-        })
-        navigate("/info");
+            info();
+        });
     };
 
     return (
@@ -82,7 +124,7 @@ const MakeReservation = () => {
                     <div className="form-group left">
                         <label for="firstname" className="label-title">First Name</label>
                         <input 
-                            value={location.state.firstName}
+                            // value={location.state.firstName}
                             type="text"
                             className="form-input" 
                             id="firstnameinput"
@@ -93,7 +135,7 @@ const MakeReservation = () => {
                     <div className="form-group right">
                         <label for="lastname" className="label-title">Last Name</label>
                         <input
-                            value={location.state.lastName}
+                            // value={location.state.lastName}
                             type="text"
                             className="form-input"
                             id="lastname"
@@ -108,7 +150,7 @@ const MakeReservation = () => {
                     <div className="form-group left">
                         <label for="email" className="label-title">Email</label>
                         <input
-                            value={location.state.emailAddress}
+                            // value={location.state.emailAddress}
                             type="email"
                             className="form-input-email"
                             id="email"
@@ -119,7 +161,7 @@ const MakeReservation = () => {
                     <div className="form-group right">
                         <label for="phone" className="label-title">Phone Number</label>
                         <input
-                            value={location.state.phoneNumber}
+                            // value={location.state.phoneNumber}
                             type="tel"
                             className="form-input"
                             id="phone"
@@ -135,7 +177,7 @@ const MakeReservation = () => {
                     <div className="form-group left">
                         <label for="date" className="label-title">Date</label>
                         <input
-                            value={location.state.date}
+                            // value={location.state.date}
                             type="date"
                             className="form-input"
                             id="date"
@@ -146,7 +188,7 @@ const MakeReservation = () => {
                         <label for="time" className="label-title">Time</label>
                         <div className="two-column">
                             <input
-                                value={location.state.startTime}
+                                // value={location.state.startTime}
                                 type="time"
                                 className="form-input"
                                 id="starttime"
@@ -156,7 +198,7 @@ const MakeReservation = () => {
                             <label for="endtime" className="label-title">to</label>
                             <div className="divider"></div>
                             <input
-                                value={location.state.endTime}
+                                // value={location.state.endTime}
                                 type="time" 
                                 className="form-input"
                                 id="endtime"
@@ -173,7 +215,7 @@ const MakeReservation = () => {
                             <label for="item1" className="label-title">Number Of Item #1:</label>
                             <div className="divider"></div>
                             <input
-                                value={location.state.numItem1}
+                                // value={location.state.numItem1}
                                 type="number"
                                 className="form-input-item"
                                 id="item1"
@@ -186,7 +228,7 @@ const MakeReservation = () => {
                         <label for="item2" className="label-title">Number Of Item #2:</label>
                         <div className="divider"></div>
                         <input
-                            value={location.state.numItem2}
+                            // value={location.state.numItem2}
                             type="number"
                             className="form-input-item"
                             id="item2"
@@ -200,7 +242,7 @@ const MakeReservation = () => {
                 <div className="form-group">
                     <label for="additionalinfo" className="label-title">Additional Information</label>
                     <textarea
-                        value={location.state.additionalInfo}
+                        // value={location.state.additionalInfo}
                         rows="4"
                         cols="50"
                         className="form-input"
@@ -213,7 +255,7 @@ const MakeReservation = () => {
                 <label className="label-title">Please select your preferred method of communication for receiving notifications and reminders about this reservation.</label>
                 <div className="input-group">
                     <input
-                        value={location.state.communicationMethod}
+                        // value={location.state.communicationMethod}
                         type="radio"
                         className="input-group-input"
                         name="communication"
@@ -224,7 +266,7 @@ const MakeReservation = () => {
                 </div>
                 <div className="input-group">
                 <input
-                        value={location.state.communicationMethod}
+                        // value={location.state.communicationMethod}
                         type="radio"
                         className="input-group-input"
                         name="communication"
@@ -238,7 +280,7 @@ const MakeReservation = () => {
                 {/* Make Reservation and Cancel Buttons */}
                 <div class="form-footer">
                     <center>
-                        <button type="submit" className="btn" id="make" onClick={info}>Make Reservation</button>
+                        <button type="submit" className="btn" id="make" onClick={onSubmit}>Make Reservation</button>
                         <div className="divider"/>
                         <button type="submit" className="btn" onClick={main}>Cancel</button>
                     </center>

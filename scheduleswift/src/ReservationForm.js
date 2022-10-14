@@ -10,7 +10,7 @@ function ReservationForm() {
         <Router>
             <div className="Reservation Form">
                     <Routes>
-                            <Route exact path="/" element={<MakeReservation />} />
+                            <Route exact path="/make" element={<MakeReservation />} />
                             <Route exact path="/main" element={<MainPage />} />
                             <Route exact path="/info" element={<ReservationInfo />} />
                     </Routes>

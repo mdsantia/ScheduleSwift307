@@ -37,8 +37,8 @@ class HashTable {
             // The hash is not unique so it cannot be added
                 return this.makeUniqueID(attempt++);
             } else {
-                this.incHashLength;
-                this.makeUniqueID;
+                this.incHashLength();
+                this.makeUniqueID();
             }
         }
     }
@@ -47,8 +47,20 @@ class HashTable {
         return key.toString().length % this.size;
     }
 
-    addPair(key) {
+    makePair(key) {
         const value = this.makeUniqueID(0);
+        const hash = this.hashFunc(key);
+        this.ids[this.length] = value;
+        if (!this.object.hasOwnProperty(hash)) {
+            this.object[hash] = {};
+        }
+        if (!this.object[hash].hasOwnProperty(key)) {
+            this.length++;
+        }
+        this.object[hash][key] = value;
+    }
+
+    addPair(key, value) {
         const hash = this.hashFunc(key);
         this.ids[this.length] = value;
         if (!this.object.hasOwnProperty(hash)) {
