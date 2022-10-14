@@ -26,7 +26,24 @@ const ReservationInfo = () => {
     }
 
     const edit = () => {
-        navigate("/form");
+        console.log(location.state.date);
+        console.log(location.state.starttime);
+        navigate("/Form", {
+            state: {
+                confID: location.state.confID,
+                firstName: location.state.organizers,
+                lastName: location.state.organizers,
+                emailAddress: location.state.email,
+                phoneNumber: location.state.phone,
+                date: location.state.date,
+                startTime: location.state.startime,
+                endTime: location.state.endtime,
+                numItem1: location.state.numItem1,
+                numItem2: location.state.numItem2,
+                additionalInfo: location.state.additionalInfo,
+                communicationMethod: location.state.communicationMethod
+            }
+        });
     }
     
     const cancelReservation = () => {
