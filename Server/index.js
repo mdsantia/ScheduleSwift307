@@ -7,6 +7,7 @@ const algorithm = "des-ede3";
 const initVector = crypto.randomBytes(16);
 const SecurityKey = "abcdefghijklmnopqrstuvwx";
 const mysql = require("mysql");
+const { format } = require("path");
 
 const db = mysql.createPool({
     host: "localhost",
@@ -37,7 +38,9 @@ app.post('/api/eventselect', (req, res) => {
                 console.log("Found a match \n");
                 console.log("Query Result: \n")
                 console.log(result);
-                res.send({ result });
+                const organizer = `${result[0]["firstName"]} ${result[0]["lastName"]}`;
+                res.send( {organizers : organizer, phone : JSON.stringify(result[0]["phoneNumber"]), email : JSON.stringify(result[0]["email"]),
+                            date : JSON.stringify(result[0]["date"]), starttime : JSON.stringify(result[0]["startTime"]), endtime: JSON.stringify(result[0]["endTime"])} );
             } else {
                 console.log("No match. \n");
                 res.send({ message: "Event with that confirmation ID does not exist!" });
