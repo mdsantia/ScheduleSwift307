@@ -50,50 +50,23 @@ const MakeReservation = () => {
         });
     }
     
-    const makeUniqueID = (attempt) => {
+    const makeUniqueID = () => {
         // Reference to ran string https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
         var result           = '';
         var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         var charactersLength = characters.length;
-        for ( var i = 0; i < this.hashLength; i++ ) {
+        var hashLength = Math.random() * 10;
+        for ( var i = 0; i < hashLength; i++ ) {
             result += characters.charAt(Math.floor(Math.random() * charactersLength));
         }
-        if (this.idUnique(result)) {
-            return result;
-        } else {
-            if (attempt > this.maxAttempts) {
-            // The hash is not unique so it cannot be added
-                return this.makeUniqueID(attempt++);
-            } else {
-                this.incHashLength();
-                this.makeUniqueID();
-            }
-        }
+        return result;
     }
 
     const onSubmit = () => {
-        // const hash = new HashTable();
-        // const i = 0;
-        // const boo = true;
-        const uniqueID = makeUniqueID(0);
-        // alert(uniqueID);
-        // while (boo) {
-        //     Axios.post('http://localhost:3001/api/confIDHash', {
-        //         entry : i,
-        //     }).then((result) => {
-        //         if (result.data.message) {
-        //             boo = false
-        //         } else {
-        //             i++;
-        //             hash.addPair(result.data.ID, result.data.confID);
-        //         }
-        //     })
-        //     // TODO catch exception where it takes too long
-        //     uniqueID = hash.makeUniqueID(0);
-        //     alert(`Reservation confirmation ID is ${uniqueID}`);
-        // }
+        var result = makeUniqueID();
+        // TODO GET INPUT TO INSERT TO DATABASE
         Axios.post('http://localhost:3001/api/eventInsert', {
-            confID: uniqueID,
+            confID: result,
             firstName: 'Jenny',
             lastName: 'Ha',
             emailAddress: 'jpha@purdue.edu',
@@ -105,9 +78,14 @@ const MakeReservation = () => {
             numItem2: 3,
             additionalInfo: 'this is additional info',
             communicationMethod: 'Email'
-        }).then(() => {
-            alert("Successful Insert");
-            info();
+        }).then((result) => {
+            if (!result.data.err) {
+                alert(`Successful Insert! Your Confirmation ID is ${result}`);
+                // TODO OPEN THE ACTUAL MADE RESERVATION
+                info();
+            } else {
+                onSubmit();
+            }
         });
     };
 

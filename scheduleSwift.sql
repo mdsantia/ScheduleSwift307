@@ -18,7 +18,7 @@ CREATE TABLE scheduleSwift.facilities(
 CREATE TABLE scheduleSwift.events(
 	ID int NOT NULL AUTO_INCREMENT,
     -- Make this column to have a UNIQUE Constraint
-    confID VARCHAR(10) NOT NULL,
+    confID VARCHAR(10) NOT NULL UNIQUE,
     username VARCHAR(200) NOT NULL,
     firstName VARCHAR(200) NOT NULL,
     lastName VARCHAR(200) NOT NULL,
