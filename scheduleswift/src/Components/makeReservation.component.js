@@ -1,10 +1,10 @@
 import React, { useState, Component, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Axios from 'axios';
 
 const MakeReservation = () => {
     const [confID, setConfID] = useState('');
-    const [firstName, setFirstName] = useState(0);
+    const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [emailAddress, setEmailAddress] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
@@ -18,9 +18,12 @@ const MakeReservation = () => {
     const [error, setError] = useState(null);
 
     const navigate = useNavigate();
+
     const main = () => {
         navigate("/main");
     }
+
+    let location = useLocation();
 
     // const email = document.getElementById("mail");
     // email.addEventListener("input", (event) => {
@@ -36,12 +39,12 @@ const MakeReservation = () => {
         navigate("/info", {
             state : {
                 date : 'result.data.date',
-                    email : 'result.data.email',
-                    phone : 'result.data.phone',
-                    starttime : 'result.data.starttime',
-                    endtime : 'result.data.endtime',
-                    organizers : 'result.data.organizers',
-                    confID : 'confID',
+                email : 'result.data.email',
+                phone : 'result.data.phone',
+                starttime : 'result.data.starttime',
+                endtime : 'result.data.endtime',
+                organizers : 'result.data.organizers',
+                confID : 'confID',
             }
         });
     }
@@ -79,16 +82,18 @@ const MakeReservation = () => {
                     <div className="form-group left">
                         <label for="firstname" className="label-title">First Name</label>
                         <input 
+                            value={location.state.firstName}
                             type="text"
                             className="form-input" 
                             id="firstnameinput"
-                            placeholder="Enter Your First Name" 
+                            placeholder="Enter Your First Name"
                             required="required"
                         />
                     </div>
                     <div className="form-group right">
                         <label for="lastname" className="label-title">Last Name</label>
                         <input
+                            value={location.state.lastName}
                             type="text"
                             className="form-input"
                             id="lastname"
@@ -103,6 +108,7 @@ const MakeReservation = () => {
                     <div className="form-group left">
                         <label for="email" className="label-title">Email</label>
                         <input
+                            value={location.state.emailAddress}
                             type="email"
                             className="form-input-email"
                             id="email"
@@ -113,6 +119,7 @@ const MakeReservation = () => {
                     <div className="form-group right">
                         <label for="phone" className="label-title">Phone Number</label>
                         <input
+                            value={location.state.phoneNumber}
                             type="tel"
                             className="form-input"
                             id="phone"
@@ -128,6 +135,7 @@ const MakeReservation = () => {
                     <div className="form-group left">
                         <label for="date" className="label-title">Date</label>
                         <input
+                            value={location.state.date}
                             type="date"
                             className="form-input"
                             id="date"
@@ -138,6 +146,7 @@ const MakeReservation = () => {
                         <label for="time" className="label-title">Time</label>
                         <div className="two-column">
                             <input
+                                value={location.state.startTime}
                                 type="time"
                                 className="form-input"
                                 id="starttime"
@@ -147,7 +156,9 @@ const MakeReservation = () => {
                             <label for="endtime" className="label-title">to</label>
                             <div className="divider"></div>
                             <input
-                                type="time" className="form-input"
+                                value={location.state.endTime}
+                                type="time" 
+                                className="form-input"
                                 id="endtime"
                                 required="required"
                             />                                    
@@ -162,6 +173,7 @@ const MakeReservation = () => {
                             <label for="item1" className="label-title">Number Of Item #1:</label>
                             <div className="divider"></div>
                             <input
+                                value={location.state.numItem1}
                                 type="number"
                                 className="form-input-item"
                                 id="item1"
@@ -174,6 +186,7 @@ const MakeReservation = () => {
                         <label for="item2" className="label-title">Number Of Item #2:</label>
                         <div className="divider"></div>
                         <input
+                            value={location.state.numItem2}
                             type="number"
                             className="form-input-item"
                             id="item2"
@@ -187,6 +200,7 @@ const MakeReservation = () => {
                 <div className="form-group">
                     <label for="additionalinfo" className="label-title">Additional Information</label>
                     <textarea
+                        value={location.state.additionalInfo}
                         rows="4"
                         cols="50"
                         className="form-input"
@@ -199,22 +213,22 @@ const MakeReservation = () => {
                 <label className="label-title">Please select your preferred method of communication for receiving notifications and reminders about this reservation.</label>
                 <div className="input-group">
                     <input
+                        value={location.state.communicationMethod}
                         type="radio"
                         className="input-group-input"
                         name="communication"
                         id="option1"
-                        value="email"
                         required="required"
                     />
                     <label className="input-group-label">Email</label>
                 </div>
                 <div className="input-group">
                 <input
+                        value={location.state.communicationMethod}
                         type="radio"
                         className="input-group-input"
                         name="communication"
                         id="option2"
-                        value="txtmessage"
                         required="required"
                     />
                     <label className="input-group-label">Text Message</label>
