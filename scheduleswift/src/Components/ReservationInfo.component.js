@@ -175,33 +175,14 @@ const ReservationInfo = () => {
                 <div className="form-group">
                     <label for="additionalinfo" className="label-title">Additional Information</label>
                     <div className="form-body">
-                        <field-info for="addinfo" className="label">Please include any important additional information about your reservation here.</field-info>
+                        <field-info for="addinfo" className="label">{location.state.additionalInfo}</field-info>
                     </div>
                 </div>
 
                 {/* Reservation Notification Options */}
-                <label className="label-title">Please select at least one way in which you would like to receive notifications and reminders about this reservation.</label>
-                <div className="form-check">
-                    <input
-                        type="checkbox"
-                        className="form-check-input"
-                        id="option1"
-                        value="email"
-                        // TODO change to be true if the box was selected
-                        checked="true"
-                    />
-                    <label className="form-check-label">Email</label>
-                </div>
-                <div className="form-check">
-                <input
-                        type="checkbox"
-                        className="form-check-input"
-                        id="option2"
-                        value="txtmessage"
-                        // TODO change to be true if the box was selected
-                        checked="true"
-                    />
-                    <label className="form-check-label">Text Message</label>
+                <div className="input-group">
+                    <label for="communicationMethod" className="label-title">Preferred Method of Communication</label>
+                    <field-info for="communicatonMethod" className="label">{location.state.communicationMethod}</field-info>
                 </div>
                 <br></br>
 
@@ -211,6 +192,8 @@ const ReservationInfo = () => {
                         <button type="submit" className="btn" onClick={main}>Close</button>
                         <div className="divider"/>
                         <button type="submit" className="btn" onClick={edit}>Edit</button>
+                        <div className="divider"/>
+                        <button type="submit" className="btn" onClick={cancelReservation}>Cancel Reservation</button>
                     </center>
                 </div>
             </div>
