@@ -39,7 +39,7 @@ app.post('/api/eventselect', (req, res) => {
                 console.log("Query Result: \n")
                 console.log(result);
                 const organizer = `${result[0]["firstName"]} ${result[0]["lastName"]}`;
-                res.send( {organizers : organizer, phone : JSON.stringify(result[0]["phoneNumber"]), email : JSON.stringify(result[0]["email"]),
+                res.send( {organizers : organizer, phone : JSON.stringify(result[0]["phoneNumber"]), email : JSON.stringify(result[0]["emailAddress"]),
                             date : JSON.stringify(result[0]["date"]), starttime : JSON.stringify(result[0]["startTime"]), endtime: JSON.stringify(result[0]["endTime"])} );
             } else {
                 console.log("No match. \n");
