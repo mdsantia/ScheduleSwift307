@@ -12,6 +12,7 @@ const SignUp = () => {
     const [emailAddress, setEmailAddress] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
+    const [userType, setUserType] = useState('');
     const navigate = useNavigate();
 
 
@@ -31,7 +32,8 @@ const SignUp = () => {
             .max(40, "Password must be less than 40 characters"),
         yupConfirmPassword: Yup.string()
             .required("Confirm Password is Required.")
-            .oneOf([Yup.ref('yupPassword'), null], "Confirm Password does not match.")
+            .oneOf([Yup.ref('yupPassword'), null], "Confirm Password does not match."),
+        yupRadio: Yup.string().required("An account type is required.").nullable()
     });
 
     const {
@@ -45,12 +47,14 @@ const SignUp = () => {
 
     const onSubmit = data => {
         console.log(JSON.stringify(data, null, 2));
+        console.log(userType);
         Axios.post('http://localhost:3001/api/insert', {
             firstName: firstName,
             lastName: lastName,
             username: username,
             emailAddress: emailAddress,
-            password: password
+            password: password,
+            userType: userType
         }).then(() => {
             alert("Successful Insert");
         })
@@ -128,6 +132,39 @@ const SignUp = () => {
                             />
                             <div className="invalid-feedback">{errors.yupConfirmPassword?.message}</div>
                         </div>
+                        <div class="form-check">
+                            <input
+                                type="radio"
+                                class={`form-check-input ${errors.yupRadio ? 'is-invalid' : ''}`}
+                                id="radio1"
+                                name="optradio"
+                                value="customer"
+                                {...register('yupRadio')}
+                                onChange={(e) => setUserType(e.target.value)} />I'm a Customer
+                            <label class="form-check-label" for="radio1"></label>
+                        </div>
+                        <div class="form-check">
+                            <input
+                                type="radio"
+                                class={`form-check-input ${errors.yupRadio ? 'is-invalid' : ''}`}
+                                id="radio2" name="optradio"
+                                value="employee"
+                                {...register('yupRadio')}
+                                onChange={(e) => setUserType(e.target.value)} />I'm an Employee
+                            <label class="form-check-label" for="radio2"></label>
+                        </div>
+                        <div class="form-check">
+                            <input
+                                type="radio"
+                                class={`form-check-input ${errors.yupRadio ? 'is-invalid' : ''}`}
+                                id="radio3" name="optradio"
+                                value="manager"
+                                {...register('yupRadio')}
+                                onChange={(e) => setUserType(e.target.value)} />I'm a Manager
+                            <label class="form-check-label" for="radio3"></label>
+                            <div className="invalid-feedback">{errors.yupRadio?.message}</div>
+                        </div>
+
                         <div className='d-grid'>
                             <button type='submit' className='btn btn-primary'>Submit</button>
                         </div>

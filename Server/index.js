@@ -14,6 +14,7 @@ const db = mysql.createPool({
     password: "password",
     database: "scheduleSwift",
 });
+
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -28,11 +29,26 @@ app.post('/api/insert', (req, res) => {
     const lastName = req.body.lastName;
     const username = req.body.username;
     const emailAddress = req.body.emailAddress;
+    const userType = req.body.userType;
     var encryptedPassword = encrypt(req.body.password);
-    const sqlInsert = "INSERT INTO userData (firstName, lastName, username, emailAddress, password) VALUES (?,?,?,?,?)"
-    db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword], (err, result) => {
-        console.log(err);
-    })
+    if (userType == "customer") {
+        const sqlInsert = "INSERT INTO userData (firstName, lastName, username, emailAddress, password) VALUES (?,?,?,?,?)"
+        db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword], (err, result) => {
+            console.log(err);
+        })
+    }
+    if (userType == "employee") {
+        const sqlInsert = "INSERT INTO employeeData (firstName, lastName, username, emailAddress, password) VALUES (?,?,?,?,?)"
+        db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword], (err, result) => {
+            console.log(err);
+        })
+    }
+    if (userType == "manager") {
+        const sqlInsert = "INSERT INTO managerData (firstName, lastName, username, emailAddress, password) VALUES (?,?,?,?,?)"
+        db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword], (err, result) => {
+            console.log(err);
+        })
+    }
 
 })
 function encrypt(text) {
@@ -44,6 +60,7 @@ function encrypt(text) {
 app.post('/api/login', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
+    console.log(`Username: ${username}\n`);
     console.log(`Entered Password: ${password}\n`);
     var encryptedPassword = encrypt(password);
     console.log(`Encrypted Password: ${encryptedPassword}\n`);
