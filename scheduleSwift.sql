@@ -18,6 +18,7 @@ CREATE TABLE scheduleSwift.facilities(
 CREATE TABLE scheduleSwift.events(
 	ID int NOT NULL AUTO_INCREMENT,
     confID VARCHAR(10) NOT NULL,
+    username VARCHAR(200) NOT NULL,
     firstName VARCHAR(200) NOT NULL,
     lastName VARCHAR(200) NOT NULL,
     email VARCHAR(200) NOT NULL,

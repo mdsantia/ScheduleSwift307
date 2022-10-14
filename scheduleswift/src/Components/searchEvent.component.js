@@ -14,7 +14,7 @@ const Search = () => {
     const navigate = useNavigate();
 
     const events = () => {
-        navigate('/main');
+        navigate('/active');
     }
 
     const main = () => {

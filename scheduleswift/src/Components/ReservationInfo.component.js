@@ -17,12 +17,16 @@ const ReservationInfo = () => {
 
     const navigate = useNavigate();
 
+    const active = () => {
+        navigate("/active");
+    }
+
     const main = () => {
         navigate("/");
     }
 
     const edit = () => {
-        navigate("/Form");
+        navigate("/form");
     }
 
     return (
