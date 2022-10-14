@@ -76,7 +76,21 @@ app.post('/api/eventselect', (req, res) => {
     )
 })
 
-// TODO JENNY DELETE * WHERE Delete an event from database
+app.post('/api/eventDelete', (req, res) => {
+    const confID = req.body.confID;
+    db.query(
+        "DELETE FROM events WHERE confID = ?", 
+        [confID],
+        (err, result) => {
+            if (err) {
+                console.log("Failed to remove reservaton.\n");
+                console.log(err);
+            } else {
+                console.log("Successfully removed reservation.\n");
+            }
+        }
+    )
+})
 
 app.post('/api/eventInsert', (req, res) => {
     /* TODO Add Username & Host/Facility Once Everything is Connected */
