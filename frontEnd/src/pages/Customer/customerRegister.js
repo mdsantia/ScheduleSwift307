@@ -57,10 +57,11 @@ const CustomerRegister = () => {
                 password: data.get('password'),
                 creationDate: creationDate
             })
-            navigate("/customerMain", {
+            navigate("/customerConfirmAccount", {
                 state: {
                     username: data.get('username'),
-                    password: data.get('password')
+                    password: data.get('password'),
+                    email: data.get('email'),
                 }
             });
         }
