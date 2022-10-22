@@ -245,7 +245,7 @@ function DashboardContent() {
                             {/* Recent Orders */}
                             <Grid item xs={12}>
                                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                                    <Orders />
+                                    <Orders username={state.username} password={state.password} businessName={state.businessName} />
                                 </Paper>
                             </Grid>
                         </Grid>
