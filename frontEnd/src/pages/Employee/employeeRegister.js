@@ -33,7 +33,7 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-const CustomerRegister = () => {
+const EmployeeRegister = () => {
     const navigate = useNavigate();
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -188,4 +188,4 @@ const CustomerRegister = () => {
         </ThemeProvider>
     );
 }
-export default CustomerRegister;
+export default EmployeeRegister;
