@@ -74,7 +74,7 @@ app.post("/api/sendConfirmEmail", (req, res) => {
         html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
             + "<p>Here is a confirmation link to confirm your account. Once you click the link, your account will be activated and you will be automatically redirected to the main page.</p>"
             + "<h4>Confirmation Link:</h4>"
-            + "<p><a href=http://localhost:3000/${confirmNum}>http://localhost:3000/" + confirmNum + "</a></p></body></html>"
+            + "<p><a href=" + "http://localhost:3000/verify/"+ confirmNum + ">http://localhost:3000/verify/" + confirmNum + "</a></p></body></html>"
     };
     transport.sendMail(mailOptions,(err,res)=>{
         if(err){
@@ -86,6 +86,10 @@ app.post("/api/sendConfirmEmail", (req, res) => {
         }
     });
 })
+
+app.get('/verify/', (req, res)=>{
+    console.log("linked worked");
+});
 
 app.post("/api/customerRegister", (req, res) => {
     const firstName = req.body.firstName;
@@ -106,7 +110,7 @@ app.post("/api/customerRegister", (req, res) => {
         html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
             + "<p>Here is a confirmation link to confirm your account. Once you click the link, your account will be activated and you will be automatically redirected to the main page.</p>"
             + "<h4>Confirmation Link:</h4>"
-            + "<p><a href=http://localhost:3000/${confirmNum}>http://localhost:3000/" + confirmNum + "</a></p></body></html>"
+            + "<p><a href=" + "http://localhost:3000/verify/"+ confirmNum + ">http://localhost:3000/verify/" + confirmNum + "</a></p></body></html>"
     };
     transport.sendMail(mailOptions,(err,res)=>{
         if(err){
