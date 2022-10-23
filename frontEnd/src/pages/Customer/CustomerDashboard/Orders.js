@@ -46,6 +46,7 @@ export default function Orders() {
                         label={reservableItems[element]}
                         type={reservableItems[element]}
                         id={reservableItems[element]}
+                        InputProps={{ inputProps: { min: 0, step: 1 } }}
                     />
                 </Grid>
             );
@@ -169,7 +170,6 @@ export default function Orders() {
                                         readOnly: true,
                                     }}
                                     id="reservedBy"
-
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -178,8 +178,9 @@ export default function Orders() {
                                     fullWidth
                                     name="numPeople"
                                     label="Party Size"
-                                    type="numPeople"
+                                    type="number"
                                     id="numPeople"
+                                    InputProps={{ inputProps: { min: 0, step: 1 } }}
                                 />
                             </Grid>
                             {/* And here I render the box array */}

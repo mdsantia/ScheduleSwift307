@@ -29,7 +29,6 @@ export default function Orders(props) {
             if (result.data.message) {
                 alert(`There are no more associated active reservations to your account.`);
             } else {
-                alert(numEntries);
                 for (let entryNum = 0 + numEntries; entryNum < 5 + numEntries; entryNum++) {
                     rows.push(createData(result.data[entryNum]["ID"], result.data[entryNum]["reservationDate"],
                     result.data[entryNum]["startTime"], result.data[entryNum]["businessName"], 'Yes', result.data[entryNum]["price"]));

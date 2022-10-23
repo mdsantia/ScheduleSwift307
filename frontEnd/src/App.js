@@ -12,6 +12,7 @@ import CustomerReserve from './pages/Customer/CustomerReserve/Dashboard';
 import CustomerStats from './pages/Customer/CustomerStats/Dashboard';
 import EmployeeMain from './pages/Employee/EmployeeDashboard/Dashboard';
 import ManagerMain from './pages/Manager/ManagerDashboard/Dashboard';
+import FacilityForm from './pages/Manager/FacilityForm/Dashboard';
 import ManagerAccount from './pages/Manager/ManagerAccount/Dashboard';
 import ManagerCreateAccount from './pages/Manager/ManagerCreateAccount/Dashboard';
 import ManagerCreateReservation from './pages/Manager/ManagerCreateReservation/Dashboard';
@@ -44,6 +45,7 @@ function App() {
           <Route path="/customerStats" element={<CustomerStats />} />
           <Route path="/employeeMain" element={<EmployeeMain />} />
           <Route path="/managerMain" element={<ManagerMain />} />
+          <Route path="/FacilityForm" element={<FacilityForm />} />
           <Route path="/managerCreateReservation" element={<ManagerCreateReservation />} />
           <Route path="/managerAccount" element={<ManagerAccount />} />
           <Route path="/managerNotes" element={<ManagerNotes />} />
