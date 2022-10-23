@@ -21,7 +21,6 @@ import { useState, useEffect } from 'react';
 import Axios from 'axios';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 
-
 function preventDefault(event) {
     event.preventDefault();
 }
@@ -32,13 +31,34 @@ export default function Orders() {
     const [endTime, setEndTime] = useState(null);
     const navigate = useNavigate();
     const [reservationDetails, setReservationDetails] = useState(null);
+    const [reservableItems, setReservableItems] = useState(null);
+    const box = [];
+
+    function makeBox() {
+        for (const element in reservableItems) {
+            // Then the code pushes each time it loops to the empty array I initiated.
+            box.push(
+                <Grid>
+                    <TextField
+                        required
+                        fullWidth
+                        name={reservableItems[element]}
+                        label={reservableItems[element]}
+                        type={reservableItems[element]}
+                        id={reservableItems[element]}
+                    />
+                </Grid>
+            );
+            }
+    }
+
     function getReservationDetails() {
         Axios.post("http://localhost:3001/api/customerMakeReservation", {
             reservationID: state.reservationID,
             username: state.username
         }).then((result) => {
-            console.log(result.data.result[0]);
             setReservationDetails(result.data.result[0]);
+            setReservableItems(result.data.result[0].reservableItem.split(";"));
         })
     }
     useEffect(() => {
@@ -47,13 +67,21 @@ export default function Orders() {
     function handleSubmit(event) {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
+        let numReservedItems = "";
+        for (const element in reservableItems) {
+            if (numReservedItems === "") {
+                numReservedItems = numReservedItems.concat(data.get(reservableItems[element]));
+            } else {
+                numReservedItems = numReservedItems.concat(";", data.get(reservableItems[element]));
+            }
+        }
         Axios.post("http://localhost:3001/api/customerConfirmReservation", {
             reservationID: state.reservationID,
             startTime: startTime,
             endTime: endTime,
             reservedBy: state.username,
             numPeople: data.get('numPeople'),
-            numReservable: data.get('numReservedItems')
+            numReservable: numReservedItems
         }).then((result) => {
         })
         navigate("/customerMain", {
@@ -152,18 +180,40 @@ export default function Orders() {
                                     label="Party Size"
                                     type="numPeople"
                                     id="numPeople"
-
                                 />
                             </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    name="numReservedItems"
-                                    label={reservationDetails.reservableItem}
-                                    type="numReservedItems"
-                                    id="numReservedItems"
-                                />
+                            {/* And here I render the box array */}
+                            {/* There is going to be a max of 10 items */}
+                            {makeBox()}
+                            <Grid item xs={12} sm={6}>
+                                {box[0]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {box[1]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {box[2]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {box[3]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {box[4]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {box[5]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {box[6]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {box[7]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {box[8]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {box[9]}
                             </Grid>
                         </Grid>
                         <Button

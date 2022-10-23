@@ -28,6 +28,8 @@ function preventDefault(event) {
 }
 
 export default function Orders(props) {
+    const box = [];
+    const [numReservableItems, setNumReservableItems] = useState(3);
     const businessName = props.businessName;
     const year = new Date().getFullYear();
     const month = new Date().getMonth() + 1;
@@ -39,14 +41,73 @@ export default function Orders(props) {
         setCurrentDate(formattedDate);
     }, [])
 
+    function makeBox() {
+        for (let element = 1; element <= numReservableItems; element++) {
+            // Then the code pushes each time it loops to the empty array I initiated.
+            box.push(
+                <Grid container spacing={2}>
+                    <Grid  item xs={12} sm={6}>
+                    <TextField
+                        required
+                        fullWidth
+                        name={"Reserved" + element}
+                        label={'Reservable Item ' + element}
+                        type={element}
+                        id={"Reserved" + element}
+                    />
+                    </Grid>
+                    <Grid  item xs={12} sm={6}>
+                    <TextField
+                        required
+                        fullWidth
+                        name={"Price" + element}
+                        label={'Price Item ' + element}
+                        type="number" min="0.01" step="0.01"
+                        id={"Price" + element}
+                    />
+                    </Grid>
+                </Grid>
+            );
+            }
+    }
+
+    const add_rem = (event) => {
+        event.preventDefault();
+        if (event.currentTarget.id === 'Add') {
+            if (numReservableItems <= 10) {
+                setNumReservableItems(numReservableItems + 1);
+            }
+        } else if (event.currentTarget.id === "Remove") {
+            if (numReservableItems >= 1) {
+                setNumReservableItems(numReservableItems - 1);
+            }
+        }
+    }
+
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
+        let ReservedItems = "";
+        for (let element = 1; element <= numReservableItems; element++) {
+            if (ReservedItems === "") {
+                ReservedItems = ReservedItems.concat(data.get("Reserved" + element));
+            } else {
+                ReservedItems = ReservedItems.concat(";", data.get("Reserved" + element));
+            }
+        }
+        let prices = "";
+        for (let element = 1; element <= numReservableItems; element++) {
+            if (prices === "") {
+                prices = prices.concat(data.get("Price" + element));
+            } else {
+                prices = prices.concat(";", data.get("Price" + element));
+            }
+        }
         Axios.post("http://localhost:3001/api/managerCreateReservation", {
             businessName: data.get('business'),
             reservationDate: currentDate,
-            reservable: data.get('reservable'),
-            price: data.get('price')
+            reservable: ReservedItems,
+            price: prices
         })
         navigate("/managerMain", {
             state: {
@@ -103,24 +164,64 @@ export default function Orders(props) {
                             </LocalizationProvider>
                         </Grid>
                         <Grid item xs={12}>
-                            <TextField
-                                required
-                                fullWidth
-                                id="reservable"
-                                name="reservable"
-                                label="Reservable Item"
-                            />
+                            
                         </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                required
-                                fullWidth
-                                id="price"
-                                name="price"
-                                label="Price"
-                            />
-                        </Grid>
+                        {/* And here I render the box array */}
+                            {/* There is going to be a max of 10 items */}
+                            {makeBox()}
+                            <Grid item xs={12} sm={6}>
+                                {box[0]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {box[1]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {box[2]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {box[3]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {box[4]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {box[5]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {box[6]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {box[7]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {box[8]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {box[9]}
+                            </Grid>
                     </Grid>
+                    <Grid container={2}>
+                    <Grid item sm={1}></Grid>
+                    <Grid item sm={4}>
+                    <Button
+                        onClick={add_rem}
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2 }}
+                        id="Add"
+                    >
+                        Add Reservable Item
+                    </Button></Grid><Grid item sm={2}></Grid><Grid item sm={4}>
+                    <Button
+                        onClick={add_rem}
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2 }}
+                        id="Remove"
+                    >
+                        Remove Reservable Item
+                    </Button></Grid></Grid>
+                    
                     <Button
                         type="submit"
                         fullWidth
