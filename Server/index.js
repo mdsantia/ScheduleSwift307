@@ -25,6 +25,34 @@ function encrypt(text) {
     return encrypted;
 }
 
+app.post('/api/activeEvents', (req, res) => {
+    const username = req.body.username;
+    console.log(`Searching by username: ${username}\n`);
+    db.query(
+        // TODO get facility too by checking all facility databases
+        // TODO get start and end time as well
+        // TODO Read multiple entries at once
+        // "SELECT confID, date FROM events WHERE username = ?",
+        // "SELECT confID, date, startTime, endTime FROM events WHERE username = ?",
+        "SELECT * FROM reservations WHERE reservedBy = ?",
+        [username],
+        (err, result) => {
+            if (err) {
+                res.send({ err: err });
+            }
+            if (result.length > 0) {
+                console.log("Found a match \n");
+                console.log("Query Result: \n")
+                console.log(result);
+                res.send( result );
+            } else {
+                console.log("No match. \n");
+                res.send({ message: "Events made by that user does not exist!" });
+            }
+        }
+    )
+})
+
 app.post("/api/customerRegister", (req, res) => {
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
