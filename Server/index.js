@@ -63,6 +63,29 @@ app.post('/api/activeEvents', (req, res) => {
     )
 })
 
+app.post("/api/sendConfirmEmail", (req, res) => {
+    const firstName = req.body.firstName;
+    const emailAddress = req.body.email;
+    const confirmNum = req.body.confirmNum;
+    const mailOptions = {
+        from: 'no-reply@scheduleswift.com',
+        to: emailAddress,
+        subject: "Confirm Your Account",
+        html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
+            + "<p>Here is a confirmation link to confirm your account. Once you click the link, your account will be activated and you will be automatically redirected to the main page.</p>"
+            + "<h4>Confirmation Link:</h4></body></html>"
+    };
+    transport.sendMail(mailOptions,(err,res)=>{
+        if(err){
+            console.log("Unable to resend email.");
+            console.log(err);
+        }
+        else {
+            console.log("The email was successfully resent.");
+        }
+    });
+})
+
 app.post("/api/customerRegister", (req, res) => {
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
