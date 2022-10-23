@@ -7,7 +7,7 @@ CREATE TABLE `employeeData` (
   `password` varchar(200) DEFAULT NULL,
   `businessName` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `userData` (
   `ID` int NOT NULL AUTO_INCREMENT,
@@ -17,9 +17,10 @@ CREATE TABLE `userData` (
   `emailAddress` varchar(200) NOT NULL,
   `password` varchar(200) NOT NULL,
   `creationDate` varchar(200) DEFAULT NULL,
+  `confirmNum` varchar(200) NOT NULL,
   `active` boolean NOT NULL DEFAULT 0,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `managerData` (
   `ID` int NOT NULL AUTO_INCREMENT,
@@ -30,7 +31,7 @@ CREATE TABLE `managerData` (
   `password` varchar(200) DEFAULT NULL,
   `businessName` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `reservations` (
   `ID` int NOT NULL AUTO_INCREMENT,
@@ -46,4 +47,4 @@ CREATE TABLE `reservations` (
   `numReservable` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `ID_UNIQUE` (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

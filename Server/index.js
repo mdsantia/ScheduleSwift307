@@ -6,6 +6,7 @@ const crypto = require("crypto");
 const algorithm = "des-ede3";
 const SecurityKey = "abcedfghijklmnopqrstuvwx";
 const mysql = require("mysql");
+const nodemailer = require("nodemailer");
 
 const db = mysql.createPool({
     host: "localhost",
@@ -25,6 +26,15 @@ function encrypt(text) {
     return encrypted;
 }
 
+var transport = nodemailer.createTransport({
+    host: "smtp.mailtrap.io",
+    port: 2525,
+    auth: {
+      user: "91818b64366958",
+      pass: "e7214f0a8b0461"
+    }
+});
+  
 app.post('/api/activeEvents', (req, res) => {
     const username = req.body.username;
     console.log(`Searching by username: ${username}\n`);
@@ -53,6 +63,34 @@ app.post('/api/activeEvents', (req, res) => {
     )
 })
 
+app.post("/api/sendConfirmEmail", (req, res) => {
+    const firstName = req.body.firstName;
+    const emailAddress = req.body.email;
+    const confirmNum = req.body.confirmNum;
+    const mailOptions = {
+        from: 'no-reply@scheduleswift.com',
+        to: emailAddress,
+        subject: "Confirm Your Account",
+        html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
+            + "<p>Here is a confirmation link to confirm your account. Once you click the link, your account will be activated and you will be automatically redirected to the main page.</p>"
+            + "<h4>Confirmation Link:</h4>"
+            + "<p><a href=" + "http://localhost:3000/verify/"+ confirmNum + ">http://localhost:3000/verify/" + confirmNum + "</a></p></body></html>"
+    };
+    transport.sendMail(mailOptions,(err,res)=>{
+        if(err){
+            console.log("Unable to resend email.");
+            console.log(err);
+        }
+        else {
+            console.log("The email was successfully resent.");
+        }
+    });
+})
+
+app.get('/verify/', (req, res)=>{
+    console.log("linked worked");
+});
+
 app.post("/api/customerRegister", (req, res) => {
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
@@ -60,11 +98,41 @@ app.post("/api/customerRegister", (req, res) => {
     const emailAddress = req.body.email;
     const encryptedPassword = encrypt(req.body.password);
     const registerDate = req.body.creationDate;
-    const sqlInsert = "INSERT INTO userData (firstName, lastName, username, emailAddress, password, creationDate) VALUES (?,?,?,?,?,?)"
-    db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword, registerDate], (err, result) => {
+    const confirmNum = req.body.confirmNum;
+    const sqlInsert = "INSERT INTO userData (firstName, lastName, username, emailAddress, password, creationDate, confirmNum) VALUES (?,?,?,?,?,?,?)"
+    db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword, registerDate, confirmNum], (err, result) => {
         console.log(err);
     })
+    const mailOptions = {
+        from: 'no-reply@scheduleswift.com',
+        to: emailAddress,
+        subject: "Confirm Your Account",
+        html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
+            + "<p>Here is a confirmation link to confirm your account. Once you click the link, your account will be activated and you will be automatically redirected to the main page.</p>"
+            + "<h4>Confirmation Link:</h4>"
+            + "<p><a href=" + "http://localhost:3000/verify/"+ confirmNum + ">http://localhost:3000/verify/" + confirmNum + "</a></p></body></html>"
+    };
+    transport.sendMail(mailOptions,(err,res)=>{
+        if(err){
+            console.log("Unable to send email.");
+            console.log(err);
+        }
+        else {
+            console.log("The email was sent successfully.");
+        }
+    });
 })
+
+// app.post("/api/checkIfConfirmUniqueNum", (req, res) => {
+//     const confirmNum = req.body.confirmNum;
+//     db.query(
+//         "SELECT * FROM userData WHERE confirmNum = ?",
+//         [confirmNum],
+//         (err, result) => {
+//             console.log(err);
+//         }
+//     )
+// })
 
 app.post("/api/employeeRegister", (req, res) => {
     const firstName = req.body.firstName;
