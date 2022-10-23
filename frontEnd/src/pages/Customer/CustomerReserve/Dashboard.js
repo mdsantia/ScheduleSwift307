@@ -29,6 +29,7 @@ import BentoIcon from "@mui/icons-material/Bento";
 import { mainListItems } from './listItems';
 import Orders from './Orders';
 import { Navigate, useNavigate, useLocation } from "react-router-dom";
+import { useState } from 'react';
 
 function Copyright(props) {
     return (
@@ -239,7 +240,7 @@ function DashboardContent() {
                             {/* Recent Orders */}
                             <Grid item xs={12}>
                                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                                    <Orders />
+                                    <Orders username={state.username} password={state.password} />
                                 </Paper>
                             </Grid>
                         </Grid>
@@ -247,7 +248,7 @@ function DashboardContent() {
                     </Container>
                 </Box>
             </Box>
-        </ThemeProvider>
+        </ThemeProvider >
     );
 }
 
