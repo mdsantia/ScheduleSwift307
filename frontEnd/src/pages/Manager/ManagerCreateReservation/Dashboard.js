@@ -26,6 +26,8 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PeopleIcon from '@mui/icons-material/People';
 import BallotIcon from "@mui/icons-material/Ballot";
 import BentoIcon from "@mui/icons-material/Bento";
+import DateRangeIcon from '@mui/icons-material/DateRange';
+import ListAltIcon from '@mui/icons-material/ListAlt';
 import { mainListItems } from './listItems';
 import Orders from './Orders';
 import { Navigate, useNavigate, useLocation } from "react-router-dom";
@@ -169,6 +171,20 @@ function DashboardContent() {
                             <ListItemText primary="Dashboard" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
+                            navigate("/FacilityForm", {
+                                state: {
+                                    username: state.username,
+                                    password: state.password,
+                                    businessName: state.businessName
+                                }
+                            })
+                        }}>
+                            <ListItemIcon>
+                                <BallotIcon />
+                            </ListItemIcon>
+                            <ListItemText primary='Reservation Form' />
+                        </ListItemButton>
+                        <ListItemButton onClick={() => {
                             navigate("/managerCreateReservation", {
                                 state: {
                                     username: state.username,
@@ -181,6 +197,33 @@ function DashboardContent() {
                                 <BallotIcon />
                             </ListItemIcon>
                             <ListItemText primary='Create Reservations' />
+                        </ListItemButton>
+                        <ListItemButton onClick={() => {
+                            navigate("/facilityReservations", {
+                                state: {
+                                    username: state.username,
+                                    password: state.password
+                                }
+                            })
+                        }}>
+                            <ListItemIcon>
+                                <BallotIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Facility's Reservations" />
+                        </ListItemButton>
+                        <ListItemButton onClick={() => {
+                            navigate("/Calendar", {
+                                state: {
+                                    username: state.username,
+                                    password: state.password,
+                                    businessName: state.businessName
+                                }
+                            })
+                        }}>
+                            <ListItemIcon>
+                                <DateRangeIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Calendar View" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
                             navigate("/managerNotes", {
@@ -257,6 +300,6 @@ function DashboardContent() {
     );
 }
 
-export default function ManagerCreateReservation() {
+export default function ManagerMain() {
     return <DashboardContent />;
 }

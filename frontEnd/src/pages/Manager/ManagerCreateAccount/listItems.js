@@ -8,6 +8,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PeopleIcon from '@mui/icons-material/People';
 import BallotIcon from "@mui/icons-material/Ballot";
 import BentoIcon from "@mui/icons-material/Bento";
+import DateRangeIcon from '@mui/icons-material/DateRange';
 
 export const mainListItems = (
     <React.Fragment>
@@ -22,6 +23,12 @@ export const mainListItems = (
                 <BallotIcon />
             </ListItemIcon>
             <ListItemText primary="Reservations" />
+        </ListItemButton>
+        <ListItemButton>
+            <ListItemIcon>
+                <DateRangeIcon />
+            </ListItemIcon>
+            <ListItemText primary="Calendar" />
         </ListItemButton>
         <ListItemButton>
             <ListItemIcon>

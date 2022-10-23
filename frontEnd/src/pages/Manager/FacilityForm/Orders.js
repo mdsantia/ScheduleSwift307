@@ -18,7 +18,8 @@ import { useState, useEffect } from 'react';
 import { useSlotProps } from '@mui/base';
 import { Dayjs } from 'dayjs';
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 
@@ -46,25 +47,35 @@ export default function Orders(props) {
             // Then the code pushes each time it loops to the empty array I initiated.
             box.push(
                 <Grid container spacing={2}>
-                    <Grid  item xs={12} sm={6}>
+                    <Grid  item xs={12} sm={4}>
                     <TextField
                         required
                         fullWidth
                         name={"Reserved" + element}
-                        label={'Reservable Item ' + element}
+                        label={'Item ' + element}
                         type={element}
                         id={"Reserved" + element}
                     />
                     </Grid>
-                    <Grid  item xs={12} sm={6}>
+                    <Grid  item xs={12} sm={4}>
                     <TextField
                         required
                         fullWidth
                         name={"Price" + element}
                         label={'Price Item ' + element}
-                        type="number"
+                        type="number" InputProps={{ inputProps: { min: 0.01, step: 0.01 } }}
                         id={"Price" + element}
-                        InputProps={{ inputProps: { min: 0.01, step: 0.01 } }}
+                    />
+                    </Grid>
+                    <Grid  item xs={12} sm={4}>
+                    <TextField
+                        required
+                        fullWidth
+                        name={"Max " + element}
+                        label={'Max ' + element}
+                        InputProps={{ inputProps: { min: 1, step: 1 } }}
+                        type="number"
+                        id={"Max" + element}
                     />
                     </Grid>
                 </Grid>
@@ -79,7 +90,7 @@ export default function Orders(props) {
                 setNumReservableItems(numReservableItems + 1);
             }
         } else if (event.currentTarget.id === "Remove") {
-            if (numReservableItems >= 1) {
+            if (numReservableItems > 1) {
                 setNumReservableItems(numReservableItems - 1);
             }
         }
@@ -102,6 +113,14 @@ export default function Orders(props) {
                 prices = prices.concat(data.get("Price" + element));
             } else {
                 prices = prices.concat(";", data.get("Price" + element));
+            }
+        }
+        let maximums = "";
+        for (let element = 1; element <= numReservableItems; element++) {
+            if (maximums === "") {
+                maximums = maximums.concat(data.get("Max" + element));
+            } else {
+                maximums = maximums.concat(";", data.get("Max" + element));
             }
         }
         Axios.post("http://localhost:3001/api/managerCreateReservation", {
@@ -137,7 +156,7 @@ export default function Orders(props) {
                     <LockOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    Create Reservation
+                    {props.businessName} Reservation Form Template
                 </Typography>
                 <Box component="form" validate="true" onSubmit={handleSubmit} sx={{ mt: 3 }}>
                     <Grid container spacing={2}>
@@ -159,14 +178,44 @@ export default function Orders(props) {
                                     id="reservationDate"
                                     label="Select Date"
                                     value={currentDate}
-                                    onChange={(newValue) => { setCurrentDate(newValue) }}
+                                    // onChange={(newValue) => { setCurrentDate(newValue) }}
                                     renderInput={(params) => <TextField {...params} />}
                                 />
                             </LocalizationProvider>
                         </Grid>
-                        <Grid item xs={12}>
-                            
+                        <Grid item xs={12} sm={4}>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <TimePicker
+                                    label="Start Time"
+                                    value={1000}
+                                    fullWidth
+                                    // onChange={(newValue) => { setStartTime(newValue) }}
+                                    renderInput={(params) => <TextField {...params} />}
+                                />
+                            </LocalizationProvider>
                         </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <TimePicker
+                                    label="End Time"
+                                    value={3000}
+                                    fullWidth
+                                    // onChange={(newValue) => { setEndTime(newValue) }}
+                                    renderInput={(params) => <TextField {...params} />}
+                                />
+                            </LocalizationProvider>
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                                <TextField
+                                    required
+                                    fullWidth
+                                    name="numPeople"
+                                    label="Max Party Size"
+                                    type="number"
+                                    id="numPeople"
+                                    InputProps={{ inputProps: { min: 1, step: 1 } }}
+                                />
+                            </Grid>
                         {/* And here I render the box array */}
                             {/* There is going to be a max of 10 items */}
                             {makeBox()}
@@ -229,7 +278,7 @@ export default function Orders(props) {
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
                     >
-                        Create Reservation
+                        Save
                     </Button>
                 </Box>
             </Box>
