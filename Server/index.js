@@ -6,6 +6,7 @@ const crypto = require("crypto");
 const algorithm = "des-ede3";
 const SecurityKey = "abcedfghijklmnopqrstuvwx";
 const mysql = require("mysql");
+const nodemailer = require("nodemailer");
 
 const db = mysql.createPool({
     host: "localhost",
@@ -25,6 +26,15 @@ function encrypt(text) {
     return encrypted;
 }
 
+var transport = nodemailer.createTransport({
+    host: "smtp.mailtrap.io",
+    port: 2525,
+    auth: {
+      user: "91818b64366958",
+      pass: "e7214f0a8b0461"
+    }
+  });
+    
 app.post("/api/customerRegister", (req, res) => {
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
@@ -37,6 +47,23 @@ app.post("/api/customerRegister", (req, res) => {
     db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword, registerDate, confirmNum], (err, result) => {
         console.log(err);
     })
+    const mailOptions = {
+        from: 'no-reply@scheduleswift.com',
+        to: emailAddress,
+        subject: "Confirm Your Account",
+        html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
+            + "<p>Here is a confirmation link to confirm your account. Once you click the link, your account will be activated and you will be automatically redirected to the main page.</p>"
+            + "<h4>Confirmation Link:</h4></body></html>"
+    };
+    transport.sendMail(mailOptions,(err,res)=>{
+        if(err){
+            console.log("Unable to send email.");
+            console.log(err);
+        }
+        else {
+            console.log("The email was sent successfully.");
+        }
+    });
 })
 
 // app.post("/api/checkIfConfirmUniqueNum", (req, res) => {
