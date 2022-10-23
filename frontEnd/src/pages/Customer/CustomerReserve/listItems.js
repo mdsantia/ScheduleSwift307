@@ -22,7 +22,7 @@ export const mainListItems = (
             <ListItemIcon>
                 <BallotIcon />
             </ListItemIcon>
-            <ListItemText primary="My Reservations" />
+            <ListItemText primary='My Reservations' />
         </ListItemButton>
         <ListItemButton component={Link} to="/customerReserve">
             <ListItemIcon>
@@ -30,7 +30,7 @@ export const mainListItems = (
             </ListItemIcon>
             <ListItemText primary="Make Reservations" />
         </ListItemButton>
-        <ListItemButton component={Link} to="/customerAccount">
+        <ListItemButton component={Link} to="/customerAccount" >
             <ListItemIcon>
                 <PeopleIcon />
             </ListItemIcon>

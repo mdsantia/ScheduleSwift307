@@ -12,7 +12,7 @@ import { Navigate, useNavigate, useLocation, Link } from "react-router-dom";
 
 export const mainListItems = (
     <React.Fragment>
-        <ListItemButton component={Link} to="/customerMain">
+        <ListItemButton component={Link} to="/customerReserve">
             <ListItemIcon>
                 <DashboardIcon />
             </ListItemIcon>
@@ -24,7 +24,7 @@ export const mainListItems = (
             </ListItemIcon>
             <ListItemText primary="My Reservations" />
         </ListItemButton>
-        <ListItemButton component={Link} to="/customerReserve">
+        <ListItemButton component={Link} to="/customerMain">
             <ListItemIcon>
                 <BentoIcon />
             </ListItemIcon>
