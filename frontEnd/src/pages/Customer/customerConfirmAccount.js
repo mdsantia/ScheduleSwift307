@@ -31,31 +31,19 @@ const theme = createTheme();
 
 const CustomerConfirmAccount = () => {
     const { state } = useLocation();
-    const navigate = useNavigate();
-
-    // const handleSubmit = (event) => {
-    //     event.preventDefault();
-    //     const data = new FormData(event.currentTarget);
-    //     Axios.post("http://localhost:3001/api/customerConfirmAccount", {
-            //  email: data.get('email'),
-    //         username: data.get('username'),
-        //  }).then((result) => {
-    //         if (result.data.message) {
-    //             setLoginStatus(result.data.message);
-    //         } else {
-    //             navigate("/customerChangePassword", {
-    //                 state: {
-    //                     username: data.get('username'),
-    //                     email: data.get('email'),
-    //                 }
-    //             });
-    //         }
-    //     })
-    //     console.log({
-    //         email: data.get('email'),
-    //         username: data.get('username'),
-    //     });
-    // };
+    const handleSubmit = () => {
+        Axios.post("http://localhost:3001/api/sendConfirmEmail", {
+            email: state.email,
+            firstName: state.firstName,
+            confirmNum: state.confirmNum,
+         }).then((result) => {
+            if (result) {
+                console.log("Successfully resent confirmation email.");
+            } else {
+                console.log("Unable to resend confirmation email.");
+            }
+        })
+    };
 
     return (
         <ThemeProvider theme={theme}>
@@ -91,7 +79,7 @@ const CustomerConfirmAccount = () => {
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
-                        // onSubmit={handleSubmit}
+                        onClick={handleSubmit}
                     >
                     Resend Confirmation Email
                     </Button>

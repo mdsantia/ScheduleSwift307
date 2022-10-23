@@ -76,6 +76,7 @@ const CustomerRegister = () => {
                     username: data.get('username'),
                     password: data.get('password'),
                     email: data.get('email'),
+                    firstName: data.get('firstName'),
                     confirmNum: uniqueConfirmNum,
                 }
             });
