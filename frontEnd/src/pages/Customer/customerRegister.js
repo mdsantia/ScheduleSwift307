@@ -56,7 +56,7 @@ const CustomerRegister = () => {
         }
         return result;
     }
-    const uniqueConfirmNum = makeUniqueID(8);
+    const uniqueConfirmCode = makeUniqueID(8);
 
     const onSubmit = (event) => {
         event.preventDefault();
@@ -69,7 +69,7 @@ const CustomerRegister = () => {
                 email: data.get('email'),
                 password: data.get('password'),
                 creationDate: creationDate,
-                confirmNum: uniqueConfirmNum,
+                confirmCode: uniqueConfirmCode,
             })
             navigate("/customerConfirmAccount", {
                 state: {
@@ -77,7 +77,7 @@ const CustomerRegister = () => {
                     password: data.get('password'),
                     email: data.get('email'),
                     firstName: data.get('firstName'),
-                    confirmNum: uniqueConfirmNum,
+                    confirmCode: uniqueConfirmCode,
                 }
             });
         }
@@ -87,7 +87,7 @@ const CustomerRegister = () => {
             username: data.get('username'),
             email: data.get('email'),
             password: data.get('password'),
-            confirmNum: uniqueConfirmNum,
+            confirmCode: uniqueConfirmCode,
         });
     };
 

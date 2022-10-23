@@ -31,11 +31,11 @@ const theme = createTheme();
 
 const CustomerConfirmAccount = () => {
     const { state } = useLocation();
-    const handleSubmit = () => {
+    const handleResend = () => {
         Axios.post("http://localhost:3001/api/sendConfirmEmail", {
             email: state.email,
             firstName: state.firstName,
-            confirmNum: state.confirmNum,
+            confirmCode: state.confirmCode,
          }).then((result) => {
             if (result) {
                 console.log("Successfully resent confirmation email.");
@@ -44,6 +44,10 @@ const CustomerConfirmAccount = () => {
             }
         })
     };
+
+    const handleConfirmation = () => {
+        console.log("confirmed hit");
+    }
 
     return (
         <ThemeProvider theme={theme}>
@@ -60,11 +64,11 @@ const CustomerConfirmAccount = () => {
                     <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}><LockOutlinedIcon /></Avatar>
                     <Typography component="h1" variant="h5">Confirm Account</Typography>
                     <Typography justifyContent="flex-end" component="h1" variant="body2">
-                        A confirmation link has been sent to
+                        A confirmation code has been sent to
                     </Typography>
                     <span><b>{state.email}</b></span>
                     <Typography justifyContent="flex-end" component="h1" variant="body2">
-                        Click on the link in order to activate your account. Once your account is activated, you will
+                        Enter the confirmation code below in order to activate your account. Once your account is activated, you will
                         be automatically redirected to the main page.
                     </Typography>
                     <Typography justifyContent="flex-end" component="h1" variant="body2">
@@ -72,14 +76,33 @@ const CustomerConfirmAccount = () => {
                     </Typography>    
                     <span><b>"Resend Confirmation Email"</b></span>
                     <Typography justifyContent="flex-end" component="h1" variant="body2">
-                        and an email with the confirmation link will be re-sent.
+                        and an email with the confirmation code will be re-sent.
                     </Typography>
+                    <Box component="form" validate="true"  sx={{ mt: 3 }}>
+                        <TextField
+                            name="confirmCode"
+                            required
+                            fullWidth
+                            id="confirmCode"
+                            label="Confirmation Code"
+                            autoFocus
+                        />
+                    </Box>
                     <Button
                         type="submit"
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
-                        onClick={handleSubmit}
+                        onClick={handleConfirmation}
+                    >
+                    Confirm Account
+                    </Button>
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2 }}
+                        onClick={handleResend}
                     >
                     Resend Confirmation Email
                     </Button>

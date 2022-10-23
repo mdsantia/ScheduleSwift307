@@ -17,7 +17,7 @@ CREATE TABLE `userData` (
   `emailAddress` varchar(200) NOT NULL,
   `password` varchar(200) NOT NULL,
   `creationDate` varchar(200) DEFAULT NULL,
-  `confirmNum` varchar(200) NOT NULL,
+  `confirmCode` varchar(200) NOT NULL,
   `active` boolean NOT NULL DEFAULT 0,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

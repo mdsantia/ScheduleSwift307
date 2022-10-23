@@ -66,15 +66,15 @@ app.post('/api/activeEvents', (req, res) => {
 app.post("/api/sendConfirmEmail", (req, res) => {
     const firstName = req.body.firstName;
     const emailAddress = req.body.email;
-    const confirmNum = req.body.confirmNum;
+    const confirmCode = req.body.confirmCode;
     const mailOptions = {
         from: 'no-reply@scheduleswift.com',
         to: emailAddress,
         subject: "Confirm Your Account",
         html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
-            + "<p>Here is a confirmation link to confirm your account. Once you click the link, your account will be activated and you will be automatically redirected to the main page.</p>"
-            + "<h4>Confirmation Link:</h4>"
-            + "<p><a href=" + "http://localhost:3000/verify/"+ confirmNum + ">http://localhost:3000/verify/" + confirmNum + "</a></p></body></html>"
+            + "<p>Here is the confirmation code to confirm your account. Once you enter the confirmation code, your account will be activated and you will be automatically redirected to the main page.</p>"
+            + "<h4>Confirmation Code:</h4>"
+            + "<p><center><font size=" + "+3" + "><b>" + confirmCode + "</b></font></center></p></body></html>"
     };
     transport.sendMail(mailOptions,(err,res)=>{
         if(err){
@@ -87,10 +87,6 @@ app.post("/api/sendConfirmEmail", (req, res) => {
     });
 })
 
-app.get('/verify/', (req, res)=>{
-    console.log("linked worked");
-});
-
 app.post("/api/customerRegister", (req, res) => {
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
@@ -98,19 +94,19 @@ app.post("/api/customerRegister", (req, res) => {
     const emailAddress = req.body.email;
     const encryptedPassword = encrypt(req.body.password);
     const registerDate = req.body.creationDate;
-    const confirmNum = req.body.confirmNum;
-    const sqlInsert = "INSERT INTO userData (firstName, lastName, username, emailAddress, password, creationDate, confirmNum) VALUES (?,?,?,?,?,?,?)"
-    db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword, registerDate, confirmNum], (err, result) => {
+    const confirmCode = req.body.confirmCode;
+    const sqlInsert = "INSERT INTO userData (firstName, lastName, username, emailAddress, password, creationDate, confirmCode) VALUES (?,?,?,?,?,?,?)"
+    db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword, registerDate, confirmCode], (err, result) => {
         console.log(err);
-    })
+    });
     const mailOptions = {
         from: 'no-reply@scheduleswift.com',
         to: emailAddress,
         subject: "Confirm Your Account",
         html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
-            + "<p>Here is a confirmation link to confirm your account. Once you click the link, your account will be activated and you will be automatically redirected to the main page.</p>"
-            + "<h4>Confirmation Link:</h4>"
-            + "<p><a href=" + "http://localhost:3000/verify/"+ confirmNum + ">http://localhost:3000/verify/" + confirmNum + "</a></p></body></html>"
+            + "<p>Here is the confirmation code to confirm your account. Once you enter the confirmation code, your account will be activated and you will be automatically redirected to the main page.</p>"
+            + "<h4>Confirmation Code:</h4>"
+            + "<p><center><font size=" + "+3" + "><b>" + confirmCode + "</b></font></center></p></body></html>"
     };
     transport.sendMail(mailOptions,(err,res)=>{
         if(err){
@@ -118,21 +114,10 @@ app.post("/api/customerRegister", (req, res) => {
             console.log(err);
         }
         else {
-            console.log("The email was sent successfully.");
+            console.log("The email was successfully sent.");
         }
     });
 })
-
-// app.post("/api/checkIfConfirmUniqueNum", (req, res) => {
-//     const confirmNum = req.body.confirmNum;
-//     db.query(
-//         "SELECT * FROM userData WHERE confirmNum = ?",
-//         [confirmNum],
-//         (err, result) => {
-//             console.log(err);
-//         }
-//     )
-// })
 
 app.post("/api/employeeRegister", (req, res) => {
     const firstName = req.body.firstName;
