@@ -33,7 +33,7 @@ var transport = nodemailer.createTransport({
       user: "91818b64366958",
       pass: "e7214f0a8b0461"
     }
-  });
+});
   
 app.post('/api/activeEvents', (req, res) => {
     const username = req.body.username;
@@ -73,7 +73,8 @@ app.post("/api/sendConfirmEmail", (req, res) => {
         subject: "Confirm Your Account",
         html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
             + "<p>Here is a confirmation link to confirm your account. Once you click the link, your account will be activated and you will be automatically redirected to the main page.</p>"
-            + "<h4>Confirmation Link:</h4></body></html>"
+            + "<h4>Confirmation Link:</h4>"
+            + "<p><a href=http://localhost:3000/${confirmNum}>http://localhost:3000/" + confirmNum + "</a></p></body></html>"
     };
     transport.sendMail(mailOptions,(err,res)=>{
         if(err){
@@ -104,7 +105,8 @@ app.post("/api/customerRegister", (req, res) => {
         subject: "Confirm Your Account",
         html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
             + "<p>Here is a confirmation link to confirm your account. Once you click the link, your account will be activated and you will be automatically redirected to the main page.</p>"
-            + "<h4>Confirmation Link:</h4></body></html>"
+            + "<h4>Confirmation Link:</h4>"
+            + "<p><a href=http://localhost:3000/${confirmNum}>http://localhost:3000/" + confirmNum + "</a></p></body></html>"
     };
     transport.sendMail(mailOptions,(err,res)=>{
         if(err){
