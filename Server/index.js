@@ -32,11 +32,23 @@ app.post("/api/customerRegister", (req, res) => {
     const emailAddress = req.body.email;
     const encryptedPassword = encrypt(req.body.password);
     const registerDate = req.body.creationDate;
-    const sqlInsert = "INSERT INTO userData (firstName, lastName, username, emailAddress, password, creationDate) VALUES (?,?,?,?,?,?)"
-    db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword, registerDate], (err, result) => {
+    const confirmNum = req.body.confirmNum;
+    const sqlInsert = "INSERT INTO userData (firstName, lastName, username, emailAddress, password, creationDate, confirmNum) VALUES (?,?,?,?,?,?,?)"
+    db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword, registerDate, confirmNum], (err, result) => {
         console.log(err);
     })
 })
+
+// app.post("/api/checkIfConfirmUniqueNum", (req, res) => {
+//     const confirmNum = req.body.confirmNum;
+//     db.query(
+//         "SELECT * FROM userData WHERE confirmNum = ?",
+//         [confirmNum],
+//         (err, result) => {
+//             console.log(err);
+//         }
+//     )
+// })
 
 app.post("/api/employeeRegister", (req, res) => {
     const firstName = req.body.firstName;

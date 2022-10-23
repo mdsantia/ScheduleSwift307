@@ -32,15 +32,14 @@ const theme = createTheme();
 const CustomerConfirmAccount = () => {
     const { state } = useLocation();
     const navigate = useNavigate();
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
-    }
+
+    // const handleSubmit = (event) => {
+    //     event.preventDefault();
+    //     const data = new FormData(event.currentTarget);
     //     Axios.post("http://localhost:3001/api/customerConfirmAccount", {
-    //         email: data.get('email'),
+            //  email: data.get('email'),
     //         username: data.get('username'),
-    //         confirmNum: data.get('confirmNum'),
-    //     }).then((result) => {
+        //  }).then((result) => {
     //         if (result.data.message) {
     //             setLoginStatus(result.data.message);
     //         } else {
@@ -92,6 +91,7 @@ const CustomerConfirmAccount = () => {
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
+                        // onSubmit={handleSubmit}
                     >
                     Resend Confirmation Email
                     </Button>
