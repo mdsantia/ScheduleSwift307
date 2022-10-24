@@ -21,6 +21,27 @@ export default function Orders(props) {
         return { id, date, time, name, paymentMethod, amount };
     }
 
+    useEffect(() => {
+        startFill();
+    }, []);
+
+    function startFill() {
+        Axios.post("http://localhost:3001/api/activeEvents", {
+            username : state.username,
+        }).then((result) => {
+            if (result.data.message) {
+                alert(`There are no more associated active reservations to your account.`);
+            } else {
+                for (let entryNum = 0; entryNum < 5; entryNum++) {
+                    rows.push(createData(result.data[entryNum]["ID"], result.data[entryNum]["reservationDate"],
+                    result.data[entryNum]["startTime"], result.data[entryNum]["businessName"], 'Yes', result.data[entryNum]["price"]));
+                    setRows(rows);
+                    setNumEntries(entryNum+1);
+                }
+            }
+        })
+    }
+
     const addRow = (e) => {
         e.preventDefault();
         Axios.post("http://localhost:3001/api/activeEvents", {
