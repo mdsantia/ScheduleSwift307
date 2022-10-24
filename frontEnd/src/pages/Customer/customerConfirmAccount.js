@@ -57,7 +57,7 @@ const CustomerConfirmAccount = () => {
             Axios.post("http://localhost:3001/api/customerConfirmAccount", {
                 confirmCode: state.confirmCode,
             })
-            console.log("made it past axios");
+            alert("Your Account Has Been Successfully Activated!");
             navigate("/customerMain", {
                 state: {
                     username: state.username,
