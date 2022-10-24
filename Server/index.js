@@ -192,7 +192,12 @@ app.post("/api/customerSignIn", (req, res) => {
                 res.send({ err: err })
             }
             if (result.length > 0) {
-                res.send({ result });
+                if (result[0].active == 1) {
+                    res.send({ result });
+                } else {
+                    const emailNameCode = result[0].emailAddress + " " + result[0].firstName + " " + result[0].confirmCode;
+                    res.send({ message: emailNameCode});
+                }
             } else {
                 res.send({ message: "Wrong username/password combination" });
             }

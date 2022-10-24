@@ -37,13 +37,8 @@ const CustomerConfirmAccount = () => {
             email: state.email,
             firstName: state.firstName,
             confirmCode: state.confirmCode,
-         }).then((result) => {
-            if (result) {
-                console.log("Successfully resent confirmation email.");
-            } else {
-                console.log("Unable to resend confirmation email.");
-            }
-        })
+         })
+         alert("The confirmation email has been resent.");
     };
 
     const [confirmStatus, setConfirmStatus] = useState('');
