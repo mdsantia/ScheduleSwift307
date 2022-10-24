@@ -45,6 +45,19 @@ const CustomerRegister = () => {
             setError(null);
         }
     }
+
+    const makeUniqueID = (length) => {
+        // Reference to ran string https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
+        var result           = '';
+        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+    const uniqueConfirmCode = makeUniqueID(8);
+
     const onSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -55,16 +68,20 @@ const CustomerRegister = () => {
                 username: data.get('username'),
                 email: data.get('email'),
                 business: data.get('business'),
-                password: data.get('password')
+                password: data.get('password'),
+                confirmCode: uniqueConfirmCode
             }).then((result) => {
                 if (result.data.err) {
                     alert("Username already taken!");
                 } else {
-                    navigate("/managerMain", {
+                    navigate("/managerConfirmAccount", {
                         state: {
                             username: data.get('username'),
                             password: data.get('password'),
-                            businessName: data.get('business')
+                            businessName: data.get('business'),
+                            email: data.get('email'),
+                            firstName: data.get('firstName'),
+                            confirmCode: uniqueConfirmCode,
                         }
                     });
                     console.log({
