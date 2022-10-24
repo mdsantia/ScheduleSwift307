@@ -56,16 +56,27 @@ const EmployeeRegister = () => {
                 email: data.get('email'),
                 business: data.get('business'),
                 password: data.get('password')
+            }).then((result) => {
+                if (result.data.err) {
+                    alert("Username already taken!");
+                } else {
+                    navigate("/employeeMain", {
+                        state: {
+                            username: data.get('username'),
+                            password: data.get('password'),
+                            businessName: data.get('business')
+                        }
+                    });
+                    console.log({
+                        firstName: data.get('firstName'),
+                        lastName: data.get('lastName'),
+                        username: data.get('username'),
+                        email: data.get('email'),
+                        password: data.get('password'),
+                    });
+                }
             })
-            navigate("/employeeMain");
         }
-        console.log({
-            firstName: data.get('firstName'),
-            lastName: data.get('lastName'),
-            username: data.get('username'),
-            email: data.get('email'),
-            password: data.get('password'),
-        });
     };
 
     return (
