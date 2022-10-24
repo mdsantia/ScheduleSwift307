@@ -78,7 +78,7 @@ app.post("/api/sendConfirmEmail", (req, res) => {
     const emailAddress = req.body.email;
     const confirmCode = req.body.confirmCode;
     const mailOptions = {
-        from:
+        from: 
             {
                 name: 'no-reply@scheduleswift.com',
                 address: 'scheduleswift@gmail.com'
@@ -130,7 +130,11 @@ app.post("/api/customerRegister", (req, res) => {
         console.log(err);
     });
     const mailOptions = {
-        from: 'no-reply@scheduleswift.com',
+        from:  
+            {
+            name: 'no-reply@scheduleswift.com',
+            address: 'scheduleswift@gmail.com'
+            },
         to: emailAddress,
         subject: "Confirm Your Account",
         html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
