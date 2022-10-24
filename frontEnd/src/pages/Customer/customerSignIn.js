@@ -43,8 +43,19 @@ export default function CustomerSignIn() {
             password: data.get('password'),
         }).then((result) => {
             console.log(result);
-            if (result.data.message) {
+            if (result.data.message == "Wrong username/password combination") {
                 setLoginStatus(result.data.message);
+            } else if (result.data.message) {
+                const emailNameCode = result.data.message.split(" ");
+                navigate("/customerConfirmAccount", {
+                    state: {
+                        username: data.get('username'),
+                        password: data.get('password'),
+                        email: emailNameCode[0],
+                        firstName: emailNameCode[1],
+                        confirmCode: emailNameCode[2],
+                    }
+                });
             } else {
                 navigate("/customerMain", {
                     state: {
