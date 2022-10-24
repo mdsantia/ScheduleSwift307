@@ -70,25 +70,29 @@ const CustomerRegister = () => {
                 password: data.get('password'),
                 creationDate: creationDate,
                 confirmCode: uniqueConfirmCode,
-            })
-            navigate("/customerConfirmAccount", {
-                state: {
-                    username: data.get('username'),
-                    password: data.get('password'),
-                    email: data.get('email'),
-                    firstName: data.get('firstName'),
-                    confirmCode: uniqueConfirmCode,
+            }).then((result) => {
+                if (result.data.err) {
+                    alert("Username already taken!");
+                } else {
+                    navigate("/customerConfirmAccount", {
+                        state: {
+                            username: data.get('username'),
+                            password: data.get('password'),
+                            email: data.get('email'),
+                            firstName: data.get('firstName'),
+                            confirmCode: uniqueConfirmCode,
+                        }
+                    });
+                    console.log({
+                        firstName: data.get('firstName'),
+                        lastName: data.get('lastName'),
+                        username: data.get('username'),
+                        email: data.get('email'),
+                        password: data.get('password'),
+                    });
                 }
-            });
+            })
         }
-        console.log({
-            firstName: data.get('firstName'),
-            lastName: data.get('lastName'),
-            username: data.get('username'),
-            email: data.get('email'),
-            password: data.get('password'),
-            confirmCode: uniqueConfirmCode,
-        });
     };
 
     return (

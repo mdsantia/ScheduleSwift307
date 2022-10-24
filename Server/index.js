@@ -7,6 +7,7 @@ const algorithm = "des-ede3";
 const SecurityKey = "abcedfghijklmnopqrstuvwx";
 const mysql = require("mysql");
 const nodemailer = require("nodemailer");
+const { send } = require("process");
 
 const db = mysql.createPool({
     host: "localhost",
@@ -114,6 +115,7 @@ app.post("/api/customerRegister", (req, res) => {
     const sqlInsert = "INSERT INTO userData (firstName, lastName, username, emailAddress, password, creationDate, confirmCode) VALUES (?,?,?,?,?,?,?)"
     db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword, registerDate, confirmCode], (err, result) => {
         console.log(err);
+        res.send( {err : err} );
     });
     const mailOptions = {
         from: 'no-reply@scheduleswift.com',
@@ -145,6 +147,7 @@ app.post("/api/employeeRegister", (req, res) => {
     const sqlInsert = "INSERT INTO employeeData (firstName, lastName, username, emailAddress, password, businessName) VALUES (?,?,?,?,?,?)"
     db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword, businessName], (err, result) => {
         console.log(err);
+        res.send( {err : err} );
     })
 })
 
@@ -158,6 +161,7 @@ app.post("/api/managerRegister", (req, res) => {
     const sqlInsert = "INSERT INTO managerData (firstName, lastName, username, emailAddress, password, businessName) VALUES (?,?,?,?,?,?)"
     db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword, businessName], (err, result) => {
         console.log(err);
+        res.send( {err : err} );
     })
 })
 
