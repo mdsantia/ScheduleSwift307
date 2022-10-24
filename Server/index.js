@@ -87,6 +87,22 @@ app.post("/api/sendConfirmEmail", (req, res) => {
     });
 })
 
+app.post("/api/customerConfirmAccount", (req, res) => {
+    const confirmCode = req.body.confirmCode;
+    db.query(
+        "UPDATE userData SET active = 1 WHERE confirmCode = ?",
+        [confirmCode],
+        (err, result) => {
+            if (err) {
+                console.log("Unable to activate account.");
+                console.log(err);
+            } else {
+                console.log("Successfully Activated Account.");
+            }
+        }
+    )
+})
+
 app.post("/api/customerRegister", (req, res) => {
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;

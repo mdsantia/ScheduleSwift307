@@ -31,6 +31,7 @@ const theme = createTheme();
 
 const CustomerConfirmAccount = () => {
     const { state } = useLocation();
+    const navigate = useNavigate();
     const handleResend = () => {
         Axios.post("http://localhost:3001/api/sendConfirmEmail", {
             email: state.email,
@@ -45,8 +46,25 @@ const CustomerConfirmAccount = () => {
         })
     };
 
-    const handleConfirmation = () => {
-        console.log("confirmed hit");
+    const [confirmStatus, setConfirmStatus] = useState('');
+    const [inputConfirmCode, setInputConfirmCode] = useState('');
+
+    const handleConfirmation = (event) => {
+        event.preventDefault();
+        if (inputConfirmCode !== state.confirmCode) {
+            setConfirmStatus("Incorrect Confirmation Code.");
+        } else {
+            Axios.post("http://localhost:3001/api/customerConfirmAccount", {
+                confirmCode: state.confirmCode,
+            })
+            console.log("made it past axios");
+            navigate("/customerMain", {
+                state: {
+                    username: state.username,
+                    password: state.password
+                }
+            });
+        }
     }
 
     return (
@@ -78,7 +96,7 @@ const CustomerConfirmAccount = () => {
                     <Typography justifyContent="flex-end" component="h1" variant="body2">
                         and an email with the confirmation code will be re-sent.
                     </Typography>
-                    <Box component="form" validate="true"  sx={{ mt: 3 }}>
+                    <Box component="form" validate="true"  onSubmit={handleConfirmation} sx={{ mt: 3 }}>
                         <TextField
                             name="confirmCode"
                             required
@@ -86,8 +104,10 @@ const CustomerConfirmAccount = () => {
                             id="confirmCode"
                             label="Confirmation Code"
                             autoFocus
+                            onChange={(e) => setInputConfirmCode(e.target.value)}
                         />
                     </Box>
+                    <Typography color="error.main" justifyContent="flex-end" component="h1" variant="body2">{confirmStatus}</Typography>
                     <Button
                         type="submit"
                         fullWidth
