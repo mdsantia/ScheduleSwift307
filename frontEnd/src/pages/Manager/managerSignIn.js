@@ -42,10 +42,21 @@ export default function ManagerSignIn() {
             username: data.get('username'),
             password: data.get('password'),
         }).then((result) => {
+            console.log(result);
             if (result.data.message) {
                 setLoginStatus(result.data.message);
+            } else if (result.data.result[0].active == 0) {
+                navigate("/managerConfirmAccount", {
+                    state: {
+                        username: data.get('username'),
+                        password: data.get('password'),
+                        businessName: result.data.result[0].businessName,
+                        email: result.data.result[0].emailAddress,
+                        firstName: result.data.result[0].firstName,
+                        confirmCode: result.data.result[0].confirmCode
+                    }
+                });
             } else {
-                console.log(result.data.result[0].businessName);
                 navigate("/managerMain", {
                     state: {
                         username: data.get('username'),
