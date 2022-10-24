@@ -16,6 +16,7 @@ import FacilityForm from './pages/Manager/FacilityForm/Dashboard';
 import ManagerAccount from './pages/Manager/ManagerAccount/Dashboard';
 import ManagerCreateAccount from './pages/Manager/ManagerCreateAccount/Dashboard';
 import ManagerCreateReservation from './pages/Manager/ManagerCreateReservation/Dashboard';
+import FacilityReservations from './pages/Manager/FacilityReservations/Dashboard';
 import ManagerNotes from './pages/Manager/ManagerNotes/Dashboard';
 import CustomerSignIn from './pages/Customer/customerSignIn';
 import EmployeeSignIn from './pages/Employee/employeeSignIn';
@@ -47,6 +48,7 @@ function App() {
           <Route path="/managerMain" element={<ManagerMain />} />
           <Route path="/FacilityForm" element={<FacilityForm />} />
           <Route path="/managerCreateReservation" element={<ManagerCreateReservation />} />
+          <Route path="/facilityReservations" element={<FacilityReservations />} />
           <Route path="/managerAccount" element={<ManagerAccount />} />
           <Route path="/managerNotes" element={<ManagerNotes />} />
           <Route path="/managerCreateAccount" element={<ManagerCreateAccount />} />

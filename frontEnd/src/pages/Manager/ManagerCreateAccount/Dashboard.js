@@ -202,7 +202,8 @@ function DashboardContent() {
                             navigate("/facilityReservations", {
                                 state: {
                                     username: state.username,
-                                    password: state.password
+                                    password: state.password,
+                                    businessName: state.businessName
                                 }
                             })
                         }}>
