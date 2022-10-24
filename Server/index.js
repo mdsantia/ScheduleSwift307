@@ -26,13 +26,23 @@ function encrypt(text) {
     return encrypted;
 }
 
+// var transport = nodemailer.createTransport({
+//     host: "smtp.mailtrap.io",
+//     port: 2525,
+//     auth: {
+//       user: "91818b64366958",
+//       pass: "e7214f0a8b0461"
+//     }
+// });
+
 var transport = nodemailer.createTransport({
-    host: "smtp.mailtrap.io",
-    port: 2525,
+    service: "gmail",
+    port: 465,
+    secure: true, // true for 465, false for other ports
     auth: {
-      user: "91818b64366958",
-      pass: "e7214f0a8b0461"
-    }
+      user: "scheduleswift@gmail.com",
+      pass: "txwgbslbjbxxojvb",
+    },
 });
   
 app.post('/api/activeEvents', (req, res) => {
@@ -68,7 +78,11 @@ app.post("/api/sendConfirmEmail", (req, res) => {
     const emailAddress = req.body.email;
     const confirmCode = req.body.confirmCode;
     const mailOptions = {
-        from: 'no-reply@scheduleswift.com',
+        from:
+            {
+                name: 'no-reply@scheduleswift.com',
+                address: 'scheduleswift@gmail.com'
+            },
         to: emailAddress,
         subject: "Confirm Your Account",
         html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
