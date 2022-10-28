@@ -30,7 +30,11 @@ function preventDefault(event) {
 
 export default function Orders(props) {
     const box = [];
-    const [numReservableItems, setNumReservableItems] = useState(3);
+    const [numReservableItems, setNumReservableItems] = useState(1);
+    const [nameArray, setNameArray] = useState([]);
+    const [minArray, setMinArray] = useState([]);
+    const [maxArray, setMaxArray] = useState([]);
+    const [priceArray, setPriceArray] = useState([]);
     const businessName = props.businessName;
     const year = new Date().getFullYear();
     const month = new Date().getMonth() + 1;
@@ -39,6 +43,7 @@ export default function Orders(props) {
     const formattedDate = `${year}-${month}-${day}`;
     const [currentDate, setCurrentDate] = useState(Dayjs | null);
     useEffect(() => {
+        setMinArray([1,2,3,4,5,6,7,8,9,10]);
         setCurrentDate(formattedDate);
     }, [])
 
@@ -47,35 +52,70 @@ export default function Orders(props) {
             // Then the code pushes each time it loops to the empty array I initiated.
             box.push(
                 <Grid container spacing={2}>
-                    <Grid  item xs={12} sm={4}>
+                    <Grid  item xs={12} sm={3}>
                     <TextField
                         required
                         fullWidth
-                        name={"Reserved" + element}
-                        label={'Item ' + element}
+                        name={'Reserved' + element}
+                        label={'Reserved ' + element}
                         type={element}
-                        id={"Reserved" + element}
+                        id={element}
+                        value={nameArray[element - 1]}
+                        onChange={(newValue) => { 
+                            let newArr = [...nameArray];
+                            newArr[parseInt(newValue.target.id) - 1] = newValue.target.value;
+                            setNameArray(newArr);
+                        }}
                     />
                     </Grid>
-                    <Grid  item xs={12} sm={4}>
+                    <Grid  item xs={12} sm={3}>
                     <TextField
                         required
                         fullWidth
-                        name={"Price" + element}
-                        label={'Price Item ' + element}
+                        name={'Price' + element}
+                        label={'Price ' + element}
+                        id={element}
+                        value={priceArray[element - 1]}
                         type="number" InputProps={{ inputProps: { min: 0.01, step: 0.01 } }}
-                        id={"Price" + element}
+                        onChange={(newValue) => { 
+                            let newArr = [...priceArray];
+                            newArr[parseInt(newValue.target.id) - 1] = parseFloat(newValue.target.value);
+                            setPriceArray(newArr);
+                        }}
                     />
                     </Grid>
-                    <Grid  item xs={12} sm={4}>
+                    <Grid  item xs={12} sm={3}>
                     <TextField
                         required
                         fullWidth
-                        name={"Max " + element}
-                        label={'Max ' + element}
-                        InputProps={{ inputProps: { min: 1, step: 1 } }}
+                        name={'Min' + element}
+                        label={'Min ' + element}
+                        InputProps={{ inputProps: { min: 0, step: 1 } }}
                         type="number"
-                        id={"Max" + element}
+                        id={element}
+                        value={minArray[element - 1]}
+                        onChange={(newValue) => { 
+                            let newArr = [...minArray];
+                            newArr[parseInt(newValue.target.id) - 1] = parseInt(newValue.target.value);
+                            setMinArray(newArr);
+                        }}
+                    />
+                    </Grid>
+                    <Grid  item xs={12} sm={3}>
+                    <TextField
+                        required
+                        fullWidth
+                        name={"Max" + element}
+                        label={"Max " + element}
+                        InputProps={{ inputProps: { min: minArray[element - 1], step: 1 } }}
+                        type="number"
+                        id={element}
+                        value={maxArray[element - 1]}
+                        onChange={(newValue) => { 
+                            let newArr = [...maxArray];
+                            newArr[parseInt(newValue.target.label) - 1] = parseInt(newValue.target.value);
+                            setMaxArray(newArr);
+                        }}
                     />
                     </Grid>
                 </Grid>
@@ -123,11 +163,22 @@ export default function Orders(props) {
                 maximums = maximums.concat(";", data.get("Max" + element));
             }
         }
-        Axios.post("http://localhost:3001/api/managerCreateReservation", {
+        let minimums = "";
+        for (let element = 1; element <= numReservableItems; element++) {
+            if (minimums === "") {
+                minimums = minimums.concat(data.get("Min" + element));
+            } else {
+                minimums = minimums.concat(";", data.get("Min" + element));
+            }
+        }
+        Axios.post("http://localhost:3001/api/minMax", {
             businessName: data.get('business'),
-            reservationDate: currentDate,
-            reservable: ReservedItems,
-            price: prices
+            ReservedItems: ReservedItems,
+            prices: prices,
+            maxs: maximums,
+            mins: minimums,
+            numPeople: data.get("numPeople"),
+            numReservable: numReservableItems
         })
         navigate("/managerMain", {
             state: {

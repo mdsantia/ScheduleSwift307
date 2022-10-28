@@ -62,35 +62,44 @@ const CustomerRegister = () => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         if (error !== "Passwords do not match!") {
-            Axios.post("http://localhost:3001/api/managerRegister", {
-                firstName: data.get('firstName'),
-                lastName: data.get('lastName'),
-                username: data.get('username'),
-                email: data.get('email'),
-                business: data.get('business'),
-                password: data.get('password'),
-                confirmCode: uniqueConfirmCode
+            Axios.post("http://localhost:3001/api/insertFacilityData", {
+                businessName: data.get('business')
             }).then((result) => {
                 if (result.data.err) {
-                    alert("Username already taken!");
+                    alert("Business Name already taken!");
+                    return;
                 } else {
-                    navigate("/managerConfirmAccount", {
-                        state: {
-                            username: data.get('username'),
-                            password: data.get('password'),
-                            businessName: data.get('business'),
-                            email: data.get('email'),
-                            firstName: data.get('firstName'),
-                            confirmCode: uniqueConfirmCode,
-                        }
-                    });
-                    console.log({
+                    Axios.post("http://localhost:3001/api/managerRegister", {
                         firstName: data.get('firstName'),
                         lastName: data.get('lastName'),
                         username: data.get('username'),
                         email: data.get('email'),
+                        business: data.get('business'),
                         password: data.get('password'),
-                    });
+                        confirmCode: uniqueConfirmCode
+                    }).then((result) => {
+                        if (result.data.err) {
+                            alert("Username already taken!");
+                        } else {
+                            navigate("/managerConfirmAccount", {
+                                state: {
+                                    username: data.get('username'),
+                                    password: data.get('password'),
+                                    businessName: data.get('business'),
+                                    email: data.get('email'),
+                                    firstName: data.get('firstName'),
+                                    confirmCode: uniqueConfirmCode,
+                                }
+                            });
+                            console.log({
+                                firstName: data.get('firstName'),
+                                lastName: data.get('lastName'),
+                                username: data.get('username'),
+                                email: data.get('email'),
+                                password: data.get('password'),
+                            });
+                        }
+                    })
                 }
             })
         }

@@ -45,7 +45,53 @@ var transport = nodemailer.createTransport({
       pass: "txwgbslbjbxxojvb",
     },
 });
+
+app.post("/api/minMax", (req, res) => {
+    const businessName = req.body.businessName;
+    const reservableItems = req.body.reservableItems;
+    const prices = req.body.prices;
+    const maxs = req.body.maxs;
+    const mins = req.body.mins;
+    const numPeople = req.body.numPeople;
+    const numReservable = req.body.numReservable;
+    db.query(
+        "UPDATE facilityData SET reservableItem = ?, prices = ?, maxs = ?, mins = ?, numPeople = ?, numReservable = ?) WHERE businessName = ?",
+        [reservableItems, prices, maxs, mins, numPeople, numReservable, businessName],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            }
+            if (result) {
+                res.send({ result })
+            }
+        }
+    )
+})
   
+app.post('/api/facilityData', (req, res) => {
+    const facility = req.body.facility;
+    console.log(`Searching by username: ${facility}\n`);
+    db.query(
+        "SELECT * FROM facilityData WHERE businessName = ?",
+        [facility],
+        (err, result) => {
+            if (err) {
+                res.send({ err: err });
+            }
+            if (result.length > 0) {
+                console.log("Found a match \n");
+                console.log("Query Result: \n")
+                console.log(result);
+                res.send( result );
+            } else {
+                console.log("No match. \n");
+                res.send({ message: "The facility does not exist!" });
+            }
+        }
+    )
+})
+
 app.post('/api/activeEvents', (req, res) => {
     const username = req.body.username;
     console.log(`Searching by username: ${username}\n`);
