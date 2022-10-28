@@ -46,7 +46,30 @@ var transport = nodemailer.createTransport({
     },
 });
 
-app.post("/api/minMax", (req, res) => {
+app.post("/api/getMinMax", (req, res) => {
+    const businessName = req.body.businessName;
+    console.log(`Searching by facility data: ${businessName}\n`);
+    db.query(
+        "SELECT * FROM facilityData WHERE businessName = ?",
+        [businessName],
+        (err, result) => {
+            if (err) {
+                res.send({ err: err });
+            }
+            if (result.length > 0) {
+                console.log("Found a match \n");
+                console.log("Query Result: \n")
+                console.log(result);
+                res.send( { result : result } );
+            } else {
+                console.log("No match. \n");
+                res.send({ message: "The facility does not exist!" });
+            }
+        }
+    )
+})
+
+app.post("/api/updateMinMax", (req, res) => {
     const businessName = req.body.businessName;
     const reservableItems = req.body.reservableItems;
     const prices = req.body.prices;
@@ -55,7 +78,7 @@ app.post("/api/minMax", (req, res) => {
     const numPeople = req.body.numPeople;
     const numReservable = req.body.numReservable;
     db.query(
-        "UPDATE facilityData SET reservableItem = ?, prices = ?, maxs = ?, mins = ?, numPeople = ?, numReservable = ?) WHERE businessName = ?",
+        "UPDATE facilityData SET `reservableItem` = ?, `prices` = ?, `maxs` = ?, `mins` = ?, `numPeople` = ?, `numReservable` = ? WHERE businessName = ?",
         [reservableItems, prices, maxs, mins, numPeople, numReservable, businessName],
         (err, result) => {
             if (err) {

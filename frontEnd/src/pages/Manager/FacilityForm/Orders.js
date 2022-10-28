@@ -30,11 +30,12 @@ function preventDefault(event) {
 
 export default function Orders(props) {
     const box = [];
-    const [numReservableItems, setNumReservableItems] = useState(1);
+    const [numReservableItems, setNumReservableItems] = useState([]);
     const [nameArray, setNameArray] = useState([]);
     const [minArray, setMinArray] = useState([]);
     const [maxArray, setMaxArray] = useState([]);
     const [priceArray, setPriceArray] = useState([]);
+    const [numPeople, setNumPeople] = useState([]);
     const businessName = props.businessName;
     const year = new Date().getFullYear();
     const month = new Date().getMonth() + 1;
@@ -43,9 +44,45 @@ export default function Orders(props) {
     const formattedDate = `${year}-${month}-${day}`;
     const [currentDate, setCurrentDate] = useState(Dayjs | null);
     useEffect(() => {
-        setMinArray([1,2,3,4,5,6,7,8,9,10]);
+        insertValues();
         setCurrentDate(formattedDate);
     }, [])
+
+    function insertValues() {
+        Axios.post("http://localhost:3001/api/getMinMax", {
+            businessName: props.businessName
+        }).then((result) => {
+            if (result.data.err) {
+                alert("Facility data missing!");
+            } else {
+                // UPDATE NUM OF RESERVABLES
+                if (!result.data.result[0].numReservable) {
+                    setNumReservableItems([]);
+                } else {
+                    setNumReservableItems(parseInt(result.data.result[0].numReservable));
+
+                    // UPDATE NUM OF RESERVABLES
+                    setNumPeople(result.data.result[0].numPeople);
+
+                    // UPDATE NAMES
+                    let ReservedItems = String(result.data.result[0].reservableItem).split(";");
+                    setNameArray(ReservedItems);
+                    
+                    // UPDATE PRICES
+                    let prices = String(result.data.result[0].prices).split(";");
+                    setPriceArray(prices);
+
+                    // UPDATE MAXIMUMS
+                    let maxs = String(result.data.result[0].maxs).split(";");
+                    setMaxArray(maxs);
+
+                    // UPDATE MINIMUMS
+                    let mins = String(result.data.result[0].mins).split(";");
+                    setMinArray(mins);
+                }
+            }
+        })
+    }
 
     function makeBox() {
         for (let element = 1; element <= numReservableItems; element++) {
@@ -125,6 +162,7 @@ export default function Orders(props) {
 
     const add_rem = (event) => {
         event.preventDefault();
+        console.log(numReservableItems);
         if (event.currentTarget.id === 'Add') {
             if (numReservableItems <= 10) {
                 setNumReservableItems(numReservableItems + 1);
@@ -171,16 +209,17 @@ export default function Orders(props) {
                 minimums = minimums.concat(";", data.get("Min" + element));
             }
         }
-        Axios.post("http://localhost:3001/api/minMax", {
+        Axios.post("http://localhost:3001/api/updateMinMax", {
             businessName: data.get('business'),
-            ReservedItems: ReservedItems,
+            reservableItems: ReservedItems,
             prices: prices,
             maxs: maximums,
             mins: minimums,
             numPeople: data.get("numPeople"),
             numReservable: numReservableItems
         })
-        navigate("/managerMain", {
+        alert("Your changes have been saved!");
+        navigate("/FacilityForm", {
             state: {
                 username: props.username,
                 password: props.password,
@@ -265,6 +304,10 @@ export default function Orders(props) {
                                     type="number"
                                     id="numPeople"
                                     InputProps={{ inputProps: { min: 1, step: 1 } }}
+                                    value={numPeople}
+                                    onChange={(newValue) => { 
+                                        setNumPeople(parseInt(newValue.target.value));
+                                    }}
                                 />
                             </Grid>
                         {/* And here I render the box array */}
