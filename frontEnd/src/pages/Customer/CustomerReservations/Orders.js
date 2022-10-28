@@ -15,6 +15,7 @@ export default function Orders(props) {
     const { state } = useLocation();
     const [ numEntries, setNumEntries ] = useState([]);
     const [rows, setRows] = useState([]);
+    const [filled, setFilled] = useState(null);
 
     // Generate Order Data
     function createData(id, date, time, name, paymentMethod, amount) {
@@ -29,13 +30,12 @@ export default function Orders(props) {
         Axios.post("http://localhost:3001/api/activeEvents", {
             username : state.username,
         }).then((result) => {
-            if (result.data.message) {
-                alert(`There are no more associated active reservations to your account.`);
-            } else {
+            if (!result.data.message) {
+                let row = [...rows];
                 for (let entryNum = 0; entryNum < 5; entryNum++) {
-                    rows.push(createData(result.data[entryNum]["ID"], result.data[entryNum]["reservationDate"],
+                    row.push(createData(result.data[entryNum]["ID"], result.data[entryNum]["reservationDate"],
                     result.data[entryNum]["startTime"], result.data[entryNum]["businessName"], 'Yes', result.data[entryNum]["price"]));
-                    setRows(rows);
+                    setRows(row);
                     setNumEntries(entryNum+1);
                 }
             }

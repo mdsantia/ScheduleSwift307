@@ -30,61 +30,59 @@ export default function Orders() {
     const [startTime, setStartTime] = useState(null);
     const [endTime, setEndTime] = useState(null);
     const navigate = useNavigate();
-    const [reservationDetails, setReservationDetails] = useState(null);
-    const [reservableItems, setReservableItems] = useState(null);
-    const box = [];
+    const [numFacilities, setNumFacilities] = useState(null);
+    const [rows, setRows] = useState([]);
 
-    function makeBox() {
-        for (const element in reservableItems) {
-            // Then the code pushes each time it loops to the empty array I initiated.
-            box.push(
-                <Grid>
-                    <TextField
-                        required
-                        fullWidth
-                        name={reservableItems[element]}
-                        label={reservableItems[element]}
-                        type={reservableItems[element]}
-                        id={reservableItems[element]}
-                        InputProps={{ inputProps: { min: 0, step: 1 } }}
-                    />
-                </Grid>
-            );
-            }
+    // Generate Order Data
+    function createData(id, name) {
+        return { id, name };
     }
 
-    function getReservationDetails() {
-        Axios.post("http://localhost:3001/api/customerMakeReservation", {
-            reservationID: state.reservationID,
-            username: state.username
-        }).then((result) => {
-            setReservationDetails(result.data.result[0]);
-            setReservableItems(result.data.result[0].reservableItem.split(";"));
+    function startFill() {
+        Axios.post("http://localhost:3001/api/allFacilityData").then((result) => {
+            if (result.data.err) {
+                alert("Facility data missing!");
+            } else {
+                // UPDATE ARRAY WITH ALL THE FACILITY DETAILS
+                let response = result.data.result
+                if (response.length > 0) {
+                    if (!numFacilities) {
+                        let row = [...rows];
+                        for (let entryNum = 0; entryNum < 5; entryNum++) {
+                            row.push(createData(response[entryNum]["ID"],
+                            response[entryNum]["businessName"]));
+                            setRows(row);
+                            setNumFacilities(numFacilities+1);
+                        }
+                    }
+                }
+            }
         })
     }
     useEffect(() => {
-        getReservationDetails();
+        startFill();
     }, [])
+
+    const addRow = (e) => {
+        e.preventDefault();
+        Axios.post("http://localhost:3001/api/allFacilityData").then((result) => {
+            if (result.data.message) {
+                alert(`There are no more associated active reservations to your account.`);
+            } else {
+                let response = result.data.result
+                for (let entryNum = 0 + numFacilities; entryNum < 5 + numFacilities; entryNum++) {
+                    rows.push(createData(response[entryNum]["ID"],
+                        response[entryNum]["businessName"]));
+                    setRows(rows);
+                    setNumFacilities(numFacilities+1);
+                }
+            }
+        })
+    }
+
     function handleSubmit(event) {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        let numReservedItems = "";
-        for (const element in reservableItems) {
-            if (numReservedItems === "") {
-                numReservedItems = numReservedItems.concat(data.get(reservableItems[element]));
-            } else {
-                numReservedItems = numReservedItems.concat(";", data.get(reservableItems[element]));
-            }
-        }
-        Axios.post("http://localhost:3001/api/customerConfirmReservation", {
-            reservationID: state.reservationID,
-            startTime: startTime,
-            endTime: endTime,
-            reservedBy: state.username,
-            numPeople: data.get('numPeople'),
-            numReservable: numReservedItems
-        }).then((result) => {
-        })
         navigate("/customerReserve", {
             state: {
                 username: state.username,
@@ -92,141 +90,32 @@ export default function Orders() {
             }
         })
     }
-    if (reservationDetails) {
-        console.log(reservationDetails[0])
+    if (rows) {
+        console.log(rows)
         return (
             <React.Fragment>
-                <Box
-                    sx={{
-                        marginTop: 8,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                    }}
-                >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                        <LockOutlinedIcon />
-                    </Avatar>
-                    <Typography component="h1" variant="h5">
-                        Make Reservation
-                    </Typography>
-                    <Box component="form" validate="true" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    id="business"
-                                    label="Business Name"
-                                    fullWidth
-                                    defaultValue={reservationDetails.businessName}
-                                    InputProps={{
-                                        readOnly: true,
-                                    }}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    required
-                                    id="reservationDate"
-                                    label="Reservation Date"
-                                    name="reservationDate"
-                                    defaultValue={reservationDetails.reservationDate}
-                                    InputProps={{
-                                        readOnly: true,
-                                    }}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <TimePicker
-                                        label="Start Time"
-                                        value={startTime}
-                                        fullWidth
-                                        onChange={(newValue) => { setStartTime(newValue) }}
-                                        renderInput={(params) => <TextField {...params} />}
-                                    />
-                                </LocalizationProvider>
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <TimePicker
-                                        label="End Time"
-                                        value={endTime}
-                                        fullWidth
-                                        onChange={(newValue) => { setEndTime(newValue) }}
-                                        renderInput={(params) => <TextField {...params} />}
-                                    />
-                                </LocalizationProvider>
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    name="reservedBy"
-                                    label="Reserved By"
-                                    type="username"
-                                    defaultValue={state.username}
-                                    InputProps={{
-                                        readOnly: true,
-                                    }}
-                                    id="reservedBy"
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    name="numPeople"
-                                    label="Party Size"
-                                    type="number"
-                                    id="numPeople"
-                                    InputProps={{ inputProps: { min: 0, step: 1 } }}
-                                />
-                            </Grid>
-                            {/* And here I render the box array */}
-                            {/* There is going to be a max of 10 items */}
-                            {makeBox()}
-                            <Grid item xs={12} sm={6}>
-                                {box[0]}
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                {box[1]}
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                {box[2]}
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                {box[3]}
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                {box[4]}
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                {box[5]}
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                {box[6]}
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                {box[7]}
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                {box[8]}
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                {box[9]}
-                            </Grid>
-                        </Grid>
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
-                        >
-                            Make Reservation
-                        </Button>
-                    </Box>
-                </Box>
+                <Title>Customer Reservations</Title>
+                <Table size="small">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell align='left'>Business Name</TableCell>
+                            <TableCell align='center'>Business Dashboard</TableCell>
+                            <TableCell align='right'>Business Reservation Form</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {rows.map((row) => (
+                            <TableRow key={row.id}>
+                                <TableCell  align="left">{row.name}</TableCell>
+                                <TableCell align="center"><Button name = {"Dash"} id={row.id}>See {row.name}'s Home Page</Button></TableCell>
+                                <TableCell align="right"><Button name = {"Make"} id={row.id}>Make Reservation</Button></TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                <Link color="primary" href="#" onClick={addRow} sx={{ mt: 3 }}>
+                    See more facilities
+                </Link>
             </React.Fragment>
         );
     } else {

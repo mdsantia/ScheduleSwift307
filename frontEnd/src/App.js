@@ -29,6 +29,7 @@ import EmployeeForgotPassword from './pages/Employee/employeeForgotPassword';
 import ManagerForgotPassword from './pages/Manager/managerForgotPassword';
 import CustomerConfirmAccount from './pages/Customer/customerConfirmAccount';
 import ManagerConfirmAccount from './pages/Manager/managerConfirmAccount';
+import CustomerSubmit from './pages/Customer/CustomerSubmit/Dashboard';
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
           <Route path="/managerConfirmAccount" element={<ManagerConfirmAccount />} />
           <Route path="/employeeRegister" element={<EmployeeRegister />} />
           <Route path="/customerMain" element={<CustomerMain />} />
+          <Route path="/customerSubmit" element={<CustomerSubmit />} />
           <Route path="/customerReservations" element={<CustomerReservations />} />
           <Route path="/customerReserve" element={<CustomerReserve />} />
           <Route path="/customerAccount" element={<CustomerAccount />} />

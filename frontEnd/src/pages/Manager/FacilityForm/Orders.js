@@ -49,7 +49,7 @@ export default function Orders(props) {
     }, [])
 
     function insertValues() {
-        Axios.post("http://localhost:3001/api/getMinMax", {
+        Axios.post("http://localhost:3001/api/getFacilitysData", {
             businessName: props.businessName
         }).then((result) => {
             if (result.data.err) {

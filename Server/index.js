@@ -46,12 +46,10 @@ var transport = nodemailer.createTransport({
     },
 });
 
-app.post("/api/getMinMax", (req, res) => {
-    const businessName = req.body.businessName;
-    console.log(`Searching by facility data: ${businessName}\n`);
+app.post('/api/allFacilityData', (req, res) => {
+    console.log(`Searching by all the facilities\n`);
     db.query(
-        "SELECT * FROM facilityData WHERE businessName = ?",
-        [businessName],
+        "SELECT * FROM facilityData",
         (err, result) => {
             if (err) {
                 res.send({ err: err });
@@ -63,7 +61,7 @@ app.post("/api/getMinMax", (req, res) => {
                 res.send( { result : result } );
             } else {
                 console.log("No match. \n");
-                res.send({ message: "The facility does not exist!" });
+                res.send({ message: "No facility has been created!" });
             }
         }
     )
@@ -92,12 +90,12 @@ app.post("/api/updateMinMax", (req, res) => {
     )
 })
   
-app.post('/api/facilityData', (req, res) => {
-    const facility = req.body.facility;
-    console.log(`Searching by username: ${facility}\n`);
+app.post('/api/getFacilitysData', (req, res) => {
+    const businessName = req.body.businessName;
+    console.log(`Searching by facility data: ${businessName}\n`);
     db.query(
         "SELECT * FROM facilityData WHERE businessName = ?",
-        [facility],
+        [businessName],
         (err, result) => {
             if (err) {
                 res.send({ err: err });
@@ -106,7 +104,7 @@ app.post('/api/facilityData', (req, res) => {
                 console.log("Found a match \n");
                 console.log("Query Result: \n")
                 console.log(result);
-                res.send( result );
+                res.send( { result : result } );
             } else {
                 console.log("No match. \n");
                 res.send({ message: "The facility does not exist!" });

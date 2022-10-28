@@ -36,7 +36,7 @@ export default function Orders(props) {
         const username = props.username;
         const password = props.password;
         const reservationID = resID;
-        navigate("/customerMain", {
+        navigate("/customerSubmit", {
             state: {
                 username: username,
                 password: password,
