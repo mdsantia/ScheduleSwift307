@@ -51,7 +51,7 @@ export default function SignIn() {
     };
 
     const employeeSubmit = () => {
-        navigate("./employeeRegister", {
+        navigate("./employeeSignIn", {
             state: {
                 userType: "employee"
             }

@@ -41,8 +41,8 @@ var transport = nodemailer.createTransport({
     port: 465,
     secure: true, // true for 465, false for other ports
     auth: {
-      user: "scheduleswift@gmail.com",
-      pass: "txwgbslbjbxxojvb",
+        user: "scheduleswift@gmail.com",
+        pass: "txwgbslbjbxxojvb",
     },
 });
 
@@ -58,7 +58,7 @@ app.post('/api/allFacilityData', (req, res) => {
                 console.log("Found a match \n");
                 console.log("Query Result: \n")
                 console.log(result);
-                res.send( { result : result } );
+                res.send({ result: result });
             } else {
                 console.log("No match. \n");
                 res.send({ message: "No facility has been created!" });
@@ -89,7 +89,7 @@ app.post("/api/updateMinMax", (req, res) => {
         }
     )
 })
-  
+
 app.post('/api/getFacilitysData', (req, res) => {
     const businessName = req.body.businessName;
     console.log(`Searching by facility data: ${businessName}\n`);
@@ -104,7 +104,7 @@ app.post('/api/getFacilitysData', (req, res) => {
                 console.log("Found a match \n");
                 console.log("Query Result: \n")
                 console.log(result);
-                res.send( { result : result } );
+                res.send({ result: result });
             } else {
                 console.log("No match. \n");
                 res.send({ message: "The facility does not exist!" });
@@ -132,7 +132,7 @@ app.post('/api/activeEvents', (req, res) => {
                 console.log("Found a match \n");
                 console.log("Query Result: \n")
                 console.log(result);
-                res.send( result );
+                res.send(result);
             } else {
                 console.log("No match. \n");
                 res.send({ message: "Events made by that user does not exist!" });
@@ -146,11 +146,11 @@ app.post("/api/sendConfirmEmail", (req, res) => {
     const emailAddress = req.body.email;
     const confirmCode = req.body.confirmCode;
     const mailOptions = {
-        from: 
-            {
-                name: 'no-reply@scheduleswift.com',
-                address: 'scheduleswift@gmail.com'
-            },
+        from:
+        {
+            name: 'no-reply@scheduleswift.com',
+            address: 'scheduleswift@gmail.com'
+        },
         to: emailAddress,
         subject: "Confirm Your Account",
         html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
@@ -158,8 +158,8 @@ app.post("/api/sendConfirmEmail", (req, res) => {
             + "<h4>Confirmation Code:</h4>"
             + "<p><center><font size=" + "+3" + "><b>" + confirmCode + "</b></font></center></p></body></html>"
     };
-    transport.sendMail(mailOptions,(err,res)=>{
-        if(err){
+    transport.sendMail(mailOptions, (err, res) => {
+        if (err) {
             console.log("Unable to resend email.");
             console.log(err);
         }
@@ -196,14 +196,14 @@ app.post("/api/customerRegister", (req, res) => {
     const sqlInsert = "INSERT INTO userData (firstName, lastName, username, emailAddress, password, creationDate, confirmCode) VALUES (?,?,?,?,?,?,?)"
     db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword, registerDate, confirmCode], (err, result) => {
         console.log(err);
-        res.send( {err : err} );
+        res.send({ err: err });
     });
     const mailOptions = {
-        from:  
-            {
+        from:
+        {
             name: 'no-reply@scheduleswift.com',
             address: 'scheduleswift@gmail.com'
-            },
+        },
         to: emailAddress,
         subject: "Confirm Your Account",
         html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
@@ -211,8 +211,8 @@ app.post("/api/customerRegister", (req, res) => {
             + "<h4>Confirmation Code:</h4>"
             + "<p><center><font size=" + "+3" + "><b>" + confirmCode + "</b></font></center></p></body></html>"
     };
-    transport.sendMail(mailOptions,(err,res)=>{
-        if(err){
+    transport.sendMail(mailOptions, (err, res) => {
+        if (err) {
             console.log("Unable to send email.");
             console.log(err);
         }
@@ -232,7 +232,7 @@ app.post("/api/employeeRegister", (req, res) => {
     const sqlInsert = "INSERT INTO employeeData (firstName, lastName, username, emailAddress, password, businessName) VALUES (?,?,?,?,?,?)"
     db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword, businessName], (err, result) => {
         console.log(err);
-        res.send( {err : err} );
+        res.send({ err: err });
     })
 })
 
@@ -263,14 +263,14 @@ app.post("/api/managerRegister", (req, res) => {
     const sqlInsert = "INSERT INTO managerData (firstName, lastName, username, emailAddress, password, businessName, confirmCode) VALUES (?,?,?,?,?,?,?)"
     db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword, businessName, confirmCode], (err, result) => {
         console.log(err);
-        res.send( {err : err} );
+        res.send({ err: err });
     })
     const mailOptions = {
-        from:  
-            {
+        from:
+        {
             name: 'no-reply@scheduleswift.com',
             address: 'scheduleswift@gmail.com'
-            },
+        },
         to: emailAddress,
         subject: "Confirm Your Account",
         html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
@@ -278,8 +278,8 @@ app.post("/api/managerRegister", (req, res) => {
             + "<h4>Confirmation Code:</h4>"
             + "<p><center><font size=" + "+3" + "><b>" + confirmCode + "</b></font></center></p></body></html>"
     };
-    transport.sendMail(mailOptions,(err,res)=>{
-        if(err){
+    transport.sendMail(mailOptions, (err, res) => {
+        if (err) {
             console.log("Unable to send email.");
             console.log(err);
         }
@@ -328,6 +328,7 @@ app.post("/api/employeeSignIn", (req, res) => {
                 res.send({ err: err })
             }
             if (result.length > 0) {
+                console.log(result);
                 res.send({ result });
             } else {
                 res.send({ message: "Wrong username/password combination" });

@@ -34,7 +34,7 @@ const theme = createTheme();
 export default function EmployeeSignIn() {
     const [loginStatus, setLoginStatus] = useState('');
     const navigate = useNavigate();
-
+    const [businessName, setBusinessName] = useState('');
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -45,10 +45,12 @@ export default function EmployeeSignIn() {
             if (result.data.message) {
                 setLoginStatus(result.data.message);
             } else {
+                setBusinessName(result.data.result[0].businessName);
                 navigate("/employeeMain", {
                     state: {
                         username: data.get('username'),
-                        password: data.get('password')
+                        password: data.get('password'),
+                        businessName: result.data.result[0].businessName
                     }
                 });
             }
