@@ -19,7 +19,6 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { mainListItems } from './listItems';
 import Orders from './Orders';
-import Notes from './notes';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -231,14 +230,13 @@ function DashboardContent() {
                             {/* Recent Orders */}
                             <Grid item xs={12}>
                                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                                    <Notes />
                                 </Paper>
                             </Grid>
                         </Grid><Grid container spacing={3}>
                             {/* Notes */}
                             <Grid item xs={12}>
                                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                                    <Orders />
+                                    <Orders username={state.username} password={state.password} businessName={state.businessName} />
                                 </Paper>
                             </Grid>
                         </Grid>

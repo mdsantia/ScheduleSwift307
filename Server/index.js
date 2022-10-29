@@ -648,6 +648,62 @@ app.post("/api/customerConfirmReservation", (req, res) => {
     )
 })
 
+app.post("/api/addBusinessNotes", (req, res) => {
+    const businessName = req.body.businessName;
+    const noteSubject = req.body.noteSubject;
+    const noteBody = req.body.noteBody;
+    const year = new Date().getFullYear();
+    const month = new Date().getMonth() + 1;
+    const day = new Date().getDate();
+    const formattedDate = `${month}-${day}-${year}`;
+    db.query(
+        "INSERT INTO managerNotes (date, businessName, noteSubject, noteBody) VALUES (?,?,?,?)",
+        [formattedDate, businessName, noteSubject, noteBody],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result })
+            }
+        }
+    )
+})
+app.post("/api/getBusinessNotes", (req, res) => {
+    const businessName = req.body.businessName
+    db.query(
+        "SELECT * FROM managerNotes WHERE businessName = ?",
+        [businessName],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            }
+            if (result) {
+                console.log(result)
+                res.send({ result: result })
+            }
+        }
+    )
+})
+app.post("/api/managerDeleteNote", (req, res) => {
+    const noteID = req.body.noteID;
+    db.query(
+        "DELETE FROM managerNotes WHERE ID = ?",
+        [noteID],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log(result)
+                res.send({ result: result })
+            }
+        }
+    )
+})
+
 
 
 

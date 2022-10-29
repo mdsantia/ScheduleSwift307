@@ -32,7 +32,7 @@ export default function Orders(props) {
         Axios.post("http://localhost:3001/api/managerDeleteReservation", {
             reservationID: resID
         }).then((result) => {
-            if (result.data.result.affectedRows == 0) {
+            if (result.data.result.affectedRows === 0) {
                 setError("No Reservation with that ID exists")
             } else {
                 setError("");

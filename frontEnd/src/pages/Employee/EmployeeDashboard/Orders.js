@@ -5,82 +5,78 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import AddIcon from '@mui/icons-material/Add';
 import Title from './Title';
+import { Box } from '@mui/system';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Axios from 'axios';
+import { Icon, IconButton, Collapse, Typography, Tab } from '@mui/material';
+import { ClassNames } from '@emotion/react';
+export default function Orders(props) {
 
-// Generate Order Data
-function createData(id, date, name, shipTo, paymentMethod, amount) {
-    return { id, date, name, shipTo, paymentMethod, amount };
-}
+    const navigate = useNavigate();
+    const [notes, setNotes] = useState([]);
+    const [noteSubject, setNoteSubject] = useState('');
+    const [noteBody, setNoteBody] = useState('');
+    const [open, setOpen] = useState(false);
+    function getNotes(businessName) {
+        Axios.post("http://localhost:3001/api/getBusinessNotes", {
+            businessName: props.businessName
+        }).then((result) => {
+            const allNotes = result.data.result;
+            console.log(allNotes);
+            setNotes(allNotes);
 
-const rows = [
-    createData(
-        0,
-        '16 Mar, 2019',
-        'Elvis Presley',
-        'Tupelo, MS',
-        'VISA ⠀•••• 3719',
-        312.44,
-    ),
-    createData(
-        1,
-        '16 Mar, 2019',
-        'Paul McCartney',
-        'London, UK',
-        'VISA ⠀•••• 2574',
-        866.99,
-    ),
-    createData(2, '16 Mar, 2019', 'Tom Scholz', 'Boston, MA', 'MC ⠀•••• 1253', 100.81),
-    createData(
-        3,
-        '16 Mar, 2019',
-        'Michael Jackson',
-        'Gary, IN',
-        'AMEX ⠀•••• 2000',
-        654.39,
-    ),
-    createData(
-        4,
-        '15 Mar, 2019',
-        'Bruce Springsteen',
-        'Long Branch, NJ',
-        'VISA ⠀•••• 5919',
-        212.79,
-    ),
-];
+        })
+    }
+    useEffect(() => {
+        getNotes(props.businessName);
+    }, []);
+    if (notes.length > 0) {
+        return (
+            <React.Fragment>
+                <Title>{props.businessName}'s Notes from Management</Title>
+                <Box mb={10}>
+                    <Table size="small" sx={{
+                        "& th": {
+                            color: "black",
+                            fontWeight: "bold",
+                            backgroundColor: "rgba(200, 199, 197, 0.8)",
+                            borderStyle: "solid",
+                            borderColor: "black",
+                            borderRightStyle: "solid",
+                            borgerRightColor: "black",
+                            display: "tableRowGroup"
+                        }
+                    }}>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell component="th" scope="row">
+                                    Subject
+                                </TableCell>
+                                <TableCell align="center">Details</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        {notes.map((note, index) => (
+                            <TableBody>
+                                <TableRow key={note.ID} >
+                                    <TableCell align="left" style={{ borderRight: '0.1em solid black' }}>{note.noteSubject}</TableCell>
+                                    <TableCell align="center">{note.noteBody}</TableCell>
+                                </TableRow>
+                            </TableBody>
 
-function preventDefault(event) {
-    event.preventDefault();
-}
-
-export default function Orders() {
-    return (
-        <React.Fragment>
-            <Title>Current Active Reservations</Title>
-            <Table size="small">
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Date</TableCell>
-                        <TableCell>Organizer</TableCell>
-                        <TableCell>Business Name</TableCell>
-                        <TableCell>Payment Method</TableCell>
-                        <TableCell align="right">Price</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {rows.map((row) => (
-                        <TableRow key={row.id}>
-                            <TableCell>{row.date}</TableCell>
-                            <TableCell>{row.name}</TableCell>
-                            <TableCell>{row.shipTo}</TableCell>
-                            <TableCell>{row.paymentMethod}</TableCell>
-                            <TableCell align="right">{`$${row.amount}`}</TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-            <Link color="primary" href="#" onClick={preventDefault} sx={{ mt: 3 }}>
-                See more Reservations
-            </Link>
-        </React.Fragment>
-    );
+                        ))}
+                    </Table>
+                </Box>
+            </React.Fragment>
+        );
+    } else {
+        return (
+            <React.Fragment>
+                <Title>{props.businessName}'s Daily Notes</Title>
+                <p>No notes at this time</p>
+            </React.Fragment>
+        )
+    }
 }
