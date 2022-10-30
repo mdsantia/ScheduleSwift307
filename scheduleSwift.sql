@@ -21,7 +21,8 @@ CREATE TABLE `userData` (
   `confirmCode` varchar(200) NOT NULL,
   `active` boolean NOT NULL DEFAULT 0,
   UNIQUE KEY `username_UNIQUE` (`username`),
-  PRIMARY KEY (`ID`)
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `confirmCode_UNIQUE` (`confirmCode`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `managerData` (
@@ -35,7 +36,8 @@ CREATE TABLE `managerData` (
   `confirmCode` varchar(200) NOT NULL,
   `active` boolean NOT NULL DEFAULT 0,
   PRIMARY KEY (`ID`),
-  UNIQUE KEY `username_UNIQUE` (`username`)
+  UNIQUE KEY `username_UNIQUE` (`username`),
+  UNIQUE KEY `confirmCode_UNIQUE` (`confirmCode`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `reservations` (
