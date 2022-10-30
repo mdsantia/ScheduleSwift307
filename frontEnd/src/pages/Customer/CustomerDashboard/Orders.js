@@ -63,6 +63,21 @@ export default function Orders() {
         startFill();
     }, [])
 
+    const open = (e) => {
+        e.preventDefault();
+        if (e.currentTarget.name === 'Dash') {
+            alert(`${e.currentTarget.id}'s HOME PAGE`);
+        } else {
+            navigate("/requestForm", {
+                state: {
+                    username: state.username,
+                    password: state.password,
+                    businessName: e.currentTarget.id
+                }
+            })
+        }
+    }
+    
     const addRow = (e) => {
         e.preventDefault();
         Axios.post("http://localhost:3001/api/allFacilityData").then((result) => {
@@ -107,8 +122,10 @@ export default function Orders() {
                         {rows.map((row) => (
                             <TableRow key={row.id}>
                                 <TableCell  align="left">{row.name}</TableCell>
-                                <TableCell align="center"><Button name = {"Dash"} id={row.id}>See {row.name}'s Home Page</Button></TableCell>
-                                <TableCell align="right"><Button name = {"Make"} id={row.id}>Make Reservation</Button></TableCell>
+                                <TableCell align="center"><Button name = {"Dash"} id={row.name} onClick={open}>
+                                    See {row.name}'s Home Page</Button></TableCell>
+                                <TableCell align="right"><Button name = {"Make"} id={row.name} onClick={open}>
+                                    Make Reservation</Button></TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

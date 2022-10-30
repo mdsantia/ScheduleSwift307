@@ -19,6 +19,8 @@ import ManagerCreateReservation from './pages/Manager/ManagerCreateReservation/D
 import FacilityReservations from './pages/Manager/FacilityReservations/Dashboard';
 import ManagerNotes from './pages/Manager/ManagerNotes/Dashboard';
 import CustomerSignIn from './pages/Customer/customerSignIn';
+import CustomerSubmit from './pages/Customer/CustomerSubmit/Dashboard';
+import RequestForm from './pages/Customer/RequestForm/Dashboard';
 import EmployeeSignIn from './pages/Employee/employeeSignIn';
 import ManagerSignIn from './pages/Manager/managerSignIn';
 import CustomerVerify from './pages/Customer/customerVerify';
@@ -29,7 +31,6 @@ import EmployeeForgotPassword from './pages/Employee/employeeForgotPassword';
 import ManagerForgotPassword from './pages/Manager/managerForgotPassword';
 import CustomerConfirmAccount from './pages/Customer/customerConfirmAccount';
 import ManagerConfirmAccount from './pages/Manager/managerConfirmAccount';
-import CustomerSubmit from './pages/Customer/CustomerSubmit/Dashboard';
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
           <Route path="/customerMain" element={<CustomerMain />} />
           <Route path="/customerSubmit" element={<CustomerSubmit />} />
           <Route path="/customerReservations" element={<CustomerReservations />} />
+          <Route path="/requestForm" element={<RequestForm />} />
           <Route path="/customerReserve" element={<CustomerReserve />} />
           <Route path="/customerAccount" element={<CustomerAccount />} />
           <Route path="/customerStats" element={<CustomerStats />} />

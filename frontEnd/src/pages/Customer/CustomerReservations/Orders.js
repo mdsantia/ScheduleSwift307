@@ -16,6 +16,7 @@ export default function Orders(props) {
     const [ numEntries, setNumEntries ] = useState([]);
     const [rows, setRows] = useState([]);
     const [filled, setFilled] = useState(null);
+    const navigate = useNavigate();
 
     // Generate Order Data
     function createData(id, date, time, name, paymentMethod, amount) {
@@ -38,6 +39,17 @@ export default function Orders(props) {
                     setRows(row);
                     setNumEntries(entryNum+1);
                 }
+            }
+        })
+    }
+
+    const edit = (e) => {
+        navigate("/requestForm", {
+            state: {
+                username: state.username,
+                password: state.password,
+                businessName: e.currentTarget.name,
+                ID: e.currentTarget.id
             }
         })
     }
@@ -82,7 +94,8 @@ export default function Orders(props) {
                             <TableCell>{row.name}</TableCell>
                             <TableCell>{row.paymentMethod}</TableCell>
                             <TableCell>{`$${row.amount}`}</TableCell>
-                            <TableCell align="right"><Button id={"Edit" + row.id}>Edit</Button></TableCell>
+                            <TableCell align="right"><Button name={row.name} id={row.id} onClick={edit}>
+                                Edit</Button></TableCell>
                         </TableRow>
                     ))}
                 </TableBody>

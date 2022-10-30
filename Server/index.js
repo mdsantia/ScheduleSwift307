@@ -529,6 +529,83 @@ app.post("/api/memberSince", (req, res) => {
     )
 })
 
+app.post("/api/getReservation", (req, res) => {
+    const ID = req.body.ID;
+    db.query(
+        "SELECT * FROM reservations WHERE ID = ?",
+        [ID],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result : result })
+            }
+        }
+    )
+})
+
+app.post("/api/updateReservation", (req, res) => {
+    const ID = req.body.ID;
+    const businessName = req.body.businessName;
+    const isReserved = "Yes";
+    let reservationDate = req.body.reservationDate;
+    let reservationSubstring = reservationDate.substring(0, 10);
+    const reservable = req.body.reservable;
+    const price = req.body.price;
+    const reservedBy = req.body.reservedBy;
+    const startTime = req.body.startTime;
+    const endTime = req.body.endTime;
+    const numPeople = req.body.numPeople;
+    const numReservable = req.body.numReservable;
+    db.query(
+        "UPDATE reservations SET numReservable = ?, startTime = ?, endTime = ?, reservedBy = ?, \
+            numPeople = ?, businessName = ?, reservationDate = ?, reservableItem = ?, price = ?, isReserved = ? WHERE ID = ?",
+        [numReservable, startTime, endTime, reservedBy, numPeople, businessName, reservationSubstring, reservable, price, isReserved, ID],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            }
+            if (result) {
+                console.log(result);
+                res.send( { id: result.insertId } )
+            }
+        }
+    )
+})
+
+app.post("/api/createReservation", (req, res) => {
+    const businessName = req.body.businessName;
+    const isReserved = "Yes";
+    let reservationDate = req.body.reservationDate;
+    let reservationSubstring = reservationDate.substring(0, 10);
+    const reservable = req.body.reservable;
+    const price = req.body.price;
+    const reservedBy = req.body.reservedBy;
+    const startTime = req.body.startTime;
+    const endTime = req.body.endTime;
+    const numPeople = req.body.numPeople;
+    const numReservable = req.body.numReservable;
+    db.query(
+        "INSERT INTO reservations (numReservable, startTime, endTime, reservedBy, \
+            numPeople, businessName, reservationDate, reservableItem, price, isReserved) VALUES (?,?,?,?,?,?,?,?,?,?)",
+        [numReservable, startTime, endTime, reservedBy, numPeople, businessName, reservationSubstring, reservable, price, isReserved],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            }
+            if (result) {
+                console.log(result);
+                res.send( { id: result.insertId } )
+            }
+        }
+    )
+})
+
 app.post("/api/managerCreateReservation", (req, res) => {
     const businessName = req.body.businessName;
     const isReserved = "No";
