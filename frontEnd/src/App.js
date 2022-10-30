@@ -27,6 +27,7 @@ import CustomerVerify from './pages/Customer/customerVerify';
 import EmployeeVerify from './pages/Employee/employeeVerify';
 import ManagerVerify from './pages/Manager/managerVerify';
 import CustomerForgotPassword from './pages/Customer/customerForgotPassword';
+import FacilityHomepage from './pages/Customer/FacilityHomepage/Dashboard';
 import EmployeeForgotPassword from './pages/Employee/employeeForgotPassword';
 import ManagerForgotPassword from './pages/Manager/managerForgotPassword';
 import CustomerConfirmAccount from './pages/Customer/customerConfirmAccount';
@@ -48,6 +49,7 @@ function App() {
           <Route path="/customerMain" element={<CustomerMain />} />
           <Route path="/customerSubmit" element={<CustomerSubmit />} />
           <Route path="/customerReservations" element={<CustomerReservations />} />
+          <Route path="/facilityHomepage" element={<FacilityHomepage />} />
           <Route path="/requestForm" element={<RequestForm />} />
           <Route path="/customerReserve" element={<CustomerReserve />} />
           <Route path="/customerAccount" element={<CustomerAccount />} />

@@ -66,7 +66,13 @@ export default function Orders() {
     const open = (e) => {
         e.preventDefault();
         if (e.currentTarget.name === 'Dash') {
-            alert(`${e.currentTarget.id}'s HOME PAGE`);
+            navigate("/facilityHomepage", {
+                state: {
+                    username: state.username,
+                    password: state.password,
+                    businessName: e.currentTarget.id
+                }
+            })
         } else {
             navigate("/requestForm", {
                 state: {
