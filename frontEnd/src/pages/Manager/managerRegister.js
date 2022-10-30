@@ -38,6 +38,8 @@ const CustomerRegister = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState(null);
+    const [usernameStatus, setUsernameStatus] = useState('');
+    const [businessNameStatus, setBusinessNameStatus] = useState('');
     const checkPasswords = () => {
         if (password !== confirmPassword) {
             setError("Passwords do not match!");
@@ -60,46 +62,44 @@ const CustomerRegister = () => {
 
     const onSubmit = (event) => {
         event.preventDefault();
+        setUsernameStatus('');
+        setBusinessNameStatus('');
         const data = new FormData(event.currentTarget);
         if (error !== "Passwords do not match!") {
-            Axios.post("http://localhost:3001/api/insertFacilityData", {
-                businessName: data.get('business')
+            Axios.post("http://localhost:3001/api/managerRegister", {
+                firstName: data.get('firstName'),
+                lastName: data.get('lastName'),
+                username: data.get('username'),
+                email: data.get('email'),
+                business: data.get('business'),
+                password: data.get('password'),
+                confirmCode: uniqueConfirmCode
             }).then((result) => {
-                if (result.data.err) {
-                    alert("Business Name already taken!");
-                    return;
+                if (result.data.message) {
+                    console.log(result.data.message);
+                    if (result.data.message === "Username has already been taken") {
+                        setUsernameStatus("This username has already been taken.");
+                    } else if (result.data.message === "Business name has already been taken") {
+                        setBusinessNameStatus("This business name has already been taken.");
+                    }                
                 } else {
-                    Axios.post("http://localhost:3001/api/managerRegister", {
+                    navigate("/managerConfirmAccount", {
+                        state: {
+                            username: data.get('username'),
+                            password: data.get('password'),
+                            businessName: data.get('business'),
+                            email: data.get('email'),
+                            firstName: data.get('firstName'),
+                            confirmCode: uniqueConfirmCode,
+                        }
+                    });
+                    console.log({
                         firstName: data.get('firstName'),
                         lastName: data.get('lastName'),
                         username: data.get('username'),
                         email: data.get('email'),
-                        business: data.get('business'),
                         password: data.get('password'),
-                        confirmCode: uniqueConfirmCode
-                    }).then((result) => {
-                        if (result.data.err) {
-                            alert("Username already taken!");
-                        } else {
-                            navigate("/managerConfirmAccount", {
-                                state: {
-                                    username: data.get('username'),
-                                    password: data.get('password'),
-                                    businessName: data.get('business'),
-                                    email: data.get('email'),
-                                    firstName: data.get('firstName'),
-                                    confirmCode: uniqueConfirmCode,
-                                }
-                            });
-                            console.log({
-                                firstName: data.get('firstName'),
-                                lastName: data.get('lastName'),
-                                username: data.get('username'),
-                                email: data.get('email'),
-                                password: data.get('password'),
-                            });
-                        }
-                    })
+                    });
                 }
             })
         }
@@ -156,6 +156,7 @@ const CustomerRegister = () => {
                                     autoComplete="username"
                                 />
                             </Grid>
+                            <Typography color="error.main" justifyContent="flex-end" component="h1" variant="body2">{usernameStatus}</Typography>
                             <Grid item xs={12}>
                                 <TextField
                                     required
@@ -176,6 +177,7 @@ const CustomerRegister = () => {
                                     autoComplete="business"
                                 />
                             </Grid>
+                            <Typography color="error.main" justifyContent="flex-end" component="h1" variant="body2">{businessNameStatus}</Typography>
                             <Grid item xs={12}>
                                 <TextField
                                     required

@@ -31,6 +31,11 @@ import EmployeeForgotPassword from './pages/Employee/employeeForgotPassword';
 import ManagerForgotPassword from './pages/Manager/managerForgotPassword';
 import CustomerConfirmAccount from './pages/Customer/customerConfirmAccount';
 import ManagerConfirmAccount from './pages/Manager/managerConfirmAccount';
+<<<<<<< HEAD
+=======
+import CustomerSubmit from './pages/Customer/CustomerSubmit/Dashboard';
+import EmployeeReservations from './pages/Employee/EmployeeReservations/Dashboard';
+>>>>>>> feed27e1d3180a2b24c0396b158e64c072e64682
 
 function App() {
   return (
@@ -67,6 +72,7 @@ function App() {
           <Route path="/customerChangePassword" element={<CustomerForgotPassword />} />
           <Route path="/employeeChangePassword" element={<EmployeeForgotPassword />} />
           <Route path="/managerChangePassword" element={<ManagerForgotPassword />} />
+          <Route path="/employeeReservations" element={<EmployeeReservations />} />
         </Routes>
       </Router>
     </div>

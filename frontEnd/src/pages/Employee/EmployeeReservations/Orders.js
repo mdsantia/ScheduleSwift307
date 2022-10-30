@@ -1,23 +1,16 @@
 import * as React from 'react';
-import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Title from './Title';
+import { useState, useEffect } from 'react';
 import Axios from 'axios';
-import { useEffect, useState } from 'react';
-import { Button, TextField, Grid, Typography } from '@mui/material';
 
-function preventDefault(event) {
-    event.preventDefault();
-}
 
 export default function Orders(props) {
     const [reservations, setReservations] = useState([]);
-    const [deleteRes, setDeleteRes] = useState('');
-    const [error, setError] = useState('');
     function getReservations(business) {
         Axios.post("http://localhost:3001/api/getBusinessReservations", {
             businessName: props.businessName
@@ -26,18 +19,6 @@ export default function Orders(props) {
             console.log(allReserves);
             setReservations(allReserves);
 
-        })
-    }
-    function deleteReservation(resID) {
-        Axios.post("http://localhost:3001/api/managerDeleteReservation", {
-            reservationID: resID
-        }).then((result) => {
-            if (result.data.result.affectedRows === 0) {
-                setError("No Reservation with that ID exists")
-            } else {
-                setError("");
-                getReservations(props.businessName);
-            }
         })
     }
 
@@ -68,7 +49,6 @@ export default function Orders(props) {
                                 <TableCell>{reserve.reservableItem}</TableCell>
                                 <TableCell>{reserve.isReserved}</TableCell>
                                 <TableCell align="right">{`$${reserve.price}`}</TableCell>
-                                <TableCell><Button onClick={() => deleteReservation(reserve.ID)}>Delete</Button></TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

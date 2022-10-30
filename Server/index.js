@@ -41,8 +41,8 @@ var transport = nodemailer.createTransport({
     port: 465,
     secure: true, // true for 465, false for other ports
     auth: {
-      user: "scheduleswift@gmail.com",
-      pass: "txwgbslbjbxxojvb",
+        user: "scheduleswift@gmail.com",
+        pass: "txwgbslbjbxxojvb",
     },
 });
 
@@ -58,7 +58,7 @@ app.post('/api/allFacilityData', (req, res) => {
                 console.log("Found a match \n");
                 console.log("Query Result: \n")
                 console.log(result);
-                res.send( { result : result } );
+                res.send({ result: result });
             } else {
                 console.log("No match. \n");
                 res.send({ message: "No facility has been created!" });
@@ -89,7 +89,7 @@ app.post("/api/updateMinMax", (req, res) => {
         }
     )
 })
-  
+
 app.post('/api/getFacilitysData', (req, res) => {
     const businessName = req.body.businessName;
     console.log(`Searching by facility data: ${businessName}\n`);
@@ -104,7 +104,7 @@ app.post('/api/getFacilitysData', (req, res) => {
                 console.log("Found a match \n");
                 console.log("Query Result: \n")
                 console.log(result);
-                res.send( { result : result } );
+                res.send({ result: result });
             } else {
                 console.log("No match. \n");
                 res.send({ message: "The facility does not exist!" });
@@ -132,7 +132,7 @@ app.post('/api/activeEvents', (req, res) => {
                 console.log("Found a match \n");
                 console.log("Query Result: \n")
                 console.log(result);
-                res.send( result );
+                res.send(result);
             } else {
                 console.log("No match. \n");
                 res.send({ message: "Events made by that user does not exist!" });
@@ -146,11 +146,11 @@ app.post("/api/sendConfirmEmail", (req, res) => {
     const emailAddress = req.body.email;
     const confirmCode = req.body.confirmCode;
     const mailOptions = {
-        from: 
-            {
-                name: 'no-reply@scheduleswift.com',
-                address: 'scheduleswift@gmail.com'
-            },
+        from:
+        {
+            name: 'no-reply@scheduleswift.com',
+            address: 'scheduleswift@gmail.com'
+        },
         to: emailAddress,
         subject: "Confirm Your Account",
         html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
@@ -158,8 +158,8 @@ app.post("/api/sendConfirmEmail", (req, res) => {
             + "<h4>Confirmation Code:</h4>"
             + "<p><center><font size=" + "+3" + "><b>" + confirmCode + "</b></font></center></p></body></html>"
     };
-    transport.sendMail(mailOptions,(err,res)=>{
-        if(err){
+    transport.sendMail(mailOptions, (err, res) => {
+        if (err) {
             console.log("Unable to resend email.");
             console.log(err);
         }
@@ -195,29 +195,32 @@ app.post("/api/customerRegister", (req, res) => {
     const confirmCode = req.body.confirmCode;
     const sqlInsert = "INSERT INTO userData (firstName, lastName, username, emailAddress, password, creationDate, confirmCode) VALUES (?,?,?,?,?,?,?)"
     db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword, registerDate, confirmCode], (err, result) => {
-        console.log(err);
-        res.send( {err : err} );
-    });
-    const mailOptions = {
-        from:  
-            {
-            name: 'no-reply@scheduleswift.com',
-            address: 'scheduleswift@gmail.com'
-            },
-        to: emailAddress,
-        subject: "Confirm Your Account",
-        html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
-            + "<p>Here is the confirmation code to confirm your account. Once you enter the confirmation code, your account will be activated and you will be automatically redirected to the main page.</p>"
-            + "<h4>Confirmation Code:</h4>"
-            + "<p><center><font size=" + "+3" + "><b>" + confirmCode + "</b></font></center></p></body></html>"
-    };
-    transport.sendMail(mailOptions,(err,res)=>{
-        if(err){
-            console.log("Unable to send email.");
-            console.log(err);
-        }
-        else {
-            console.log("The email was successfully sent.");
+        if (err) {
+            console.log(err.message);
+            res.send({ err: err });
+        } else {
+            const mailOptions = {
+                from:
+                {
+                    name: 'no-reply@scheduleswift.com',
+                    address: 'scheduleswift@gmail.com'
+                },
+                to: emailAddress,
+                subject: "Confirm Your Account",
+                html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
+                    + "<p>Here is the confirmation code to confirm your account. Once you enter the confirmation code, your account will be activated and you will be automatically redirected to the main page.</p>"
+                    + "<h4>Confirmation Code:</h4>"
+                    + "<p><center><font size=" + "+3" + "><b>" + confirmCode + "</b></font></center></p></body></html>"
+            };
+            transport.sendMail(mailOptions, (err, res) => {
+                if (err) {
+                    console.log("Unable to send email.");
+                    console.log(err);
+                }
+                else {
+                    console.log("The email was successfully sent.");
+                }
+            });
         }
     });
 })
@@ -232,7 +235,7 @@ app.post("/api/employeeRegister", (req, res) => {
     const sqlInsert = "INSERT INTO employeeData (firstName, lastName, username, emailAddress, password, businessName) VALUES (?,?,?,?,?,?)"
     db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword, businessName], (err, result) => {
         console.log(err);
-        res.send( {err : err} );
+        res.send({ err: err });
     })
 })
 
@@ -262,31 +265,44 @@ app.post("/api/managerRegister", (req, res) => {
     const confirmCode = req.body.confirmCode;
     const sqlInsert = "INSERT INTO managerData (firstName, lastName, username, emailAddress, password, businessName, confirmCode) VALUES (?,?,?,?,?,?,?)"
     db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword, businessName, confirmCode], (err, result) => {
-        console.log(err);
-        res.send( {err : err} );
+        if (err) {
+            console.log(err.sqlMessage);
+            if (err.sqlMessage.includes(username)) {
+                res.send({ message: "Username has already been taken"});
+            } else {
+                res.send({ message: "Business name has already been taken"});
+            }
+        } else {
+            db.query("INSERT INTO facilityData (businessName) VALUES (?)", [businessName], (err, result) => {
+                if (err) {
+                    console.log(err);
+                }
+            });
+            res.send({ result });
+            const mailOptions = {
+                from:
+                {
+                    name: 'no-reply@scheduleswift.com',
+                    address: 'scheduleswift@gmail.com'
+                },
+                to: emailAddress,
+                subject: "Confirm Your Account",
+                html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
+                    + "<p>Here is the confirmation code to confirm your account. Once you enter the confirmation code, your account will be activated and you will be automatically redirected to the main page.</p>"
+                    + "<h4>Confirmation Code:</h4>"
+                    + "<p><center><font size=" + "+3" + "><b>" + confirmCode + "</b></font></center></p></body></html>"
+            };
+            transport.sendMail(mailOptions, (err, res) => {
+                if (err) {
+                    console.log("Unable to send email.");
+                    console.log(err);
+                }
+                else {
+                    console.log("The email was successfully sent.");
+                }
+            });
+        }
     })
-    const mailOptions = {
-        from:  
-            {
-            name: 'no-reply@scheduleswift.com',
-            address: 'scheduleswift@gmail.com'
-            },
-        to: emailAddress,
-        subject: "Confirm Your Account",
-        html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
-            + "<p>Here is the confirmation code to confirm your account. Once you enter the confirmation code, your account will be activated and you will be automatically redirected to the main page.</p>"
-            + "<h4>Confirmation Code:</h4>"
-            + "<p><center><font size=" + "+3" + "><b>" + confirmCode + "</b></font></center></p></body></html>"
-    };
-    transport.sendMail(mailOptions,(err,res)=>{
-        if(err){
-            console.log("Unable to send email.");
-            console.log(err);
-        }
-        else {
-            console.log("The email was successfully sent.");
-        }
-    });
 })
 
 app.post("/api/customerSignIn", (req, res) => {
@@ -303,12 +319,6 @@ app.post("/api/customerSignIn", (req, res) => {
             }
             if (result.length == 1) {
                 res.send({ result });
-                // if (result[0].active == 1) {
-                //     res.send({ result });
-                // } else {
-                //     const emailNameCode = result[0].emailAddress + " " + result[0].firstName + " " + result[0].confirmCode;
-                //     res.send({ message: emailNameCode});
-                // }
             } else {
                 res.send({ message: "Wrong username/password combination" });
             }
@@ -328,6 +338,7 @@ app.post("/api/employeeSignIn", (req, res) => {
                 res.send({ err: err })
             }
             if (result.length > 0) {
+                console.log(result);
                 res.send({ result });
             } else {
                 res.send({ message: "Wrong username/password combination" });
@@ -719,6 +730,62 @@ app.post("/api/customerConfirmReservation", (req, res) => {
             if (result) {
                 console.log({ result })
                 res.send({ result })
+            }
+        }
+    )
+})
+
+app.post("/api/addBusinessNotes", (req, res) => {
+    const businessName = req.body.businessName;
+    const noteSubject = req.body.noteSubject;
+    const noteBody = req.body.noteBody;
+    const year = new Date().getFullYear();
+    const month = new Date().getMonth() + 1;
+    const day = new Date().getDate();
+    const formattedDate = `${month}-${day}-${year}`;
+    db.query(
+        "INSERT INTO managerNotes (date, businessName, noteSubject, noteBody) VALUES (?,?,?,?)",
+        [formattedDate, businessName, noteSubject, noteBody],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result })
+            }
+        }
+    )
+})
+app.post("/api/getBusinessNotes", (req, res) => {
+    const businessName = req.body.businessName
+    db.query(
+        "SELECT * FROM managerNotes WHERE businessName = ?",
+        [businessName],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            }
+            if (result) {
+                console.log(result)
+                res.send({ result: result })
+            }
+        }
+    )
+})
+app.post("/api/managerDeleteNote", (req, res) => {
+    const noteID = req.body.noteID;
+    db.query(
+        "DELETE FROM managerNotes WHERE ID = ?",
+        [noteID],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log(result)
+                res.send({ result: result })
             }
         }
     )

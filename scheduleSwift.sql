@@ -21,7 +21,8 @@ CREATE TABLE `userData` (
   `confirmCode` varchar(200) NOT NULL,
   `active` boolean NOT NULL DEFAULT 0,
   UNIQUE KEY `username_UNIQUE` (`username`),
-  PRIMARY KEY (`ID`)
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `confirmCode_UNIQUE` (`confirmCode`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `managerData` (
@@ -35,7 +36,8 @@ CREATE TABLE `managerData` (
   `confirmCode` varchar(200) NOT NULL,
   `active` boolean NOT NULL DEFAULT 0,
   PRIMARY KEY (`ID`),
-  UNIQUE KEY `username_UNIQUE` (`username`)
+  UNIQUE KEY `username_UNIQUE` (`username`),
+  UNIQUE KEY `confirmCode_UNIQUE` (`confirmCode`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `reservations` (
@@ -76,3 +78,12 @@ CREATE TABLE `facilityData` (
   UNIQUE KEY `ID_UNIQUE` (`ID`),
   UNIQUE KEY `businessName_UNIQUE` (`businessName`)
 )  ENGINE=INNODB AUTO_INCREMENT=57 DEFAULT CHARSET=UTF8MB4 COLLATE = UTF8MB4_0900_AI_CI;
+
+CREATE TABLE `managerNotes` (
+  `ID` INT NOT NULL AUTO_INCREMENT,
+  `date` VARCHAR(200) NULL,
+  `businessName` VARCHAR(200) NULL,
+  `noteSubject` VARCHAR(200) NULL,
+  `noteBody` TEXT(500) NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=INNODB AUTO_INCREMENT=57 DEFAULT CHARSET=UTF8MB4 COLLATE = UTF8MB4_0900_AI_CI;
