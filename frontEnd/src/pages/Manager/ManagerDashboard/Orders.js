@@ -7,26 +7,36 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Title from './Title';
 import Axios from 'axios';
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { useEffect, useState } from 'react';
 import { Button, TextField, Grid, Typography } from '@mui/material';
+import { Dayjs } from 'dayjs';
 
 function preventDefault(event) {
     event.preventDefault();
 }
 
-function createDay(day, open, close) {
-    return {day, open, close};
+function createDay(int, day) {
+    return {int, day};
 }
 
 export default function Orders(props) {
     const box = [];
-    const [reservations, setReservations] = useState([]);
-    const [deleteRes, setDeleteRes] = useState('');
-    const [error, setError] = useState('');
+    const [rows, setRows] = useState([]);
+    const [openTime, setOpenTime] = useState(Dayjs | null);
+    const [closeTime, setCloseTime] = useState(Dayjs | null);
+    const [closed, setClosed] = useState('');
+
     function getBusinessHours(business) {
-        setReservations([createDay('Sunday', '', ''), createDay('Monday', '', '') , 
-        createDay('Tuesday', '', '')]);
+        setClosed([0, 0, 0, 0, 0, 0, 0]);
+        setOpenTime([]);
+        setCloseTime([]);
+        setRows([createDay(0, 'Sunday'), createDay(1, 'Monday') , 
+        createDay(2, 'Tuesday'), createDay(3, 'Wednesday'), 
+        createDay(4, 'Thursday'), createDay(5, 'Friday'), 
+        createDay(6, 'Saturday')]);
         // Axios.post("http://localhost:3001/api/getBusinessHours", {
         //     businessName: props.businessName
         // }).then((result) => {
@@ -35,24 +45,77 @@ export default function Orders(props) {
         //     setReservations(allReserves);
         // })
     }
-    function editHours(day) {
-        
-        // Axios.post("http://localhost:3001/api/managerDeleteReservation", {
-        //     reservationID: day
-        // }).then((result) => {
-        //     if (result.data.result.affectedRows == 0) {
-        //         setError("No Reservation with that ID exists")
-        //     } else {
-        //         setError("");
-        //         getBusinessHours(props.businessName);
-        //     }
-        // })
+    
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        alert(`${props.businessName}'s Business Hours have been saved!`);
+    }
+
+    const col = (day) => {
+        let row = [];
+        if (!closed[day]) {
+            row.push(
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <TimePicker
+                        label="Open Time"
+                        value={openTime[day]}
+                        fullWidth
+                        onChange={(newValue) => { let open = [...openTime]; open[day] = newValue; setOpenTime(open) }}
+                        renderInput={(params) => <TextField {...params} required/>}
+                        shouldDisableTime={(timeValue, clockType) => {
+                        if (clockType === 'minutes' && timeValue % 5) {
+                            return true;
+                        }
+                        return false;
+                        }}
+                    />
+                </LocalizationProvider>
+            )
+            row.push(
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <TimePicker
+                        label="Close Time"
+                        value={closeTime[day]}
+                        fullWidth
+                        onChange={(newValue) => { let close = [...closeTime]; close[day] = newValue; setCloseTime(close) }}
+                        renderInput={(params) => <TextField {...params} required/>}
+                        shouldDisableTime={(timeValue, clockType) => {
+                        if (clockType === 'minutes' && timeValue % 5) {
+                            return true;
+                        }
+                        return false;
+                        }}
+                    />
+                </LocalizationProvider>
+            )
+            box.push(row);
+        } else {
+            row.push(
+                <b>CLOSED</b>
+            )
+            row.push(
+                <b>CLOSED</b>
+            )
+            box.push(row);
+        }
+    }
+    
+    const close = (e) => {
+        e.preventDefault();
+        let copy = [...closed];
+        if (closed[e.currentTarget.id]) {
+            copy[e.currentTarget.id] = 0;
+        } else {
+            copy[e.currentTarget.id] = 1;
+        }
+        setClosed(copy);
     }
 
     useEffect(() => {
         getBusinessHours(props.businessName)
     }, []);
-    if (reservations.length > 0) {
+    if (rows.length > 0) {
+
         return (
             <React.Fragment>
                 <Title>{props.businessName}'s Business Hours</Title>
@@ -65,12 +128,13 @@ export default function Orders(props) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {reservations.map((weekday, index) => (
+                        {rows.map((weekday, index) => (
                             <TableRow key={weekday.day}>
                                 <TableCell align="center">{<b>{weekday.day}</b>}</TableCell>
-                                <TableCell align="center">{box}</TableCell>
-                                <TableCell align="center">{weekday.close}</TableCell>
-                                <TableCell align="center"><Button onClick={() => editHours(weekday.day)}>Edit</Button></TableCell>
+                                {col(weekday.int)}
+                                <TableCell align="center">{box[weekday.int][0]}</TableCell>
+                                <TableCell align="center">{box[weekday.int][1]}</TableCell>
+                                <TableCell align="center"><Button id={weekday.int} onClick={close}>Closed/OPEN</Button></TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -79,6 +143,7 @@ export default function Orders(props) {
                         type="submit"
                         fullWidth
                         variant="contained"
+                        onClick={handleSubmit}
                         sx={{ mt: 3, mb: 2 }}
                     >
                         Save
