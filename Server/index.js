@@ -67,6 +67,34 @@ app.post('/api/allFacilityData', (req, res) => {
     )
 })
 
+app.post("/api/updateTimes", (req, res) => {
+    const businessName = req.body.businessName;
+    const open = req.body.open;
+    const close = req.body.close;
+    let hours = [];
+    for (let i = 0; i < 7; i++) {
+        if (open[i]) {
+            hours.push(`${open[i]};${close[i]}`);
+        } else {
+            hours.push('null;null');
+        }
+    }
+    db.query(
+        "UPDATE facilityData SET `Sun` = ?, `Mon` = ?, `Tues` = ?, `Wed` = ?, `Thurs` = ?, `Fri` = ?, `Sat` = ? WHERE businessName = ?",
+        [hours[0], hours[1], hours[2], hours[3], hours[4], hours[5], hours[6], businessName],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            }
+            if (result) {
+                console.log(hours)
+                res.send({ result })
+            }
+        }
+    )
+})
+
 app.post("/api/updateMinMax", (req, res) => {
     const businessName = req.body.businessName;
     const reservableItems = req.body.reservableItems;

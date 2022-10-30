@@ -5,6 +5,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import Box from '@mui/material/Box';
 import Title from './Title';
 import Axios from 'axios';
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -23,32 +24,84 @@ function createDay(int, day) {
 }
 
 export default function Orders(props) {
+    const year = new Date().getFullYear();
+    const month = new Date().getMonth() + 1;
+    const day = new Date().getDate();
+    const formattedDate = `${year}-${month}-${day}`;
+
     const box = [];
     const [rows, setRows] = useState([]);
     const [openTime, setOpenTime] = useState(Dayjs | null);
     const [closeTime, setCloseTime] = useState(Dayjs | null);
     const [closed, setClosed] = useState('');
 
-    function getBusinessHours(business) {
-        setClosed([0, 0, 0, 0, 0, 0, 0]);
-        setOpenTime([]);
-        setCloseTime([]);
+    function getBusinessHours() {
+        Axios.post("http://localhost:3001/api/getFacilitysData", {
+            businessName: props.businessName
+        }).then((result) => {
+            let Sun = result.data.result[0].Sun;
+            let Mon = result.data.result[0].Mon;
+            let Tues = result.data.result[0].Tues;
+            let Wed = result.data.result[0].Wed;
+            let Thurs = result.data.result[0].Thurs;
+            let Fri = result.data.result[0].Fri;
+            let Sat = result.data.result[0].Sat;
+            let full = `${Sun};${Mon};${Tues};${Wed};${Thurs};${Fri};${Sat}`;
+            let val = full.split(';');
+            let closed = [];
+            let open = [];
+            let close = [];
+            for (let i = 0; i < 14; i++) {
+                if (i % 2 === 0) {
+                    if (val[i] === 'null') {
+                        closed.push(1);
+                        open.push(formattedDate);
+                    } else {
+                        closed.push(0);
+                        open.push(val[i]);
+                    }
+                } else {
+                    if (val[i] === 'null') {
+                        close.push(formattedDate);
+                    } else {
+                        close.push(val[i]);
+                    }
+                }
+            }
+            setClosed(closed);
+            setOpenTime(open);
+            setCloseTime(close);
+        });
+
+        // setClosed([0, 0, 0, 0, 0, 0, 0]);
+        // setOpenTime([formattedDate, formattedDate, formattedDate, formattedDate, formattedDate, formattedDate, formattedDate]);
+        // setCloseTime([formattedDate, formattedDate, formattedDate, formattedDate, formattedDate, formattedDate, formattedDate]);
         setRows([createDay(0, 'Sunday'), createDay(1, 'Monday') , 
         createDay(2, 'Tuesday'), createDay(3, 'Wednesday'), 
         createDay(4, 'Thursday'), createDay(5, 'Friday'), 
         createDay(6, 'Saturday')]);
-        // Axios.post("http://localhost:3001/api/getBusinessHours", {
-        //     businessName: props.businessName
-        // }).then((result) => {
-        //     const allReserves = result.data.result;
-        //     console.log(allReserves);
-        //     setReservations(allReserves);
-        // })
     }
     
     const handleSubmit = (event) => {
         event.preventDefault();
         alert(`${props.businessName}'s Business Hours have been saved!`);
+        let open = [...openTime];
+        let close = [...closeTime];
+        for (let i = 0; i < 7; i++) {
+            if (closed[i]) {
+                open[i] = null;
+                close[i] = null;
+                setOpenTime(open);
+                setCloseTime(close);
+            }
+        }
+        Axios.post("http://localhost:3001/api/updateTimes", {
+                businessName: props.businessName,
+                open: open,
+                close: close
+            }).then((result) => {
+                // alert(`Your reservation has been saved! Your reservation's id is ${result.data.id}`);
+            })
     }
 
     const col = (day) => {
@@ -112,42 +165,43 @@ export default function Orders(props) {
     }
 
     useEffect(() => {
-        getBusinessHours(props.businessName)
+        getBusinessHours();
     }, []);
     if (rows.length > 0) {
 
         return (
             <React.Fragment>
-                <Title>{props.businessName}'s Business Hours</Title>
-                <Table size="small">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell align="center">Week Day</TableCell>
-                            <TableCell align="center">Opens at</TableCell>
-                            <TableCell align="center">Closes at</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {rows.map((weekday, index) => (
-                            <TableRow key={weekday.day}>
-                                <TableCell align="center">{<b>{weekday.day}</b>}</TableCell>
-                                {col(weekday.int)}
-                                <TableCell align="center">{box[weekday.int][0]}</TableCell>
-                                <TableCell align="center">{box[weekday.int][1]}</TableCell>
-                                <TableCell align="center"><Button id={weekday.int} onClick={close}>Closed/OPEN</Button></TableCell>
+                <Box component="form" validate="true" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+                    <Title>{props.businessName}'s Business Hours</Title>
+                    <Table size="small">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell align="center">Week Day</TableCell>
+                                <TableCell align="center">Opens at</TableCell>
+                                <TableCell align="center">Closes at</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-                <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        onClick={handleSubmit}
-                        sx={{ mt: 3, mb: 2 }}
-                    >
-                        Save
-                </Button>
+                        </TableHead>
+                        <TableBody>
+                            {rows.map((weekday, index) => (
+                                <TableRow key={weekday.day}>
+                                    <TableCell align="center">{<b>{weekday.day}</b>}</TableCell>
+                                    {col(weekday.int)}
+                                    <TableCell align="center">{box[weekday.int][0]}</TableCell>
+                                    <TableCell align="center">{box[weekday.int][1]}</TableCell>
+                                    <TableCell align="center"><Button id={weekday.int} onClick={close}>Closed/OPEN</Button></TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                    <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            sx={{ mt: 3, mb: 2 }}
+                        >
+                            Save
+                    </Button>
+                </Box>
             </React.Fragment >
         );
     } else {
