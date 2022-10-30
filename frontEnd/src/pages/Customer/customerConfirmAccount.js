@@ -29,36 +29,82 @@ function Copyright(props) {
 
 const theme = createTheme();
 
+const makeUniqueID = (length) => {
+    // Reference to ran string https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
 const CustomerConfirmAccount = () => {
     const { state } = useLocation();
     const navigate = useNavigate();
-    const handleResend = () => {
-        Axios.post("http://localhost:3001/api/sendConfirmEmail", {
-            email: state.email,
-            firstName: state.firstName,
-            confirmCode: state.confirmCode,
-         })
-         alert("The confirmation email has been resent.");
-    };
-
     const [confirmStatus, setConfirmStatus] = useState('');
     const [inputConfirmCode, setInputConfirmCode] = useState('');
+    const [emailResentStatus, setEmailResentStatus] = useState('');
+    var [uniqueConfirmCode, setUniqueConfirmCode] = useState(state.confirmCode);
+    var [endTime, setEndTime] = useState(state.endTime);
+    // var uniqueConfirmCode = state.confirmCode;
+    // var endTime = state.endTime;
+
+    const handleResend = () => {
+        setEmailResentStatus('');
+        setConfirmStatus('');
+        console.log("Old confirmCode: " + uniqueConfirmCode);
+        console.log("Old endTime: " + endTime);
+        const newConfirmCode = makeUniqueID(8);
+        const newEndTime = new Date();
+        newEndTime.setMinutes((newEndTime.getMinutes() + 1));
+        uniqueConfirmCode = newConfirmCode;
+        endTime = newEndTime;
+        setUniqueConfirmCode(newConfirmCode);
+        setEndTime(newEndTime);
+        // if (endTime.getMinutes() < 10) {
+        //     endTime.setHours(startTime.getHours() + 1);
+        // } else {
+        // endTime.setHours(startTime.getHours());
+        // }
+        console.log("New confirmCode: " + uniqueConfirmCode);
+        console.log("New endTime: " + endTime);
+        Axios.post("http://localhost:3001/api/sendConfirmEmail", {
+            username: state.username,
+            email: state.email,
+            firstName: state.firstName,
+            confirmCode: uniqueConfirmCode,
+         })
+         setEmailResentStatus("The confirmation email has been resent.");
+    };
 
     const handleConfirmation = (event) => {
         event.preventDefault();
-        if (inputConfirmCode !== state.confirmCode) {
+        setConfirmStatus('');
+        setEmailResentStatus('');
+        console.log("Current Confirm Code: " + uniqueConfirmCode);
+        console.log("current endTime: " + endTime);
+        if (inputConfirmCode !== uniqueConfirmCode) {
             setConfirmStatus("Incorrect Confirmation Code.");
         } else {
             Axios.post("http://localhost:3001/api/customerConfirmAccount", {
-                confirmCode: state.confirmCode,
-            })
-            alert("Your Account Has Been Successfully Activated!");
-            navigate("/customerMain", {
-                state: {
-                    username: state.username,
-                    password: state.password
+                confirmCode: uniqueConfirmCode,
+                username: state.username,
+                endTime: endTime,
+            }).then((result) => {
+                if (result.data.message) {
+                    setConfirmStatus("The confirmation code has expired.");
+                } else {
+                    alert("Your Account Has Been Successfully Activated!");
+                    navigate("/customerMain", {
+                    state: {
+                        username: state.username,
+                        password: state.password
+                    }
+                    });
                 }
-            });
+            })
         }
     }
 
@@ -82,14 +128,14 @@ const CustomerConfirmAccount = () => {
                     <span><b>{state.email}</b></span>
                     <Typography justifyContent="flex-end" component="h1" variant="body2">
                         Enter the confirmation code below in order to activate your account. Once your account is activated, you will
-                        be automatically redirected to the main page.
+                        be automatically redirected to the main page. This confirmation code will expire after 10 minutes.
                     </Typography>
                     <Typography justifyContent="flex-end" component="h1" variant="body2">
-                        If you did not receive an email, hit 
+                        If you did not receive an email or if the confirmation code expired before you were able to activate your account, hit 
                     </Typography>    
                     <span><b>"Resend Confirmation Email"</b></span>
                     <Typography justifyContent="flex-end" component="h1" variant="body2">
-                        and an email with the confirmation code will be re-sent.
+                        and an email with a new confirmation code will be re-sent.
                     </Typography>
                     <Box component="form" validate="true"  onSubmit={handleConfirmation} sx={{ mt: 3 }}>
                         <TextField
@@ -121,6 +167,7 @@ const CustomerConfirmAccount = () => {
                     >
                     Resend Confirmation Email
                     </Button>
+                    <Typography color="green" justifyContent="flex-end" component="h1" variant="body2">{emailResentStatus}</Typography>
                     <Copyright sx={{ mt: 5 }} />
                 </Box>
             </Container>

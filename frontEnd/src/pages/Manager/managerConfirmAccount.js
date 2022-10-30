@@ -32,7 +32,13 @@ const theme = createTheme();
 const ManagerConfirmAccount = () => {
     const { state } = useLocation();
     const navigate = useNavigate();
+    const [confirmStatus, setConfirmStatus] = useState('');
+    const [inputConfirmCode, setInputConfirmCode] = useState('');
+    const [emailResentStatus, setEmailResentStatus] = useState('');
+
     const handleResend = () => {
+        setEmailResentStatus('');
+        setConfirmStatus('');
         Axios.post("http://localhost:3001/api/sendConfirmEmail", {
             email: state.email,
             firstName: state.firstName,
@@ -41,11 +47,10 @@ const ManagerConfirmAccount = () => {
          alert("The confirmation email has been resent.");
     };
 
-    const [confirmStatus, setConfirmStatus] = useState('');
-    const [inputConfirmCode, setInputConfirmCode] = useState('');
-
     const handleConfirmation = (event) => {
         event.preventDefault();
+        setConfirmStatus('');
+        setEmailResentStatus('');
         if (inputConfirmCode !== state.confirmCode) {
             setConfirmStatus("Incorrect Confirmation Code.");
         } else {
@@ -83,14 +88,14 @@ const ManagerConfirmAccount = () => {
                     <span><b>{state.email}</b></span>
                     <Typography justifyContent="flex-end" component="h1" variant="body2">
                         Enter the confirmation code below in order to activate your account. Once your account is activated, you will
-                        be automatically redirected to the main page.
+                        be automatically redirected to the main page. This confirmation code will expire after 10 minutes.
                     </Typography>
                     <Typography justifyContent="flex-end" component="h1" variant="body2">
-                        If you did not receive an email, hit 
+                        If you did not receive an email or if the confirmation code expired before you were able to activate your account, hit 
                     </Typography>    
                     <span><b>"Resend Confirmation Email"</b></span>
                     <Typography justifyContent="flex-end" component="h1" variant="body2">
-                        and an email with the confirmation code will be re-sent.
+                        and an email with a new confirmation code will be re-sent.
                     </Typography>
                     <Box component="form" validate="true"  onSubmit={handleConfirmation} sx={{ mt: 3 }}>
                         <TextField
@@ -122,6 +127,7 @@ const ManagerConfirmAccount = () => {
                     >
                     Resend Confirmation Email
                     </Button>
+                    <Typography color="green" justifyContent="flex-end" component="h1" variant="body2">{emailResentStatus}</Typography>
                     <Copyright sx={{ mt: 5 }} />
                 </Box>
             </Container>
