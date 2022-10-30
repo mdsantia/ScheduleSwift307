@@ -195,29 +195,32 @@ app.post("/api/customerRegister", (req, res) => {
     const confirmCode = req.body.confirmCode;
     const sqlInsert = "INSERT INTO userData (firstName, lastName, username, emailAddress, password, creationDate, confirmCode) VALUES (?,?,?,?,?,?,?)"
     db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword, registerDate, confirmCode], (err, result) => {
-        console.log(err);
-        res.send({ err: err });
-    });
-    const mailOptions = {
-        from:
-        {
-            name: 'no-reply@scheduleswift.com',
-            address: 'scheduleswift@gmail.com'
-        },
-        to: emailAddress,
-        subject: "Confirm Your Account",
-        html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
-            + "<p>Here is the confirmation code to confirm your account. Once you enter the confirmation code, your account will be activated and you will be automatically redirected to the main page.</p>"
-            + "<h4>Confirmation Code:</h4>"
-            + "<p><center><font size=" + "+3" + "><b>" + confirmCode + "</b></font></center></p></body></html>"
-    };
-    transport.sendMail(mailOptions, (err, res) => {
         if (err) {
-            console.log("Unable to send email.");
-            console.log(err);
-        }
-        else {
-            console.log("The email was successfully sent.");
+            console.log(err.message);
+            res.send({ err: err });
+        } else {
+            const mailOptions = {
+                from:
+                {
+                    name: 'no-reply@scheduleswift.com',
+                    address: 'scheduleswift@gmail.com'
+                },
+                to: emailAddress,
+                subject: "Confirm Your Account",
+                html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
+                    + "<p>Here is the confirmation code to confirm your account. Once you enter the confirmation code, your account will be activated and you will be automatically redirected to the main page.</p>"
+                    + "<h4>Confirmation Code:</h4>"
+                    + "<p><center><font size=" + "+3" + "><b>" + confirmCode + "</b></font></center></p></body></html>"
+            };
+            transport.sendMail(mailOptions, (err, res) => {
+                if (err) {
+                    console.log("Unable to send email.");
+                    console.log(err);
+                }
+                else {
+                    console.log("The email was successfully sent.");
+                }
+            });
         }
     });
 })

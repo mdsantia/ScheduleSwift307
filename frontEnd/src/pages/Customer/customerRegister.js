@@ -38,6 +38,7 @@ const CustomerRegister = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState(null);
+    const [usernameStatus, setUsernameStatus] = useState('');
     const checkPasswords = () => {
         if (password !== confirmPassword) {
             setError("Passwords do not match!");
@@ -72,7 +73,7 @@ const CustomerRegister = () => {
                 confirmCode: uniqueConfirmCode,
             }).then((result) => {
                 if (result.data.err) {
-                    alert("Username already taken!");
+                    setUsernameStatus("This username has already been taken.");
                 } else {
                     navigate("/customerConfirmAccount", {
                         state: {
@@ -146,6 +147,7 @@ const CustomerRegister = () => {
                                     autoComplete="username"
                                 />
                             </Grid>
+                            <Typography color="error.main" justifyContent="flex-end" component="h1" variant="body2">{usernameStatus}</Typography>
                             <Grid item xs={12}>
                                 <TextField
                                     required
