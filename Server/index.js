@@ -170,9 +170,22 @@ app.post('/api/activeEvents', (req, res) => {
 })
 
 app.post("/api/sendConfirmEmail", (req, res) => {
+    const username = req.body.username;
     const firstName = req.body.firstName;
     const emailAddress = req.body.email;
     const confirmCode = req.body.confirmCode;
+    db.query(
+        "UPDATE userData SET confirmCode = ? WHERE username = ?",
+        [confirmCode, username],
+        (err, result) => {
+            if (err) {
+                console.log("Unable to change confirmation code.");
+                console.log(err);
+            } else {
+                console.log("Successfully changed confirmation code to " + confirmCode);
+            }
+        }
+    )
     const mailOptions = {
         from:
         {
@@ -182,7 +195,7 @@ app.post("/api/sendConfirmEmail", (req, res) => {
         to: emailAddress,
         subject: "Confirm Your Account",
         html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
-            + "<p>Here is the confirmation code to confirm your account. Once you enter the confirmation code, your account will be activated and you will be automatically redirected to the main page.</p>"
+            + "<p>Here is the confirmation code to confirm your account. This code will expire in 10 minutes. Once you enter the confirmation code, your account will be activated and you will be automatically redirected to the main page.</p>"
             + "<h4>Confirmation Code:</h4>"
             + "<p><center><font size=" + "+3" + "><b>" + confirmCode + "</b></font></center></p></body></html>"
     };
@@ -199,18 +212,26 @@ app.post("/api/sendConfirmEmail", (req, res) => {
 
 app.post("/api/customerConfirmAccount", (req, res) => {
     const confirmCode = req.body.confirmCode;
-    db.query(
-        "UPDATE userData SET active = 1 WHERE confirmCode = ?",
-        [confirmCode],
-        (err, result) => {
-            if (err) {
-                console.log("Unable to activate account.");
-                console.log(err);
-            } else {
-                console.log("Successfully Activated Account.");
+    const username = req.body.username;
+    const endTime = req.body.endTime;
+    const currentTime = new Date();
+    if ((new Date(currentTime).getTime()) > (new Date(endTime).getTime())) {
+        res.send({ message: "Confirmation code has expired"});
+    } else {
+        db.query(
+            "UPDATE userData SET active = 1 WHERE confirmCode = ? AND username = ?",
+            [confirmCode, username],
+            (err, result) => {
+                if (err) {
+                    console.log("Unable to activate account.");
+                    console.log(err);
+                } else {
+                    res.send({result});
+                    console.log("Successfully Activated Account.");
+                }
             }
-        }
-    )
+        )
+    }
 })
 
 app.post("/api/customerRegister", (req, res) => {
@@ -227,6 +248,7 @@ app.post("/api/customerRegister", (req, res) => {
             console.log(err.message);
             res.send({ err: err });
         } else {
+            res.send({result});
             const mailOptions = {
                 from:
                 {
@@ -236,7 +258,7 @@ app.post("/api/customerRegister", (req, res) => {
                 to: emailAddress,
                 subject: "Confirm Your Account",
                 html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
-                    + "<p>Here is the confirmation code to confirm your account. Once you enter the confirmation code, your account will be activated and you will be automatically redirected to the main page.</p>"
+                    + "<p>Here is the confirmation code to confirm your account. This code will expire in 10 minutes. Once you enter the confirmation code, your account will be activated and you will be automatically redirected to the main page.</p>"
                     + "<h4>Confirmation Code:</h4>"
                     + "<p><center><font size=" + "+3" + "><b>" + confirmCode + "</b></font></center></p></body></html>"
             };
@@ -316,7 +338,7 @@ app.post("/api/managerRegister", (req, res) => {
                 to: emailAddress,
                 subject: "Confirm Your Account",
                 html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + firstName + ",</h4>"
-                    + "<p>Here is the confirmation code to confirm your account. Once you enter the confirmation code, your account will be activated and you will be automatically redirected to the main page.</p>"
+                    + "<p>Here is the confirmation code to confirm your account. This code will expire in 10 minutes. Once you enter the confirmation code, your account will be activated and you will be automatically redirected to the main page.</p>"
                     + "<h4>Confirmation Code:</h4>"
                     + "<p><center><font size=" + "+3" + "><b>" + confirmCode + "</b></font></center></p></body></html>"
             };
@@ -353,6 +375,7 @@ app.post("/api/customerSignIn", (req, res) => {
         }
     )
 })
+
 app.post("/api/employeeSignIn", (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
@@ -374,6 +397,7 @@ app.post("/api/employeeSignIn", (req, res) => {
         }
     )
 })
+
 app.post("/api/managerSignIn", (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
@@ -471,6 +495,7 @@ app.post("/api/customerForgot", (req, res) => {
         }
     )
 })
+
 app.post("/api/employeeForgot", (req, res) => {
     const username = req.body.username;
     const email = req.body.email;
@@ -487,6 +512,7 @@ app.post("/api/employeeForgot", (req, res) => {
         }
     )
 })
+
 app.post("/api/managerForgot", (req, res) => {
     const username = req.body.username;
     const email = req.body.email;
@@ -785,6 +811,7 @@ app.post("/api/addBusinessNotes", (req, res) => {
         }
     )
 })
+
 app.post("/api/getBusinessNotes", (req, res) => {
     const businessName = req.body.businessName
     db.query(
@@ -802,6 +829,7 @@ app.post("/api/getBusinessNotes", (req, res) => {
         }
     )
 })
+
 app.post("/api/managerDeleteNote", (req, res) => {
     const noteID = req.body.noteID;
     db.query(
