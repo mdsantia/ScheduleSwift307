@@ -29,42 +29,76 @@ function Copyright(props) {
 
 const theme = createTheme();
 
+const makeUniqueID = (length) => {
+    // Reference to ran string https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
 const ManagerConfirmAccount = () => {
     const { state } = useLocation();
     const navigate = useNavigate();
     const [confirmStatus, setConfirmStatus] = useState('');
     const [inputConfirmCode, setInputConfirmCode] = useState('');
     const [emailResentStatus, setEmailResentStatus] = useState('');
+    var [uniqueConfirmCode, setUniqueConfirmCode] = useState(state.confirmCode);
+    var [endTime, setEndTime] = useState(state.endTime);
 
     const handleResend = () => {
         setEmailResentStatus('');
         setConfirmStatus('');
+        const newConfirmCode = makeUniqueID(8);
+        const newEndTime = new Date();
+        newEndTime.setMinutes((newEndTime.getMinutes() + 1));
+        uniqueConfirmCode = newConfirmCode;
+        endTime = newEndTime;
+        setUniqueConfirmCode(newConfirmCode);
+        setEndTime(newEndTime);
+        // if (endTime.getMinutes() < 10) {
+        //     endTime.setHours(startTime.getHours() + 1);
+        // } else {
+        // endTime.setHours(startTime.getHours());
+        // }
         Axios.post("http://localhost:3001/api/sendConfirmEmail", {
+            username: state.username,
             email: state.email,
             firstName: state.firstName,
-            confirmCode: state.confirmCode,
+            businessName: state.businessName,
+            confirmCode: uniqueConfirmCode,
          })
-         alert("The confirmation email has been resent.");
+         setEmailResentStatus("The confirmation email has been resent.");
     };
 
     const handleConfirmation = (event) => {
         event.preventDefault();
         setConfirmStatus('');
         setEmailResentStatus('');
-        if (inputConfirmCode !== state.confirmCode) {
+        if (inputConfirmCode !== uniqueConfirmCode) {
             setConfirmStatus("Incorrect Confirmation Code.");
         } else {
             Axios.post("http://localhost:3001/api/managerConfirmAccount", {
-                confirmCode: state.confirmCode,
-            })
-            alert("Your Account Has Been Successfully Activated!");
-            navigate("/managerMain", {
-                state: {
-                    username: state.username,
-                    password: state.password,
-                    businessName: state.businessName,
+                confirmCode: uniqueConfirmCode,
+                username: state.username,
+                endTime: endTime,
+            }).then((result) => {
+                if (result.data.message) {
+                    setConfirmStatus("The confirmation code has expired.");
+                } else {
+                    alert("Your Account Has Been Successfully Activated!");
+                    navigate("/managerMain", {
+                    state: {
+                        username: state.username,
+                        password: state.password,
+                        businessName: state.businessName,
+                    }
+                    });
                 }
-            });
+            })
         }
     }
 
