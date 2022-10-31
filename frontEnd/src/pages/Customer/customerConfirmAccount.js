@@ -48,12 +48,10 @@ const CustomerConfirmAccount = () => {
     const [emailResentStatus, setEmailResentStatus] = useState('');
     var [uniqueConfirmCode, setUniqueConfirmCode] = useState(state.confirmCode);
     var [endTime, setEndTime] = useState(state.endTime);
-    
+
     const handleResend = () => {
         setEmailResentStatus('');
         setConfirmStatus('');
-        console.log("Old confirmCode: " + uniqueConfirmCode);
-        console.log("Old endTime: " + endTime);
         const newConfirmCode = makeUniqueID(8);
         const newEndTime = new Date();
         newEndTime.setMinutes((newEndTime.getMinutes() + 1));
@@ -66,8 +64,6 @@ const CustomerConfirmAccount = () => {
         // } else {
         // endTime.setHours(startTime.getHours());
         // }
-        console.log("New confirmCode: " + uniqueConfirmCode);
-        console.log("New endTime: " + endTime);
         Axios.post("http://localhost:3001/api/sendConfirmEmail", {
             username: state.username,
             email: state.email,
@@ -81,8 +77,6 @@ const CustomerConfirmAccount = () => {
         event.preventDefault();
         setConfirmStatus('');
         setEmailResentStatus('');
-        console.log("Current Confirm Code: " + uniqueConfirmCode);
-        console.log("current endTime: " + endTime);
         if (inputConfirmCode !== uniqueConfirmCode) {
             setConfirmStatus("Incorrect Confirmation Code.");
         } else {
