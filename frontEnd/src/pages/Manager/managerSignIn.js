@@ -31,6 +31,17 @@ function Copyright(props) {
 
 const theme = createTheme();
 
+const makeUniqueID = (length) => {
+    // Reference to ran string https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
 export default function ManagerSignIn() {
     const [loginStatus, setLoginStatus] = useState('');
     const navigate = useNavigate();
@@ -38,14 +49,23 @@ export default function ManagerSignIn() {
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
+        const uniqueConfirmCode = makeUniqueID(8);
         Axios.post("http://localhost:3001/api/managerSignIn", {
             username: data.get('username'),
             password: data.get('password'),
+            confirmCode: uniqueConfirmCode,
         }).then((result) => {
             console.log(result);
             if (result.data.message) {
                 setLoginStatus(result.data.message);
             } else if (result.data.result[0].active == 0) {
+                var endTime = new Date();
+                    endTime.setMinutes((endTime.getMinutes() + 1));
+                    // if (endTime.getMinutes() < 10) {
+                    //     endTime.setHours(startTime.getHours() + 1);
+                    // } else {
+                    // endTime.setHours(startTime.getHours());
+                    // }
                 navigate("/managerConfirmAccount", {
                     state: {
                         username: data.get('username'),
@@ -53,9 +73,11 @@ export default function ManagerSignIn() {
                         businessName: result.data.result[0].businessName,
                         email: result.data.result[0].emailAddress,
                         firstName: result.data.result[0].firstName,
-                        confirmCode: result.data.result[0].confirmCode
+                        confirmCode: uniqueConfirmCode,
+                        endTime: endTime,
                     }
                 });
+                alert("You have not activated your account. A confirmation email containing a new confirmation code has automatically been resent to you.");
             } else {
                 navigate("/managerMain", {
                     state: {
