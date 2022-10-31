@@ -204,8 +204,8 @@ export default function Orders(props) {
                 endTime: endTime,
                 reservedBy: state.username,
                 numPeople: data.get('numPeople'),
-
-                numReservable: numReserved
+                numReservable: numReserved,
+                
             }).then((result) => {
                 setReservationID(result.data.id);
                 alert(`Your reservation has been saved! Your reservation's id is ${result.data.id}`);
