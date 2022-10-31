@@ -755,7 +755,55 @@ app.post("/api/createReservation", (req, res) => {
             }
             if (result) {
                 console.log(result);
-                res.send( { id: result.insertId } )
+                res.send( { id: result.insertId } );
+                db.query("SELECT * from userData WHERE username = ?", [reservedBy], (err2, result2) => {
+                    if (err2) {
+                        console.log(err2);
+                        console.log("Unable to send confirmation email");
+                    } else {
+                        let allReservableItems = reservable.split(";");
+                        let allReservablePrices = price.split(";");
+                        let allNumReservable = numReservable.split(";");
+                        var allReservableItemsString = "";
+                        if (allReservableItems.length === 0) {
+                            allReservableItemsString += "<p><b>Number of Reserved " + reservable + ": </b>" + numReservable + "</p></body></html>\n";
+                            allReservableItemsString +="<p><b>Total Price of Reserved " + reservable + ": </b>" + (price * numReservable) + "</p></body></html>\n";
+                        } else {
+                            for (i = 0; i < allReservableItems.length; i++) {
+                                allReservableItemsString += "<p><b>Number of Reserved " + allReservableItems[i] + ": </b>" + allNumReservable[i] + "</p></body></html>\n";
+                                allReservableItemsString +="<p><b>Total Price of Reserved " + allReservableItems[i] + ": </b>" + (allReservablePrices[i] * allNumReservable[i]) + "</p></body></html>\n";
+                            }
+                        }
+                        const mailOptions = {
+                            from:
+                            {
+                                name: 'no-reply@scheduleswift.com',
+                                address: 'scheduleswift@gmail.com'
+                            },
+                            to: result2[0].emailAddress,
+                            subject: "Reservation Confirmation for " + result2[0].firstName + " at " + businessName,
+                            html: "<html><h1>You Have Successfully Made a Reservation!</h1><body><h4>" + result2[0].firstName + ",</h4>"
+                                + "<p>Thank you for making a reservation at " + businessName + ". Your confirmation ID is " + result.insertId + ".</p>"
+                                + "<h4>Here are the details of your reservation:</h4>"
+                                + "<p><b>Business Name: </b>" + businessName + "</p></body></html>"
+                                + "<p><b>Reserved By: </b>" + reservedBy + " (" + result2[0].firstName + " " + result2[0].lastName + ")</p></body></html>"
+                                + "<p><b>Number of People: </b>" + numPeople + "</p></body></html>"
+                                + "<p><b>Reservation Date: </b>" + reservationSubstring + "</p></body></html>"
+                                + allReservableItemsString
+                                + "<p><b>Reservation Start Time: </b>" + new Date(startTime).toLocaleTimeString() + "</p></body></html>"
+                                + "<p><b>Reservation End Time: </b>" + new Date(endTime).toLocaleTimeString() + "</p></body></html>"
+                        };
+                        transport.sendMail(mailOptions, (err, res) => {
+                            if (err) {
+                                console.log("Unable to send reservation confirmation email.");
+                                console.log(err);
+                            }
+                            else {
+                                console.log("The reservation confirmation email was successfully sent.");
+                            }
+                        });
+                    }
+                })
             }
         }
     )
