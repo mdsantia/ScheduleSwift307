@@ -83,6 +83,15 @@ const CustomerRegister = () => {
                         setBusinessNameStatus("This business name has already been taken.");
                     }                
                 } else {
+                    var endTime = new Date();
+                    endTime.setMinutes((endTime.getMinutes() + 1));
+                    // if (endTime.getMinutes() < 10) {
+                    //     endTime.setHours(startTime.getHours() + 1);
+                    // } else {
+                    // endTime.setHours(startTime.getHours());
+                    // }
+                    console.log("Initial confirmCode: " + uniqueConfirmCode);
+                    console.log("Initial endTime: " + endTime);
                     navigate("/managerConfirmAccount", {
                         state: {
                             username: data.get('username'),
@@ -91,6 +100,7 @@ const CustomerRegister = () => {
                             email: data.get('email'),
                             firstName: data.get('firstName'),
                             confirmCode: uniqueConfirmCode,
+                            endTime: endTime,
                         }
                     });
                     console.log({

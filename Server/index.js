@@ -174,8 +174,16 @@ app.post("/api/sendConfirmEmail", (req, res) => {
     const firstName = req.body.firstName;
     const emailAddress = req.body.email;
     const confirmCode = req.body.confirmCode;
+    var sqlInsert;
+    console.log(req.body.businessName);
+    if (req.body.businessName === undefined) {
+        sqlInsert = "UPDATE userData SET confirmCode = ? WHERE username = ?";
+    } else {
+        sqlInsert = "UPDATE managerData SET confirmCode = ? WHERE username = ?";
+    }
+    console.log(sqlInsert);
     db.query(
-        "UPDATE userData SET confirmCode = ? WHERE username = ?",
+        sqlInsert,
         [confirmCode, username],
         (err, result) => {
             if (err) {
@@ -291,18 +299,26 @@ app.post("/api/employeeRegister", (req, res) => {
 
 app.post("/api/managerConfirmAccount", (req, res) => {
     const confirmCode = req.body.confirmCode;
-    db.query(
-        "UPDATE managerData SET active = 1 WHERE confirmCode = ?",
-        [confirmCode],
-        (err, result) => {
-            if (err) {
-                console.log("Unable to activate account.");
-                console.log(err);
-            } else {
-                console.log("Successfully Activated Account.");
+    const username = req.body.username;
+    const endTime = req.body.endTime;
+    const currentTime = new Date();
+    if ((new Date(currentTime).getTime()) > (new Date(endTime).getTime())) {
+        res.send({ message: "Confirmation code has expired"});
+    } else {
+        db.query(
+            "UPDATE managerData SET active = 1 WHERE confirmCode = ? AND username = ?",
+            [confirmCode, username],
+            (err, result) => {
+                if (err) {
+                    console.log("Unable to activate account.");
+                    console.log(err);
+                } else {
+                    res.send({result});
+                    console.log("Successfully Activated Account.");
+                }
             }
-        }
-    )
+        )
+    }
 })
 
 app.post("/api/managerRegister", (req, res) => {

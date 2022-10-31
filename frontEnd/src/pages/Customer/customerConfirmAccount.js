@@ -48,9 +48,7 @@ const CustomerConfirmAccount = () => {
     const [emailResentStatus, setEmailResentStatus] = useState('');
     var [uniqueConfirmCode, setUniqueConfirmCode] = useState(state.confirmCode);
     var [endTime, setEndTime] = useState(state.endTime);
-    // var uniqueConfirmCode = state.confirmCode;
-    // var endTime = state.endTime;
-
+    
     const handleResend = () => {
         setEmailResentStatus('');
         setConfirmStatus('');
