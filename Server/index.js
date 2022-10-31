@@ -455,6 +455,7 @@ app.post("/api/managerSignIn", (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     const encryptedPassword = encrypt(password);
+    const confirmCode = req.body.confirmCode;
     db.query(
         "SELECT * FROM managerData WHERE username = ? AND password = ?",
         [username, encryptedPassword],
@@ -465,6 +466,42 @@ app.post("/api/managerSignIn", (req, res) => {
             }
             if (result.length == 1) {
                 res.send({ result });
+                if (result[0].active == 0) {
+                    db.query(
+                        "UPDATE managerData SET confirmCode = ? WHERE username = ?",
+                        [confirmCode, username],
+                        (err, result) => {
+                            if (err) {
+                                console.log("Unable to set new confirmation code.");
+                                console.log(err);
+                            } else {
+                                console.log("Successfully set new confirmation code to " + confirmCode);
+                            }
+                        }
+                    )
+                    const mailOptions = {
+                        from:
+                        {
+                            name: 'no-reply@scheduleswift.com',
+                            address: 'scheduleswift@gmail.com'
+                        },
+                        to: result[0].emailAddress,
+                        subject: "Confirm Your Account",
+                        html: "<html><h1>Welcome to Schedule Swift!</h1><body><h4>" + result[0].firstName + ",</h4>"
+                            + "<p>Here is the confirmation code to confirm your account. This code will expire in 10 minutes. Once you enter the confirmation code, your account will be activated and you will be automatically redirected to the main page.</p>"
+                            + "<h4>Confirmation Code:</h4>"
+                            + "<p><center><font size=" + "+3" + "><b>" + confirmCode + "</b></font></center></p></body></html>"
+                    };
+                    transport.sendMail(mailOptions, (err, res) => {
+                        if (err) {
+                            console.log("Unable to send email.");
+                            console.log(err);
+                        }
+                        else {
+                            console.log("The email was successfully sent.");
+                        }
+                    });
+                }
             } else {
                 res.send({ message: "Wrong username/password combination" });
             }
