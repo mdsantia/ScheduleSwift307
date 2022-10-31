@@ -83,8 +83,6 @@ const CustomerRegister = () => {
                     // } else {
                     // endTime.setHours(startTime.getHours());
                     // }
-                    console.log("Initial confirmCode: " + uniqueConfirmCode);
-                    console.log("Initial endTime: " + endTime);
                     navigate("/customerConfirmAccount", {
                         state: {
                             username: data.get('username'),

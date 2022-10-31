@@ -76,7 +76,6 @@ const CustomerRegister = () => {
                 confirmCode: uniqueConfirmCode
             }).then((result) => {
                 if (result.data.message) {
-                    console.log(result.data.message);
                     if (result.data.message === "Username has already been taken") {
                         setUsernameStatus("This username has already been taken.");
                     } else if (result.data.message === "Business name has already been taken") {
@@ -90,8 +89,6 @@ const CustomerRegister = () => {
                     // } else {
                     // endTime.setHours(startTime.getHours());
                     // }
-                    console.log("Initial confirmCode: " + uniqueConfirmCode);
-                    console.log("Initial endTime: " + endTime);
                     navigate("/managerConfirmAccount", {
                         state: {
                             username: data.get('username'),
