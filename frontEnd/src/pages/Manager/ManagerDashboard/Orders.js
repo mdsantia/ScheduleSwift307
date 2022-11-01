@@ -12,7 +12,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { useEffect, useState } from 'react';
-import { Button, TextField, Grid, Typography } from '@mui/material';
+import { Button, TextField, Grid, Typography, Divider } from '@mui/material';
 import { Dayjs } from 'dayjs';
 
 function preventDefault(event) {
@@ -34,6 +34,10 @@ export default function Orders(props) {
     const [openTime, setOpenTime] = useState(Dayjs | null);
     const [closeTime, setCloseTime] = useState(Dayjs | null);
     const [closed, setClosed] = useState('');
+
+    const [faq, setFAQ] = useState([]);
+    const [question, setQuestion] = useState('');
+    const [answer, setAnswer] = useState('');
 
     function getBusinessHours() {
         Axios.post("http://localhost:3001/api/getFacilitysData", {
@@ -164,8 +168,49 @@ export default function Orders(props) {
         setClosed(copy);
     }
 
+    function getFAQ(businessName) {
+
+        Axios.post("http://localhost:3001/api/managerGetFAQ", {
+            businessName: props.businessName
+        }).then((result) => {
+            const faqs = result.data.result;
+            setFAQ(faqs);
+            console.log("test");
+        })
+    }
+
+    const addFAQ = (event) => {
+
+        event.preventDefault();
+        Axios.post("http://localhost:3001/api/addManagerFAQ", {
+            businessName: props.businessName,
+            question: question,
+            answer: answer
+        }).then((result) => {
+            if (result.data.err) {
+                alert("Error! Something has gone wrong!")
+            } else {
+                setQuestion('');
+                setAnswer('');
+                getFAQ(props.businessName);
+            }
+        })
+    }
+
+    function clearFAQ(faqID) {
+        Axios.post("http://localhost:3001/api/managerDeleteFAQ", {
+            faqID: faqID
+        }).then((result) => {
+            if (result.data.result.affectedRows === 0) {
+            } else {
+                getFAQ(props.businessName);
+            }
+        })
+    }
+
     useEffect(() => {
         getBusinessHours();
+        getFAQ(props.businessName);
     }, []);
     if (rows.length > 0) {
 
@@ -200,6 +245,65 @@ export default function Orders(props) {
                             sx={{ mt: 3, mb: 2 }}
                         >
                             Save
+                    </Button>
+                </Box>
+                <br></br>
+                <br></br>
+                <Title>FAQ</Title>
+                <Table size="small">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell size="small">Question:</TableCell>
+                            <TableCell>Answer:</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {faq.map((faq, index) => (
+                            <TableRow>
+                                <TableCell>{faq.question}</TableCell>
+                                <TableCell>{faq.answer}</TableCell>
+                                <TableCell align="right"><Button onClick={() => clearFAQ(faq.ID)}>Clear</Button></TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                <br></br>
+                <br></br>
+                <Divider> Add an Additional FAQ </Divider>
+                <Box component="form" onSubmit={addFAQ} noValidate sx={{ mt: 1 }}>
+                    <TextField
+                        margin="normal"
+                        fullWidth
+                        required
+                        id="question"
+                        label="Question"
+                        name="question"
+                        value={question}
+                        autoComplete="question"
+                        onChange={(e) => setQuestion(e.target.value)}
+                    />
+                    <TextField
+                        margin="normal"
+                        fullWidth
+                        required
+                        name="answer"
+                        label="Answer"
+                        type="answer"
+                        id="answer"
+                        value={answer}
+                        autoComplete="answer"
+                        InputProps={{
+                            maxLength: 500,
+                        }}
+                        onChange={(e) => setAnswer(e.target.value)}
+                    />
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2 }}
+                    >
+                        Add FAQ
                     </Button>
                 </Box>
             </React.Fragment >

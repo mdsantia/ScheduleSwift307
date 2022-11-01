@@ -87,9 +87,7 @@ export default function Orders(props) {
             newPrice: data.get('newPrice'),
 
         }).then(() => {
-
-            window.location.reload(false);
-
+            getReservations(props.businessName);
         })
     }
 
