@@ -716,9 +716,9 @@ app.post("/api/updateReservation", (req, res) => {
     const numPeople = req.body.numPeople;
     const numReservable = req.body.numReservable;
     db.query(
-        "UPDATE reservations SET numReservable = ?, startTime = ?, endTime = ?, reservedBy = ?, \
+        "UPDATE reservations SET numReservable = ?, startTime = ?, endTime = ?, \
             numPeople = ?, businessName = ?, reservationDate = ?, reservableItem = ?, price = ?, isReserved = ? WHERE ID = ?",
-        [numReservable, startTime, endTime, reservedBy, numPeople, businessName, reservationSubstring, reservable, price, isReserved, ID],
+        [numReservable, startTime, endTime, numPeople, businessName, reservationSubstring, reservable, price, isReserved, ID],
         (err, result) => {
             if (err) {
                 console.log(err)
