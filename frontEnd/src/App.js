@@ -33,6 +33,7 @@ import ManagerForgotPassword from './pages/Manager/managerForgotPassword';
 import CustomerConfirmAccount from './pages/Customer/customerConfirmAccount';
 import ManagerConfirmAccount from './pages/Manager/managerConfirmAccount';
 import EmployeeReservations from './pages/Employee/EmployeeReservations/Dashboard';
+import ManagerFillForm from './pages/Manager/ManagerFillForm/Dashboard';
 
 
 function App() {
@@ -58,6 +59,7 @@ function App() {
           <Route path="/managerMain" element={<ManagerMain />} />
           <Route path="/FacilityForm" element={<FacilityForm />} />
           <Route path="/managerCreateReservation" element={<ManagerCreateReservation />} />
+          <Route path="/managerFillForm" element={<ManagerFillForm />} />
           <Route path="/facilityReservations" element={<FacilityReservations />} />
           <Route path="/managerAccount" element={<ManagerAccount />} />
           <Route path="/managerNotes" element={<ManagerNotes />} />

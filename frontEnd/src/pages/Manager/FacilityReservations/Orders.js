@@ -34,7 +34,7 @@ export default function Orders(props) {
         })
     }
     function editReservation (reserveID) {
-        navigate("/requestForm", {
+        navigate("/managerFillForm", {
             state: {
                 username: props.username,
                 password: props.password,
@@ -54,6 +54,23 @@ export default function Orders(props) {
                 getReservations(props.businessName);
             }
         })
+    }
+
+    function total(numReservable, price) {
+        var amount = 0;
+        if (!price.includes(";")) {
+            amount = price;
+            return amount;
+        }
+        const priceArray = price.split(";");
+        const num = numReservable.split(";");
+        const numReservableItems = num.length;
+        for (let i = 0; i < numReservableItems; i++) {
+            if (num[i]) {
+                amount = amount + parseFloat(priceArray[i]) * num[i];
+            }
+        }
+        return amount;
     }
 
     const changePrice = (event) => {
@@ -104,7 +121,7 @@ export default function Orders(props) {
                                 <TableCell>{reserve.businessName}</TableCell>
                                 <TableCell>{reserve.reservableItem}</TableCell>
                                 <TableCell>{reserve.isReserved}</TableCell>
-                                <TableCell align="right">{`$${reserve.price}`}</TableCell>
+                                <TableCell align="right">{`$${total(reserve.numReservable, reserve.price)}`}</TableCell>
                                 <TableCell><Button onClick={() => editReservation(reserve.ID)}>Edit</Button></TableCell>
                                 <TableCell><Button onClick={() => deleteReservation(reserve.ID)}>Delete</Button></TableCell>
                             </TableRow>
