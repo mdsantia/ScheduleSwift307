@@ -21,7 +21,6 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { getPickersSlideTransitionUtilityClass } from '@mui/x-date-pickers/CalendarPicker/pickersSlideTransitionClasses';
 
 function preventDefault(event) {
     event.preventDefault();
@@ -37,6 +36,7 @@ export default function Orders(props) {
     const [minArray, setMinArray] = useState([]);
     const [maxArray, setMaxArray] = useState([]);
     const [priceArray, setPriceArray] = useState([]);
+    const [total, setTotal] = useState(0);
     const [numPeople, setNumPeople] = useState([]);
     const [maxNumPeople, setMaxNumPeople] = useState([]);
     const [numArray, setNumArray] = useState([]);
@@ -53,9 +53,18 @@ export default function Orders(props) {
     const [closed, setClosed] = useState('');
 
     useEffect(() => {
-        setCurrentDate(formattedDate);
         insertValues();
     }, [])
+
+    function calculateTotal(num) {
+        var tot = 0;
+        for (let i = 0; i < numReservableItems; i++) {
+            if (num[i]) {
+                tot = tot + parseFloat(priceArray[i]) * num[i];
+            }
+        }
+        setTotal(tot);
+    }
 
     function insertValues() {
         if (state.ID) {
@@ -72,6 +81,8 @@ export default function Orders(props) {
                 setCurrentDate(result.data.result[0].reservationDate);
                 setEndTime(result.data.result[0].endTime);
             })
+        } else {
+            setCurrentDate(formattedDate);
         }
         Axios.post("http://localhost:3001/api/getFacilitysData", {
             businessName: businessName
@@ -188,6 +199,7 @@ export default function Orders(props) {
                             let newArr = [...numArray];
                             newArr[parseInt(newValue.target.id) - 1] = newValue.target.value;
                             setNumArray(newArr);
+                            calculateTotal(newArr);
                         }}
                     />
                     </Grid>
@@ -198,7 +210,6 @@ export default function Orders(props) {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        alert(new Date(formattedDate).getDate());
         if (closed[new Date(currentDate).getDay()]) {
             alert(`${businessName} is closed on ${new Date(currentDate).getDate()}.`);
             return;
@@ -250,7 +261,7 @@ export default function Orders(props) {
                 
             }).then((result) => {
                 setReservationID(result.data.id);
-                alert(`Your reservation has been saved! Your reservation's id is ${result.data.id}`);
+                alert(`Your reservation has been saved!\nYour reservation's id is ${result.data.id}.\nYour total is: ${total}.`);
             })
         } else{
             // UPDATE RESERVATION INSTEAD
@@ -267,7 +278,7 @@ export default function Orders(props) {
 
                 numReservable: numReserved
             }).then((result) => {
-                alert(`Your reservation has been saved! Your reservation's id is ${reservationID}`);
+                alert(`Your reservation has been saved!\nYour reservation's id is ${reservationID}.\nYour total is: ${total}.`);
             })
         }
     }
@@ -288,6 +299,12 @@ export default function Orders(props) {
                 </Avatar>
                 <Typography component="h1" variant="h5">
                     {businessName} Reservation Request Form
+                </Typography>
+                <Typography style={{color:"#98622E"}} component="h5" variant="h8">
+                    * Prices are assigned per unit of reservable item.
+                </Typography>
+                <Typography component="p" variant="p">
+                    Reservation ID: {reservationID}
                 </Typography>
                 <Box component="form" validate="true" onSubmit={handleSubmit} sx={{ mt: 3 }}>
                     <Grid container spacing={2}>
@@ -335,7 +352,7 @@ export default function Orders(props) {
                                         const closeHour = new Date((closeTime[new Date(currentDate).getDay()])).getHours()
                                         const closeMinute = new Date((closeTime[new Date(currentDate).getDay()])).getMinutes()
                                     if ((clockType === 'hours' && timeValue < openHour) || (clockType === 'hours' && timeValue >= closeHour && closeMinute === 0) || 
-                                        (clockType === 'hours' && timeValue >= closeHour && closeMinute > 0)) {
+                                        (clockType === 'hours' && timeValue > closeHour && closeMinute > 0)) {
                                             return true;
                                         }
                                     if (((new Date(startTime).getHours()) === openHour && clockType === 'minutes' && timeValue < openMinute)
@@ -372,7 +389,8 @@ export default function Orders(props) {
                                             return true;
                                         }
                                     if ((clockType === 'hours' && timeValue < (new Date(startTime).getHours()))
-                                        || ((clockType === 'minutes' && timeValue <= (new Date(startTime).getMinutes()) ))) {
+                                        || ((new Date(startTime).getHours()) === (new Date(endTime).getHours()) && 
+                                            clockType === 'minutes' && timeValue <= (new Date(startTime).getMinutes()) )) {
                                             return true;
                                         }
                                     if (clockType === 'minutes' && timeValue % 5) {
@@ -432,6 +450,9 @@ export default function Orders(props) {
                                 {box[9]}
                             </Grid>
                     </Grid>
+                    <Typography component="p" variant="p">
+                        Total: ${total}
+                    </Typography>
                     <Button
                         type="submit"
                         // disabled={ closed[new Date(currentDate).getDay()] ? true : false}

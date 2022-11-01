@@ -9,6 +9,7 @@ import Title from './Title';
 import Axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Button, TextField, Grid, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 function preventDefault(event) {
     event.preventDefault();
@@ -18,6 +19,7 @@ export default function Orders(props) {
     const [reservations, setReservations] = useState([]);
     const [deleteRes, setDeleteRes] = useState('');
     const [error, setError] = useState('');
+    const navigate = useNavigate();
     function getReservations(business) {
         Axios.post("http://localhost:3001/api/getBusinessReservations", {
             businessName: props.businessName
@@ -26,6 +28,16 @@ export default function Orders(props) {
             console.log(allReserves);
             setReservations(allReserves);
 
+        })
+    }
+    function editReservation (reserveID) {
+        navigate("/requestForm", {
+            state: {
+                username: props.username,
+                password: props.password,
+                businessName: props.businessName,
+                ID: reserveID
+            }
         })
     }
     function deleteReservation(resID) {
@@ -56,7 +68,9 @@ export default function Orders(props) {
                             <TableCell>Business Name</TableCell>
                             <TableCell>Reservable Item</TableCell>
                             <TableCell>Reserved</TableCell>
-                            <TableCell align="right">Price</TableCell>
+                            <TableCell>Price</TableCell>
+                            <TableCell align="right">Edit</TableCell>
+                            <TableCell align="right">Delete</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -68,6 +82,7 @@ export default function Orders(props) {
                                 <TableCell>{reserve.reservableItem}</TableCell>
                                 <TableCell>{reserve.isReserved}</TableCell>
                                 <TableCell align="right">{`$${reserve.price}`}</TableCell>
+                                <TableCell><Button onClick={() => editReservation(reserve.ID)}>Edit</Button></TableCell>
                                 <TableCell><Button onClick={() => deleteReservation(reserve.ID)}>Delete</Button></TableCell>
                             </TableRow>
                         ))}
