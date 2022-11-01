@@ -798,13 +798,13 @@ app.post("/api/createReservation", (req, res) => {
                                     ".arrival-button { padding: 10px 60px; text-align: center; background-color: #DB1A27; color: white; font-weight: bold; text-decoration: none; }" +
                                 "</style>" +
                             "</head>" + 
-                            "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><img src=\"https://static.olocdn.net/img/pandaexpress/email_logo.png\" alt=\"Logo\" /></td></tr>" +
+                            "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><img src=\"ScheduleSwift\frontEnd\public\ScheduleSwift logo.png\" alt=\"Logo\" /></td></tr>" +
                                 "<tr><td width=\"400\" valign=\"top\">" +
                                 "<br /><br /><strong>" + businessName + "</strong>" +
-                                "<br />Address" +
-                                "<br />Phone Number" +
+                                "<br />123 Address St" +
+                                "<br />(XXX) XXX-XXXX" +
                                 "<br />email@example.com</td></tr><tr style=\"text-align:right;vertical-align:top\">" +
-                                "<td colspan=\"2\">Confirmation ID: <strong>#" + result.insertId + "</strong></td></tr>" +
+                                "<td colspan=\"2\">Reservation ID: <strong>#" + result.insertId + "</strong></td></tr>" +
                                 "<tr><td>Customer Username:</td><td>" + result2[0].username + "</td></tr>" +
                                 "<tr><td>Customer Name:</td><td>" + result2[0].firstName + " " + result2[0].lastName + "</td></tr>" +
                                 "<tr><td>Customer Email:</td><td>" + result2[0].emailAddress + "</td></tr>" +
@@ -821,7 +821,7 @@ app.post("/api/createReservation", (req, res) => {
                                 "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
                                 "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal + (subTotal * 1.07)).toFixed(2) + "</strong></td></tr>" +
                                 "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
-                                "<p>Thank you for reserving with us.</p>" +
+                                "<p>Thank you for reserving with ScheduleSwift!</p>" +
                                 "</td></tr></table>" +
                             "</body>" +
                         "</html>"                     
