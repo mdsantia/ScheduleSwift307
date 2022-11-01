@@ -790,7 +790,7 @@ app.post("/api/updateReservation", (req, res) => {
                                 "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
                                 "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
                                 "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
-                                "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal + (subTotal * 1.07)).toFixed(2) + "</strong></td></tr>" +
+                                "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
                                 "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
                                 "<p>Thank you for reserving with ScheduleSwift!</p>" +
                                 "</td></tr></table>" +
@@ -900,7 +900,7 @@ app.post("/api/createReservation", (req, res) => {
                                 "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
                                 "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
                                 "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
-                                "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal + (subTotal * 1.07)).toFixed(2) + "</strong></td></tr>" +
+                                "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
                                 "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
                                 "<p>Thank you for reserving with ScheduleSwift!</p>" +
                                 "</td></tr></table>" +
