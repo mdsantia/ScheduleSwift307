@@ -765,13 +765,18 @@ app.post("/api/createReservation", (req, res) => {
                         let allReservablePrices = price.split(";");
                         let allNumReservable = numReservable.split(";");
                         var allReservableItemsString = "";
+                        var subTotal = 0;
                         if (allReservableItems.length === 0) {
-                            allReservableItemsString += "<p><b>Number of Reserved " + reservable + ": </b>" + numReservable + "</p></body></html>\n";
-                            allReservableItemsString +="<p><b>Total Price of Reserved " + reservable + ": </b>" + (price * numReservable) + "</p></body></html>\n";
+                            allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + numReservable + " x " + reservable + "</td>";
+                            allReservableItemsString += "<td width=\"20%\"> (" + numReservable + " x $" + price + ")" + "</td><td width=\"5%\">=</td>";
+                            allReservableItemsString += "<td style=\"text-align:right\">$" + (price * numReservable).toFixed(2) + "</td></tr>";
+                            subTotal = price * numReservable;
                         } else {
                             for (i = 0; i < allReservableItems.length; i++) {
-                                allReservableItemsString += "<p><b>Number of Reserved " + allReservableItems[i] + ": </b>" + allNumReservable[i] + "</p></body></html>\n";
-                                allReservableItemsString +="<p><b>Total Price of Reserved " + allReservableItems[i] + ": </b>" + (allReservablePrices[i] * allNumReservable[i]) + "</p></body></html>\n";
+                                allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + allNumReservable[i] + " x " + allReservableItems[i] + "</td>";
+                                allReservableItemsString += "<td width=\"20%\"> (" + allNumReservable[i] + " x $" + allReservablePrices[i] + ")" + "</td><td width=\"5%\">=</td>";
+                                allReservableItemsString += "<td style=\"text-align:right\">$" + (allReservablePrices[i] * allNumReservable[i]).toFixed(2) + "</td></tr>";
+                                subTotal += allReservablePrices[i] * allNumReservable[i];
                             }
                         }
                         const mailOptions = {
@@ -782,17 +787,45 @@ app.post("/api/createReservation", (req, res) => {
                             },
                             to: result2[0].emailAddress,
                             subject: "Reservation Confirmation for " + result2[0].firstName + " at " + businessName,
-                            html: "<html><h1>You Have Successfully Made a Reservation!</h1><body><h4>" + result2[0].firstName + ",</h4>"
-                                + "<p>Thank you for making a reservation at " + businessName + ". Your confirmation ID is " + result.insertId + ".</p>"
-                                + "<h4>Here are the details of your reservation:</h4>"
-                                + "<p><b>Business Name: </b>" + businessName + "</p></body></html>"
-                                + "<p><b>Reserved By: </b>" + reservedBy + " (" + result2[0].firstName + " " + result2[0].lastName + ")</p></body></html>"
-                                + "<p><b>Number of People: </b>" + numPeople + "</p></body></html>"
-                                + "<p><b>Reservation Date: </b>" + reservationSubstring + "</p></body></html>"
-                                + allReservableItemsString
-                                + "<p><b>Reservation Start Time: </b>" + new Date(startTime).toLocaleTimeString() + "</p></body></html>"
-                                + "<p><b>Reservation End Time: </b>" + new Date(endTime).toLocaleTimeString() + "</p></body></html>"
-                        };
+                            html: "<html>" +
+                            "<head><title>Reservation Confirmation</title>" +
+                                "<style>" +
+                                    "BODY			{ text-align: center; }" +
+                                    "TD				{ font-family:arial;color:black;font-size:11pt;padding:4px;text-align:left; }" +
+                                    ".Pref			{ font-size:10pt; }" +
+                                    ".note			{ font-size:0.7em; }" +
+                                    ".money			{ text-align: right; }" +
+                                    ".arrival-button { padding: 10px 60px; text-align: center; background-color: #DB1A27; color: white; font-weight: bold; text-decoration: none; }" +
+                                "</style>" +
+                            "</head>" + 
+                            "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><img src=\"https://static.olocdn.net/img/pandaexpress/email_logo.png\" alt=\"Logo\" /></td></tr>" +
+                                "<tr><td width=\"400\" valign=\"top\">" +
+                                "<br /><br /><strong>" + businessName + "</strong>" +
+                                "<br />Address" +
+                                "<br />Phone Number" +
+                                "<br />email@example.com</td></tr><tr style=\"text-align:right;vertical-align:top\">" +
+                                "<td colspan=\"2\">Confirmation ID: <strong>#" + result.insertId + "</strong></td></tr>" +
+                                "<tr><td>Customer Username:</td><td>" + result2[0].username + "</td></tr>" +
+                                "<tr><td>Customer Name:</td><td>" + result2[0].firstName + " " + result2[0].lastName + "</td></tr>" +
+                                "<tr><td>Customer Email:</td><td>" + result2[0].emailAddress + "</td></tr>" +
+                                "<tr><td colspan=\"2\"><p>Payment Method: Credit Card<br /></p>" +
+                                "<strong>RESERVATION DETAILS</strong>" +
+                                "<br />Date of Reservation: <strong>" + reservationSubstring + "</strong>" +
+                                "<br />Time of Reservation: <strong>" + new Date(startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(endTime).toLocaleTimeString() + "</td></tr>" +
+                                "<tr><td colspan=\"2\"></td></tr>" +
+                                "<tr /></table><br /><table style=\"border-top:solid 3px black;\" cellspacing=\"0\" cellpadding=\"3\" width=\"600\">" +
+                                allReservableItemsString +
+                                "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
+                                "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
+                                "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
+                                "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
+                                "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal + (subTotal * 1.07)).toFixed(2) + "</strong></td></tr>" +
+                                "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
+                                "<p>Thank you for reserving with us.</p>" +
+                                "</td></tr></table>" +
+                            "</body>" +
+                        "</html>"                     
+                        }
                         transport.sendMail(mailOptions, (err, res) => {
                             if (err) {
                                 console.log("Unable to send reservation confirmation email.");
