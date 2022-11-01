@@ -21,7 +21,6 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { getPickersSlideTransitionUtilityClass } from '@mui/x-date-pickers/CalendarPicker/pickersSlideTransitionClasses';
 
 function preventDefault(event) {
     event.preventDefault();
@@ -37,6 +36,7 @@ export default function Orders(props) {
     const [minArray, setMinArray] = useState([]);
     const [maxArray, setMaxArray] = useState([]);
     const [priceArray, setPriceArray] = useState([]);
+    const [total, setTotal] = useState(0);
     const [numPeople, setNumPeople] = useState([]);
     const [maxNumPeople, setMaxNumPeople] = useState([]);
     const [numArray, setNumArray] = useState([]);
@@ -48,10 +48,23 @@ export default function Orders(props) {
     const navigate = useNavigate();
     const formattedDate = `${year}-${month}-${day}`;
     const [currentDate, setCurrentDate] = useState(Dayjs | null);
+    const [openTime, setOpenTime] = useState(Dayjs | null);
+    const [closeTime, setCloseTime] = useState(Dayjs | null);
+    const [closed, setClosed] = useState('');
+
     useEffect(() => {
         insertValues();
-        setCurrentDate(formattedDate);
     }, [])
+
+    function calculateTotal(num) {
+        var tot = 0;
+        for (let i = 0; i < numReservableItems; i++) {
+            if (num[i]) {
+                tot = tot + parseFloat(priceArray[i]) * num[i];
+            }
+        }
+        setTotal(tot);
+    }
 
     function insertValues() {
         if (state.ID) {
@@ -68,6 +81,8 @@ export default function Orders(props) {
                 setCurrentDate(result.data.result[0].reservationDate);
                 setEndTime(result.data.result[0].endTime);
             })
+        } else {
+            setCurrentDate(formattedDate);
         }
         Axios.post("http://localhost:3001/api/getFacilitysData", {
             businessName: businessName
@@ -99,6 +114,39 @@ export default function Orders(props) {
                     // UPDATE MINIMUMS
                     let mins = String(result.data.result[0].mins).split(";");
                     setMinArray(mins);
+
+                    let Sun = result.data.result[0].Sun;
+                    let Mon = result.data.result[0].Mon;
+                    let Tues = result.data.result[0].Tues;
+                    let Wed = result.data.result[0].Wed;
+                    let Thurs = result.data.result[0].Thurs;
+                    let Fri = result.data.result[0].Fri;
+                    let Sat = result.data.result[0].Sat;
+                    let full = `${Sun};${Mon};${Tues};${Wed};${Thurs};${Fri};${Sat}`;
+                    let val = full.split(';');
+                    let closed = [];
+                    let open = [];
+                    let close = [];
+                    for (let i = 0; i < 14; i++) {
+                        if (i % 2 === 0) {
+                            if (val[i] === 'null') {
+                                closed.push(1);
+                                open.push(currentDate);
+                            } else {
+                                closed.push(0);
+                                open.push(val[i]);
+                            }
+                        } else {
+                            if (val[i] === 'null') {
+                                close.push(currentDate);
+                            } else {
+                                close.push(val[i]);
+                            }
+                        }
+                    }
+                    setClosed(closed);
+                    setOpenTime(open);
+                    setCloseTime(close);
                 }
             }
         })
@@ -131,7 +179,7 @@ export default function Orders(props) {
                         name={'Price' + element}
                         label={'Price ' + element}
                         id={element}
-                        value={`\$${priceArray[element - 1]}`}
+                        value={`$${priceArray[element - 1]}`}
                         InputProps={{
                             readOnly: true,
                         }}
@@ -151,6 +199,7 @@ export default function Orders(props) {
                             let newArr = [...numArray];
                             newArr[parseInt(newValue.target.id) - 1] = newValue.target.value;
                             setNumArray(newArr);
+                            calculateTotal(newArr);
                         }}
                     />
                     </Grid>
@@ -161,11 +210,15 @@ export default function Orders(props) {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        if (closed[new Date(currentDate).getDay()]) {
+            alert(`${businessName} is closed on ${new Date(currentDate).getDate()}.`);
+            return;
+        }
         let tot = 0;
         for (let i = 0; i < numReservableItems; i++) {
             tot = tot + numArray[i];
         }
-        if (tot == 0) {
+        if (tot === 0) {
             alert('Need to reserve at least one item');
             return;
         }
@@ -225,11 +278,12 @@ export default function Orders(props) {
 
                 numReservable: numReserved
             }).then((result) => {
-                alert(`Your reservation has been saved! Your reservation's id is ${reservationID}`);
+                alert(`Your reservation has been saved!\nYour reservation's id is ${reservationID}.\nYour total is: ${total}.`);
             })
         }
     }
 
+    if (currentDate) {
     return (
         <React.Fragment>
             <Box
@@ -245,6 +299,12 @@ export default function Orders(props) {
                 </Avatar>
                 <Typography component="h1" variant="h5">
                     {businessName} Reservation Request Form
+                </Typography>
+                <Typography style={{color:"#98622E"}} component="h5" variant="h8">
+                    * Prices are assigned per unit of reservable item.
+                </Typography>
+                <Typography component="p" variant="p">
+                    Reservation ID: {reservationID}
                 </Typography>
                 <Box component="form" validate="true" onSubmit={handleSubmit} sx={{ mt: 3 }}>
                     <Grid container spacing={2}>
@@ -265,9 +325,16 @@ export default function Orders(props) {
                                 <DatePicker
                                     id="reservationDate"
                                     label="Select Date"
+                                    validate="true"
                                     value={currentDate}
                                     onChange={(newValue) => { setCurrentDate(newValue) }}
-                                    renderInput={(params) => <TextField {...params} />}
+                                    renderInput={(params) => <TextField {...params}/>}
+                                    shouldDisableDate={(date) => {
+                                        if (closed[new Date(date).getDay()]) {
+                                            return true;
+                                        }
+                                        return false;
+                                    }}
                                 />
                             </LocalizationProvider>
                         </Grid>
@@ -280,9 +347,21 @@ export default function Orders(props) {
                                     onChange={(newValue) => { setStartTime(newValue) }}
                                     renderInput={(params) => <TextField {...params} required/>}
                                     shouldDisableTime={(timeValue, clockType) => {
-                                    if (clockType === 'minutes' && timeValue % 15) {
-                                        return true;
-                                    }
+                                        const openHour = new Date((openTime[new Date(currentDate).getDay()])).getHours()
+                                        const openMinute = new Date((openTime[new Date(currentDate).getDay()])).getMinutes()
+                                        const closeHour = new Date((closeTime[new Date(currentDate).getDay()])).getHours()
+                                        const closeMinute = new Date((closeTime[new Date(currentDate).getDay()])).getMinutes()
+                                    if ((clockType === 'hours' && timeValue < openHour) || (clockType === 'hours' && timeValue >= closeHour && closeMinute === 0) || 
+                                        (clockType === 'hours' && timeValue > closeHour && closeMinute > 0)) {
+                                            return true;
+                                        }
+                                    if (((new Date(startTime).getHours()) === openHour && clockType === 'minutes' && timeValue < openMinute)
+                                        || ((new Date(startTime).getHours()) === closeHour && clockType === 'minutes' && timeValue >= closeMinute)) {
+                                            return true;
+                                        }
+                                    if (clockType === 'minutes' && timeValue % 5) {
+                                            return true;
+                                        }
                                     return false;
                                     }}
                                 />
@@ -290,19 +369,33 @@ export default function Orders(props) {
                         </Grid>
                         <Grid item xs={12} sm={4}>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                {/* {alert(startTime)} */}
                                 <TimePicker
                                     label="End Time"
                                     value={endTime}
                                     fullWidth
                                     onChange={(newValue) => { setEndTime(newValue) }}
-                                    // minTime={Dayjs | startTime}
                                     renderInput={(params) => <TextField {...params} required />}
-                                    // Idea to implement outside hourse
                                     shouldDisableTime={(timeValue, clockType) => {
-                                    if (clockType === 'minutes' && timeValue % 15) {
-                                        return true;
-                                    }
+                                        const openHour = new Date((openTime[new Date(currentDate).getDay()])).getHours()
+                                        const openMinute = new Date((openTime[new Date(currentDate).getDay()])).getMinutes()
+                                        const closeHour = new Date((closeTime[new Date(currentDate).getDay()])).getHours()
+                                        const closeMinute = new Date((closeTime[new Date(currentDate).getDay()])).getMinutes()
+                                    if ((clockType === 'hours' && timeValue < openHour) || (clockType === 'hours' && timeValue === openHour && openMinute === 0) || 
+                                        (clockType === 'hours' && timeValue > closeHour)) {
+                                            return true;
+                                        }
+                                    if ((clockType === 'minutes' && (new Date(endTime).getHours()) === openHour && timeValue <= openMinute)
+                                        || ((new Date(endTime).getHours()) === closeHour && clockType === 'minutes' && timeValue > closeMinute)) {
+                                            return true;
+                                        }
+                                    if ((clockType === 'hours' && timeValue < (new Date(startTime).getHours()))
+                                        || ((new Date(startTime).getHours()) === (new Date(endTime).getHours()) && 
+                                            clockType === 'minutes' && timeValue <= (new Date(startTime).getMinutes()) )) {
+                                            return true;
+                                        }
+                                    if (clockType === 'minutes' && timeValue % 5) {
+                                            return true;
+                                        }
                                     return false;
                                     }}
                                 />
@@ -357,9 +450,12 @@ export default function Orders(props) {
                                 {box[9]}
                             </Grid>
                     </Grid>
-                    
+                    <Typography component="p" variant="p">
+                        Total: ${total}
+                    </Typography>
                     <Button
                         type="submit"
+                        // disabled={ closed[new Date(currentDate).getDay()] ? true : false}
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
@@ -370,4 +466,5 @@ export default function Orders(props) {
             </Box>
         </React.Fragment>
     );
+    }
 }

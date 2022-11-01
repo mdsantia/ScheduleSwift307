@@ -5,10 +5,14 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import Box from '@mui/material/Box';
 import Title from './Title';
 import Axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Button, TextField, Grid, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { TableFooter } from '@mui/material';
+import { InputLabel } from '@mui/material';
 
 function preventDefault(event) {
     event.preventDefault();
@@ -18,6 +22,7 @@ export default function Orders(props) {
     const [reservations, setReservations] = useState([]);
     const [deleteRes, setDeleteRes] = useState('');
     const [error, setError] = useState('');
+    const navigate = useNavigate();
     function getReservations(business) {
         Axios.post("http://localhost:3001/api/getBusinessReservations", {
             businessName: props.businessName
@@ -26,6 +31,16 @@ export default function Orders(props) {
             console.log(allReserves);
             setReservations(allReserves);
 
+        })
+    }
+    function editReservation (reserveID) {
+        navigate("/requestForm", {
+            state: {
+                username: props.username,
+                password: props.password,
+                businessName: props.businessName,
+                ID: reserveID
+            }
         })
     }
     function deleteReservation(resID) {
@@ -38,6 +53,26 @@ export default function Orders(props) {
                 setError("");
                 getReservations(props.businessName);
             }
+        })
+    }
+
+    const changePrice = (event) => {
+
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+
+        console.log(data.get('resID'));
+        console.log(data.get('newPrice'));
+
+        Axios.post("http://localhost:3001/api/managerChangePrice", {    
+
+            id: data.get('resID'),
+            newPrice: data.get('newPrice'),
+
+        }).then(() => {
+
+            window.location.reload(false);
+
         })
     }
 
@@ -56,7 +91,9 @@ export default function Orders(props) {
                             <TableCell>Business Name</TableCell>
                             <TableCell>Reservable Item</TableCell>
                             <TableCell>Reserved</TableCell>
-                            <TableCell align="right">Price</TableCell>
+                            <TableCell>Price</TableCell>
+                            <TableCell align="right">Edit</TableCell>
+                            <TableCell align="right">Delete</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -68,11 +105,42 @@ export default function Orders(props) {
                                 <TableCell>{reserve.reservableItem}</TableCell>
                                 <TableCell>{reserve.isReserved}</TableCell>
                                 <TableCell align="right">{`$${reserve.price}`}</TableCell>
+                                <TableCell><Button onClick={() => editReservation(reserve.ID)}>Edit</Button></TableCell>
                                 <TableCell><Button onClick={() => deleteReservation(reserve.ID)}>Delete</Button></TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
+                <br></br>
+                <h3>Change Reservation Prices</h3>
+                <Box component="form" validate="true" onSubmit={changePrice} sx={{ mt: 3 }}>
+                    <Grid container spacing={0}>
+                        <Grid xs={7}>
+                            <TextField
+                                placeholder="Reservation ID"
+                                name="resID"
+                                id="resID"
+                                required
+                            />
+                        </Grid>
+                        <Grid>
+                        <TextField
+                                placeholder="New Price"
+                                id="newPrice"
+                                name="newPrice"
+                                required
+                            />
+                        </Grid>
+                    </Grid>
+                    <Button
+                        fullWidth
+                        type="submit"
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2 }}
+                    >
+                        Change
+                    </Button>
+                </Box>
             </React.Fragment >
         );
     } else {

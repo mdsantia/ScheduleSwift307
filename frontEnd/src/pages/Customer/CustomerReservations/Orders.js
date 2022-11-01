@@ -15,11 +15,19 @@ export default function Orders(props) {
     const { state } = useLocation();
     const [ numEntries, setNumEntries ] = useState([]);
     const [rows, setRows] = useState([]);
-    const [filled, setFilled] = useState(null);
     const navigate = useNavigate();
 
     // Generate Order Data
-    function createData(id, date, time, name, paymentMethod, amount) {
+    function createData(id, date, time, name, paymentMethod, price, numReservable, reservables) {
+        var amount = 0;
+        const numReservableItems = reservables.split(";").length;
+        const priceArray = price.split(";");
+        const num = numReservable.split(";");
+        for (let i = 0; i < numReservableItems; i++) {
+            if (num[i]) {
+                amount = amount + parseFloat(priceArray[i]) * num[i];
+            }
+        }
         return { id, date, time, name, paymentMethod, amount };
     }
 
@@ -28,19 +36,22 @@ export default function Orders(props) {
     }, []);
 
     function startFill() {
-        Axios.post("http://localhost:3001/api/activeEvents", {
-            username : state.username,
-        }).then((result) => {
-            if (!result.data.message) {
-                let row = [...rows];
-                for (let entryNum = 0; entryNum < 5; entryNum++) {
-                    row.push(createData(result.data[entryNum]["ID"], result.data[entryNum]["reservationDate"],
-                    result.data[entryNum]["startTime"], result.data[entryNum]["businessName"], 'Yes', result.data[entryNum]["price"]));
-                    setRows(row);
-                    setNumEntries(entryNum+1);
+        if (rows.length === 0) {
+            Axios.post("http://localhost:3001/api/activeEvents", {
+                username : state.username,
+            }).then((result) => {
+                if (!result.data.message) {
+                    let row = [...rows];
+                    for (let entryNum = 0; entryNum < 5; entryNum++) {
+                        row.push(createData(result.data[entryNum]["ID"], result.data[entryNum]["reservationDate"],
+                        result.data[entryNum]["startTime"], result.data[entryNum]["businessName"], 'Yes', result.data[entryNum]["price"], 
+                        result.data[entryNum]["numReservable"], result.data[entryNum]["reservableItem"]));
+                        setRows(row);
+                        setNumEntries(entryNum+1);
+                    }
                 }
-            }
-        })
+            })
+        }
     }
 
     const edit = (e) => {
@@ -54,12 +65,27 @@ export default function Orders(props) {
         })
     }
 
+    function deleteReservation(resID) {
+        Axios.post("http://localhost:3001/api/managerDeleteReservation", {
+            reservationID: resID
+        }).then((result) => {
+            if (result.data.result.affectedRows === 0) {
+                // setError("No Reservation with that ID exists")
+            } else {
+                // setError("");
+                setRows([]);
+                setNumEntries(0);
+                startFill();
+            }
+        })
+    }
+
     const addRow = (e) => {
         e.preventDefault();
         Axios.post("http://localhost:3001/api/activeEvents", {
             username : state.username,
         }).then((result) => {
-            if (result.data.message) {
+            if (result.data.message || result.data.err) {
                 alert(`There are no more associated active reservations to your account.`);
             } else {
                 for (let entryNum = 0 + numEntries; entryNum < 5 + numEntries; entryNum++) {
@@ -83,7 +109,8 @@ export default function Orders(props) {
                         <TableCell>Business Name</TableCell>
                         <TableCell>Payment Method</TableCell>
                         <TableCell>Price</TableCell>
-                        <TableCell align="right"></TableCell>
+                        <TableCell align="right">Edit</TableCell>
+                        <TableCell align="right">Delete</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -96,6 +123,8 @@ export default function Orders(props) {
                             <TableCell>{`$${row.amount}`}</TableCell>
                             <TableCell align="right"><Button name={row.name} id={row.id} onClick={edit}>
                                 Edit</Button></TableCell>
+                            <TableCell align="right"><Button onClick={() => deleteReservation(row.id)}>
+                                Delete</Button></TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
