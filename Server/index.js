@@ -985,6 +985,29 @@ app.post("/api/managerDeleteNote", (req, res) => {
     )
 })
 
+app.post("/api/managerChangePrice", (req, res) => {
+    const id = req.body.id;
+    const newPrice = req.body.newPrice;
+
+    console.log(id);
+    console.log(newPrice);
+
+    db.query(
+        "UPDATE reservations SET price = ? WHERE ID = ?",
+        [newPrice, id],
+        (err, result) => {
+            console.log(result);
+            if (err) {
+                console.log(err);
+                res.send({ err: err })
+            }
+            if (result) {
+                res.send({ result })
+            }
+        }
+    )
+})
+
 
 
 
