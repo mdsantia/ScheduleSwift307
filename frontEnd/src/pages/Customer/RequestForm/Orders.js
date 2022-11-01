@@ -261,7 +261,7 @@ export default function Orders(props) {
                 
             }).then((result) => {
                 setReservationID(result.data.id);
-                alert(`Your reservation has been saved! An email confirmation has been sent to you containing your Reservation ID and reservation details.`);
+                alert(`Your reservation has been saved!\nAn confirmation email has been sent to you containing your Reservation ID and reservation details.`);
             })
         } else{
             // UPDATE RESERVATION INSTEAD
@@ -278,7 +278,7 @@ export default function Orders(props) {
 
                 numReservable: numReserved
             }).then((result) => {
-                alert(`Your reservation has been saved!\nYour reservation's id is ${reservationID}.\nYour total is: ${total}.`);
+                alert(`Your reservation has been updated!\nAn confirmation email has been sent to you containing your Reservation ID and updated reservation details.`);
             })
         }
     }
