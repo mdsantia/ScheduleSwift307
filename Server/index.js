@@ -769,7 +769,7 @@ app.post("/api/updateReservation", (req, res) => {
                                     ".arrival-button { padding: 10px 60px; text-align: center; background-color: #DB1A27; color: white; font-weight: bold; text-decoration: none; }" +
                                 "</style>" +
                             "</head>" + 
-                            "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><h4><center>Reservation Update Confirmation</center></h4></td></tr>" +
+                            "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><h4><center>RESERVATION UPDATE CONFIRMATION</center></h4><p><center>The following reservation has been modified/updated.</center></p></td></tr>" +
                                 "<tr><td width=\"400\" valign=\"top\">" +
                                 "<br /><br /><strong>" + businessName + "</strong>" +
                                 "<br />123 Address St" +
@@ -799,11 +799,11 @@ app.post("/api/updateReservation", (req, res) => {
                         }
                         transport.sendMail(mailOptions, (err, res) => {
                             if (err) {
-                                console.log("Unable to send reservation confirmation email.");
+                                console.log("Unable to send updated confirmation email.");
                                 console.log(err);
                             }
                             else {
-                                console.log("The reservation confirmation email was successfully sent.");
+                                console.log("The updated confirmation email was successfully sent.");
                             }
                         });
                     }
@@ -879,7 +879,7 @@ app.post("/api/createReservation", (req, res) => {
                                     ".arrival-button { padding: 10px 60px; text-align: center; background-color: #DB1A27; color: white; font-weight: bold; text-decoration: none; }" +
                                 "</style>" +
                             "</head>" + 
-                            "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><h4><center>Reservation Confirmation</center></h4></td></tr>" +
+                            "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><h4><center>RESERVATION CONFIRMATION</center></h4></td></tr>" +
                                 "<tr><td width=\"400\" valign=\"top\">" +
                                 "<br /><br /><strong>" + businessName + "</strong>" +
                                 "<br />123 Address St" +
@@ -966,16 +966,109 @@ app.post("/api/getBusinessReservations", (req, res) => {
 app.post("/api/managerDeleteReservation", (req, res) => {
     const reservationID = req.body.reservationID;
     db.query(
-        "DELETE FROM reservations WHERE ID = ?",
-        [reservationID],
-        (err, result) => {
-            if (err) {
-                console.log(err)
-                res.send({ err: err })
-            }
-            if (result) {
-                console.log({ result })
-                res.send({ result })
+        "SELECT * FROM reservations WHERE ID = ?",
+        [reservationID], (err3, result3) => {
+            if (err3) {
+                console.log(err3);
+                console.log("Unable to find reservation");
+            } else {
+                db.query(
+                    "DELETE FROM reservations WHERE ID = ?",
+                    [reservationID],
+                    (err, result) => {
+                        if (err) {
+                            console.log(err)
+                            res.send({ err: err })
+                        }
+                        if (result) {
+                            console.log({ result })
+                            res.send({ result })
+                            db.query(
+                                "SELECT * FROM userData WHERE username = ?",
+                                [result3[0].reservedBy], (err2, result2) => {
+                                    if (err2) {
+                                        console.log(err2);
+                                        console.log("Unable to find user");
+                                    } else {
+                                        let allReservableItems = result3[0].reservableItem.split(";");
+                                        let allReservablePrices = result3[0].price.split(";");
+                                        let allNumReservable = result3[0].numReservable.split(";");
+                                        var allReservableItemsString = "";
+                                        var subTotal = 0;
+                                        if (allReservableItems.length === 0) {
+                                            allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + result3[0].numReservable + " x " + result3[0].reservableItem + "</td>";
+                                            allReservableItemsString += "<td width=\"20%\"> (" + result3[0].numReservable + " x $" + result3[0].price + ")" + "</td><td width=\"5%\">=</td>";
+                                            allReservableItemsString += "<td style=\"text-align:right\">$" + (result3[0].price * result3[0].numReservable).toFixed(2) + "</td></tr>";
+                                            subTotal = result3[0].price * result3[0].numReservable;
+                                        } else {
+                                            for (i = 0; i < allReservableItems.length; i++) {
+                                                allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + allNumReservable[i] + " x " + allReservableItems[i] + "</td>";
+                                                allReservableItemsString += "<td width=\"20%\"> (" + allNumReservable[i] + " x $" + allReservablePrices[i] + ")" + "</td><td width=\"5%\">=</td>";
+                                                allReservableItemsString += "<td style=\"text-align:right\">$" + (allReservablePrices[i] * allNumReservable[i]).toFixed(2) + "</td></tr>";
+                                                subTotal += allReservablePrices[i] * allNumReservable[i];
+                                            }
+                                        }
+                                        const mailOptions = {
+                                            from:
+                                                {
+                                                    name: 'no-reply@scheduleswift.com',
+                                                    address: 'scheduleswift@gmail.com'
+                                                },
+                                            to: result2[0].emailAddress,
+                                            subject: "reservation Cancellation Confirmation for " + result2[0].firstName + " at " + result3[0].businessName,
+                                            html: "<html>" +
+                                            "<head>" +
+                                                "<style>" +
+                                                    "BODY			{ text-align: center; }" +
+                                                    "TD				{ font-family:arial;color:black;font-size:11pt;padding:4px;text-align:left; }" +
+                                                    ".Pref			{ font-size:10pt; }" +
+                                                    ".note			{ font-size:0.7em; }" +
+                                                    ".money			{ text-align: right; }" +
+                                                    ".arrival-button { padding: 10px 60px; text-align: center; background-color: #DB1A27; color: white; font-weight: bold; text-decoration: none; }" +
+                                                "</style>" +
+                                            "</head>" + 
+                                            "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><h4><center>RESERVATION CANCELLATION CONFIRMATION</center></h4><p><center>The following reservation has been cancelled.</center></p></td></tr>" +
+                                            "<tr><td width=\"400\" valign=\"top\">" +
+                                            "<br /><br /><strong>" + result3[0].businessName + "</strong>" +
+                                            "<br />123 Address St" +
+                                            "<br />(XXX) XXX-XXXX" +
+                                            "<br />email@example.com</td></tr><tr style=\"text-align:right;vertical-align:top\">" +
+                                            "<td colspan=\"2\">Reservation ID: <strong>#" + result3[0].ID + "</strong></td></tr>" +
+                                            "<tr><td>Customer Username:</td><td>" + result2[0].username + "</td></tr>" +
+                                            "<tr><td>Customer Name:</td><td>" + result2[0].firstName + " " + result2[0].lastName + "</td></tr>" +
+                                            "<tr><td>Customer Email:</td><td>" + result2[0].emailAddress + "</td></tr>" +
+                                            "<tr><td colspan=\"2\"><p>Payment Method: Credit Card<br /></p>" +
+                                            "<strong>RESERVATION DETAILS</strong>" +
+                                            "<br />Date of Reservation: <strong>" + result3[0].reservationDate.substring(0, 10) + "</strong>" +
+                                            "<br />Time of Reservation: <strong>" + new Date(result3[0].startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(result3[0].endTime).toLocaleTimeString() + "</td></tr>" +
+                                            "<tr><td colspan=\"2\"></td></tr>" +
+                                            "<tr /></table><br /><table style=\"border-top:solid 3px black;\" cellspacing=\"0\" cellpadding=\"3\" width=\"600\">" +
+                                            allReservableItemsString +
+                                            "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
+                                            "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
+                                            "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
+                                            "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
+                                            "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal + (subTotal * 1.07)).toFixed(2) + "</strong></td></tr>" +
+                                            "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
+                                            "<p>Thank you for reserving with ScheduleSwift!</p>" +
+                                            "</td></tr></table>" +
+                                            "</body>" +
+                                        "</html>"                     
+                                        }
+                                        transport.sendMail(mailOptions, (err, res) => {
+                                            if (err) {
+                                                console.log("Unable to send cancellation confirmation email.");
+                                                console.log(err);
+                                            } else {
+                                                console.log("The cancellation confirmation email was successfully sent.");
+                                            }
+                                        });
+                                    }
+                                }
+                            )
+                        }
+                    }
+                )
             }
         }
     )

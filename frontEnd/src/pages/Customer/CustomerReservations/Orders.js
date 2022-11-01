@@ -76,6 +76,7 @@ export default function Orders(props) {
                 setRows([]);
                 setNumEntries(0);
                 startFill();
+                alert("Your reservation has been cancelled!\nA confirmation email has been sent to you containing the details of your cancelled reservation.");
             }
         })
     }
