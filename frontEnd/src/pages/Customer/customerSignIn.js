@@ -9,7 +9,6 @@ import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -17,6 +16,7 @@ import Axios from 'axios';
 import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import Logo from '../ScheduleSwift logo.png';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 
 function Copyright(props) {

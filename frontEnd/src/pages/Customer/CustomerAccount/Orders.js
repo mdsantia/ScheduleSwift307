@@ -21,6 +21,9 @@ import Axios from 'axios';
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { InputLabel } from '@mui/material';
+import Logo from './Logo.png';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+
 // Generate Order Data
 function createData(id, date, name, shipTo, paymentMethod, amount) {
     return { id, date, name, shipTo, paymentMethod, amount };
@@ -65,7 +68,6 @@ const rows = [
 function preventDefault(event) {
     event.preventDefault();
 }
-
 
 
 export default function Orders(props) {
@@ -122,8 +124,8 @@ export default function Orders(props) {
                     alignItems: 'center',
                 }}
             >
-                <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                    <LockOutlinedIcon />
+                <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+                    <AccountCircleIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
                     Edit Account Information

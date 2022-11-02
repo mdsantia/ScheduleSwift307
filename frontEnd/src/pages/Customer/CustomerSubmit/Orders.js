@@ -19,6 +19,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { useState, useEffect } from 'react';
 import Axios from 'axios';
+import Logo from './Logo.png';
+import EventIcon from '@mui/icons-material/Event';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 
 function preventDefault(event) {
@@ -103,8 +105,8 @@ export default function Orders() {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                        <LockOutlinedIcon />
+                    <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+                        <EventIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
                         Make Reservation

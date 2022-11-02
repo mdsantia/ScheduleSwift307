@@ -20,6 +20,7 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { useState, useEffect } from 'react';
 import Axios from 'axios';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
+import Logo from './Logo.png';
 
 function preventDefault(event) {
     event.preventDefault();
