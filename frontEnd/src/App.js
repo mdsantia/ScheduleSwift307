@@ -35,7 +35,6 @@ import ManagerConfirmAccount from './pages/Manager/managerConfirmAccount';
 import EmployeeReservations from './pages/Employee/EmployeeReservations/Dashboard';
 import ManagerEditForm from './pages/Manager/ManagerEditForm/Dashboard';
 
-
 function App() {
   return (
     <div className="App">
