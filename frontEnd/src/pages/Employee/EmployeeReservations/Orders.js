@@ -9,7 +9,6 @@ import { useState, useEffect } from 'react';
 import { Button, TextField, Grid, Typography } from '@mui/material';
 import Axios from 'axios';
 
-
 export default function Orders(props) {
     const [reservations, setReservations] = useState([]);
     const [deleteRes, setDeleteRes] = useState('');

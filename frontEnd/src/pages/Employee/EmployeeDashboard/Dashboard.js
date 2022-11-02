@@ -29,6 +29,8 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PeopleIcon from '@mui/icons-material/People';
 import BallotIcon from "@mui/icons-material/Ballot";
 import BentoIcon from "@mui/icons-material/Bento";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import Logo from '../Logo.png';
 
 function Copyright(props) {
     return (
@@ -89,7 +91,41 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     }),
 );
 
-const mdTheme = createTheme();
+const styles = {
+    logoContainer: {
+        display: 'block',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        width: '90%',
+    }
+}
+
+const mdTheme = createTheme({
+    palette: {
+        primary: {
+            light: '#6b5e51',
+            main: '#694a2e',
+            dark: '#292018',
+        },
+        secondary: {
+            main: '#b71c1c',
+        },
+    },
+    typography: {
+        fontFamily: [
+            '-apple-system',
+            'BlinkMacSystemFont',
+            '"Segoe UI"',
+            'Roboto',
+            '"Helvetica Neue"',
+            'Arial',
+            'sans-serif',
+            '"Apple Color Emoji"',
+            '"Segoe UI Emoji"',
+            '"Segoe UI Symbol"',
+          ].join(','),
+    },
+});
 
 function DashboardContent() {
     const [open, setOpen] = React.useState(true);
@@ -146,6 +182,7 @@ function DashboardContent() {
                             px: [1],
                         }}
                     >
+                        <img src={Logo} style={styles.logoContainer}/>
                         <IconButton onClick={toggleDrawer}>
                             <ChevronLeftIcon />
                         </IconButton>
@@ -204,7 +241,7 @@ function DashboardContent() {
                             })
                         }}>
                             <ListItemIcon>
-                                <BallotIcon />
+                                <AccountCircleIcon />
                             </ListItemIcon>
                             <ListItemText primary="My Account" />
                         </ListItemButton>
