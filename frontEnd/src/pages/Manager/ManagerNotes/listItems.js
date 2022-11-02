@@ -9,6 +9,9 @@ import PeopleIcon from '@mui/icons-material/People';
 import BallotIcon from "@mui/icons-material/Ballot";
 import BentoIcon from "@mui/icons-material/Bento";
 import DateRangeIcon from '@mui/icons-material/DateRange';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import Logo from '../Logo.png';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 
 export const mainListItems = (
     <React.Fragment>
@@ -38,7 +41,7 @@ export const mainListItems = (
         </ListItemButton>
         <ListItemButton>
             <ListItemIcon>
-                <PeopleIcon />
+                <AccountCircleIcon />
             </ListItemIcon>
             <ListItemText primary="My Account" />
         </ListItemButton><ListItemButton>

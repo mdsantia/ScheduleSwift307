@@ -32,6 +32,8 @@ import { mainListItems } from './listItems';
 import Orders from './Orders';
 import { Navigate, useNavigate, useLocation } from "react-router-dom";
 import { useState } from 'react';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import Logo from '../Logo.png';
 
 function Copyright(props) {
     return (
@@ -92,7 +94,41 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     }),
 );
 
-const mdTheme = createTheme();
+const styles = {
+    logoContainer: {
+        display: 'block',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        width: '90%',
+    }
+}
+
+const mdTheme = createTheme({
+    palette: {
+        primary: {
+            light: '#6b5e51',
+            main: '#694a2e',
+            dark: '#292018',
+        },
+        secondary: {
+            main: '#b71c1c',
+        },
+    },
+    typography: {
+        fontFamily: [
+            '-apple-system',
+            'BlinkMacSystemFont',
+            '"Segoe UI"',
+            'Roboto',
+            '"Helvetica Neue"',
+            'Arial',
+            'sans-serif',
+            '"Apple Color Emoji"',
+            '"Segoe UI Emoji"',
+            '"Segoe UI Symbol"',
+          ].join(','),
+    },
+});
 
 function DashboardContent() {
     const { state } = useLocation();
@@ -150,6 +186,7 @@ function DashboardContent() {
                             px: [1],
                         }}
                     >
+                        <img src={Logo} style={styles.logoContainer} />
                         <IconButton onClick={toggleDrawer}>
                             <ChevronLeftIcon />
                         </IconButton>
@@ -250,7 +287,7 @@ function DashboardContent() {
                             })
                         }}>
                             <ListItemIcon>
-                                <PeopleIcon />
+                                <AccountCircleIcon />
                             </ListItemIcon>
                             <ListItemText primary="Account Info" />
                         </ListItemButton>

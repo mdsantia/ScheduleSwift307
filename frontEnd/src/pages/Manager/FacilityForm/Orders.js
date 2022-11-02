@@ -21,7 +21,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-
+import EventIcon from '@mui/icons-material/Event';
 
 
 function preventDefault(event) {
@@ -242,8 +242,8 @@ export default function Orders(props) {
                     alignItems: 'center',
                 }}
             >
-                <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                    <LockOutlinedIcon />
+                <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+                    <EventIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
                     {props.businessName} Reservation Form Template
