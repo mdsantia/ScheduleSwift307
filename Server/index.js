@@ -716,9 +716,9 @@ app.post("/api/updateReservation", (req, res) => {
     const numPeople = req.body.numPeople;
     const numReservable = req.body.numReservable;
     db.query(
-        "UPDATE reservations SET numReservable = ?, startTime = ?, endTime = ?, reservedBy = ?, \
+        "UPDATE reservations SET numReservable = ?, startTime = ?, endTime = ?, \
             numPeople = ?, businessName = ?, reservationDate = ?, reservableItem = ?, price = ?, isReserved = ? WHERE ID = ?",
-        [numReservable, startTime, endTime, reservedBy, numPeople, businessName, reservationSubstring, reservable, price, isReserved, ID],
+        [numReservable, startTime, endTime, numPeople, businessName, reservationSubstring, reservable, price, isReserved, ID],
         (err, result) => {
             if (err) {
                 console.log(err)
@@ -1048,7 +1048,7 @@ app.post("/api/managerDeleteReservation", (req, res) => {
                                             "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
                                             "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
                                             "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
-                                            "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal + (subTotal * 1.07)).toFixed(2) + "</strong></td></tr>" +
+                                            "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
                                             "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
                                             "<p>Thank you for reserving with ScheduleSwift!</p>" +
                                             "</td></tr></table>" +

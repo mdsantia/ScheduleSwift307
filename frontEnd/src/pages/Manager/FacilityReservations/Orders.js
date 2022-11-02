@@ -34,7 +34,7 @@ export default function Orders(props) {
         })
     }
     function editReservation (reserveID) {
-        navigate("/managerFillForm", {
+        navigate("/managerEditForm", {
             state: {
                 username: props.username,
                 password: props.password,
