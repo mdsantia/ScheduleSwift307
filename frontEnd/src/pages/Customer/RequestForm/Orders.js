@@ -21,7 +21,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import Logo from './Logo.png';
+import Logo from '../Logo.png';
 import EventIcon from '@mui/icons-material/Event';
 
 function preventDefault(event) {

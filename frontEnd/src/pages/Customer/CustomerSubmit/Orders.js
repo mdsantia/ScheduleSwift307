@@ -19,7 +19,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { useState, useEffect } from 'react';
 import Axios from 'axios';
-import Logo from './Logo.png';
+import Logo from '../Logo.png';
 import EventIcon from '@mui/icons-material/Event';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 
