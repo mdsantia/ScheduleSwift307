@@ -10,7 +10,7 @@ import Title from './Title';
 import { Button } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { Navigate, useNavigate, useLocation } from "react-router-dom";
-import Logo from './Logo.png';
+import Logo from '../Logo.png';
 
 export default function Orders(props) {
     const { state } = useLocation();

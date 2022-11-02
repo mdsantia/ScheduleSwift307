@@ -15,7 +15,7 @@ import { useEffect, useState } from 'react';
 import { Button, TextField, Grid, Typography } from '@mui/material';
 import { Dayjs } from 'dayjs';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
-import Logo from './Logo.png';
+import Logo from '../Logo.png';
 
 function preventDefault(event) {
     event.preventDefault();

@@ -10,7 +10,7 @@ import BallotIcon from "@mui/icons-material/Ballot";
 import BentoIcon from "@mui/icons-material/Bento";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Navigate, useNavigate, useLocation, Link } from "react-router-dom";
-import Logo from './Logo.png';
+import Logo from '../Logo.png';
 
 export const mainListItems = (
     <React.Fragment>

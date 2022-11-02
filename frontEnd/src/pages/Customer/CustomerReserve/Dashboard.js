@@ -31,7 +31,7 @@ import Orders from './Orders';
 import { Navigate, useNavigate, useLocation } from "react-router-dom";
 import { useState } from 'react';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import Logo from './Logo.png';
+import Logo from '../Logo.png';
 
 function Copyright(props) {
     return (
