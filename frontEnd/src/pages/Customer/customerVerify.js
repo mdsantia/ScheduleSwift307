@@ -15,6 +15,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Axios from 'axios';
 import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
+import Logo from '../ScheduleSwift logo.png';
 
 function Copyright(props) {
     return (
@@ -29,7 +30,32 @@ function Copyright(props) {
     );
 }
 
-const theme = createTheme();
+const theme = createTheme({
+    palette: {
+        primary: {
+            light: '#6b5e51',
+            main: '#694a2e',
+            dark: '#292018',
+        },
+        secondary: {
+            main: '#b71c1c',
+        },
+    },
+    typography: {
+        fontFamily: [
+            '-apple-system',
+            'BlinkMacSystemFont',
+            '"Segoe UI"',
+            'Roboto',
+            '"Helvetica Neue"',
+            'Arial',
+            'sans-serif',
+            '"Apple Color Emoji"',
+            '"Segoe UI Emoji"',
+            '"Segoe UI Symbol"',
+          ].join(','),
+    },
+});
 
 export default function CustomerVerify() {
     const [loginStatus, setLoginStatus] = useState('');
@@ -70,7 +96,8 @@ export default function CustomerVerify() {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                    <img src={Logo} alt='Logo'/>
+                    <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
                         <LockOutlinedIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
@@ -82,7 +109,7 @@ export default function CustomerVerify() {
                             required
                             fullWidth
                             id="email"
-                            label="email"
+                            label="Email"
                             name="email"
                             autoComplete="email"
                             autoFocus
@@ -92,7 +119,7 @@ export default function CustomerVerify() {
                             required
                             fullWidth
                             name="username"
-                            label="username"
+                            label="Username"
                             type="username"
                             id="username"
                             autoComplete="username"

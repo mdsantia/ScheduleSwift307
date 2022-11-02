@@ -9,12 +9,14 @@ import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Axios from 'axios';
 import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
+import Logo from '../ScheduleSwift logo.png';
 
 function Copyright(props) {
     return (
@@ -29,7 +31,32 @@ function Copyright(props) {
     );
 }
 
-const theme = createTheme();
+const theme = createTheme({
+    palette: {
+        primary: {
+            light: '#6b5e51',
+            main: '#694a2e',
+            dark: '#292018',
+        },
+        secondary: {
+            main: '#b71c1c',
+        },
+    },
+    typography: {
+        fontFamily: [
+            '-apple-system',
+            'BlinkMacSystemFont',
+            '"Segoe UI"',
+            'Roboto',
+            '"Helvetica Neue"',
+            'Arial',
+            'sans-serif',
+            '"Apple Color Emoji"',
+            '"Segoe UI Emoji"',
+            '"Segoe UI Symbol"',
+          ].join(','),
+    },
+});
 
 const makeUniqueID = (length) => {
     // Reference to ran string https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
@@ -106,8 +133,9 @@ export default function ManagerSignIn() {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                        <LockOutlinedIcon />
+                    <img src={Logo} alt="Logo"/>
+                    <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+                        <AccountCircleIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
                         Manager Sign In

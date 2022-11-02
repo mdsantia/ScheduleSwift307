@@ -13,6 +13,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useState } from 'react';
 import Axios from 'axios';
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import Logo from '../ScheduleSwift logo.png';
 
 function Copyright(props) {
     return (
@@ -27,7 +28,32 @@ function Copyright(props) {
     );
 }
 
-const theme = createTheme();
+const theme = createTheme({
+    palette: {
+        primary: {
+            light: '#6b5e51',
+            main: '#694a2e',
+            dark: '#292018',
+        },
+        secondary: {
+            main: '#b71c1c',
+        },
+    },
+    typography: {
+        fontFamily: [
+            '-apple-system',
+            'BlinkMacSystemFont',
+            '"Segoe UI"',
+            'Roboto',
+            '"Helvetica Neue"',
+            'Arial',
+            'sans-serif',
+            '"Apple Color Emoji"',
+            '"Segoe UI Emoji"',
+            '"Segoe UI Symbol"',
+          ].join(','),
+    },
+});
 
 const makeUniqueID = (length) => {
     // Reference to ran string https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
@@ -114,7 +140,8 @@ const ManagerConfirmAccount = () => {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}><LockOutlinedIcon /></Avatar>
+                    <img src={Logo} alt='Logo'/>
+                    <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}><LockOutlinedIcon /></Avatar>
                     <Typography component="h1" variant="h5">Confirm Account</Typography>
                     <Typography justifyContent="flex-end" component="h1" variant="body2">
                         A confirmation code has been sent to
