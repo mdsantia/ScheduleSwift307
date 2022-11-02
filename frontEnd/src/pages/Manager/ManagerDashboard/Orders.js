@@ -260,7 +260,7 @@ export default function Orders(props) {
                     <TableBody>
                         {faq.map((faq, index) => (
                             <TableRow>
-                                <TableCell>{faq.question}</TableCell>
+                                <TableCell><strong>{faq.question}</strong></TableCell>
                                 <TableCell>{faq.answer}</TableCell>
                                 <TableCell align="right"><Button onClick={() => clearFAQ(faq.ID)}>Clear</Button></TableCell>
                             </TableRow>

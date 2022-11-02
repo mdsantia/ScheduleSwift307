@@ -38,6 +38,10 @@ export default function Orders(props) {
     const [closeTime, setCloseTime] = useState(Dayjs | null);
     const [closed, setClosed] = useState('');
 
+    const [faq, setFAQ] = useState([]);
+    const [question, setQuestion] = useState('');
+    const [answer, setAnswer] = useState('');
+
     function getBusinessHours() {
         Axios.post("http://localhost:3001/api/getFacilitysData", {
             businessName: state.businessName
@@ -141,8 +145,20 @@ export default function Orders(props) {
         }
     }
 
+    function getFAQ(businessName) {
+
+        Axios.post("http://localhost:3001/api/managerGetFAQ", {
+            businessName: state.businessName
+        }).then((result) => {
+            const faqs = result.data.result;
+            setFAQ(faqs);
+            console.log("test");
+        })
+    }
+
     useEffect(() => {
         getBusinessHours();
+        getFAQ(state.businessName);
     }, []);
     if (rows.length > 0) {
 
@@ -179,6 +195,24 @@ export default function Orders(props) {
                             Make Reservation
                     </Button>
                 </Box>
+                <br></br>
+                <Title>FAQ</Title>
+                <Table size="small">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell size="small">Question:</TableCell>
+                            <TableCell>Answer:</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {faq.map((faq, index) => (
+                            <TableRow>
+                                <TableCell><strong>{faq.question}</strong></TableCell>
+                                <TableCell>{faq.answer}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
             </React.Fragment >
         );
     } else {
