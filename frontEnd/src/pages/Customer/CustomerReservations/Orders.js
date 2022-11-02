@@ -20,6 +20,10 @@ export default function Orders(props) {
     // Generate Order Data
     function createData(id, date, time, name, paymentMethod, price, numReservable, reservables) {
         var amount = 0;
+        if (!price.includes(";")) {
+            amount = price;
+            return { id, date, time, name, paymentMethod, amount };
+        }
         const numReservableItems = reservables.split(";").length;
         const priceArray = price.split(";");
         const num = numReservable.split(";");
@@ -41,13 +45,19 @@ export default function Orders(props) {
                 username : state.username,
             }).then((result) => {
                 if (!result.data.message) {
-                    let row = [...rows];
+                    let row = [];
                     for (let entryNum = 0; entryNum < 5; entryNum++) {
-                        row.push(createData(result.data[entryNum]["ID"], result.data[entryNum]["reservationDate"],
-                        result.data[entryNum]["startTime"], result.data[entryNum]["businessName"], 'Yes', result.data[entryNum]["price"], 
-                        result.data[entryNum]["numReservable"], result.data[entryNum]["reservableItem"]));
-                        setRows(row);
-                        setNumEntries(entryNum+1);
+                        if (result.data[entryNum]) {
+                            row.push(createData(result.data[entryNum].ID, result.data[entryNum]["reservationDate"],
+                            (new Date(result.data[entryNum]["startTime"])).toLocaleTimeString(), 
+                            result.data[entryNum]["businessName"], 'Yes', 
+                            result.data[entryNum]["price"], 
+                            result.data[entryNum]["numReservable"], result.data[entryNum]["reservableItem"]));
+                            setRows(row);
+                            setNumEntries(entryNum+1);
+                        } else {
+                            break;
+                        }
                     }
                 }
             })
@@ -73,8 +83,6 @@ export default function Orders(props) {
                 // setError("No Reservation with that ID exists")
             } else {
                 // setError("");
-                setRows([]);
-                setNumEntries(0);
                 startFill();
                 alert("Your reservation has been cancelled!\nA confirmation email has been sent to you containing the details of your cancelled reservation.");
             }
@@ -124,7 +132,7 @@ export default function Orders(props) {
                             <TableCell>{`$${row.amount}`}</TableCell>
                             <TableCell align="right"><Button name={row.name} id={row.id} onClick={edit}>
                                 Edit</Button></TableCell>
-                            <TableCell align="right"><Button onClick={() => deleteReservation(row.id)}>
+                            <TableCell align="right"><Button onClick={(e) => deleteReservation(row.id)}>
                                 Delete</Button></TableCell>
                         </TableRow>
                     ))}

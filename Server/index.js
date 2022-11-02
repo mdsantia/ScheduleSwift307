@@ -1215,6 +1215,61 @@ app.post("/api/managerChangePrice", (req, res) => {
     )
 })
 
+app.post("/api/addManagerFAQ", (req, res) => {
+    const businessName = req.body.businessName;
+    const question = req.body.question;
+    const answer = req.body.answer;
+    db.query(
+        "INSERT INTO managerFAQ (businessName, question, answer) VALUES (?,?,?)",
+        [businessName, question, answer],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result })
+            }
+        }
+    )
+})
+
+app.post("/api/managerGetFAQ", (req, res) => {
+    const businessName = req.body.businessName;
+
+    db.query(
+        "SELECT * FROM managerFAQ WHERE businessName = ?",
+        [businessName],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            }
+            if (result) {
+                console.log(result)
+                res.send({ result: result })
+            }
+        }
+    )
+
+})
+
+app.post("/api/managerDeleteFAQ", (req, res) => {
+    const faqID = req.body.faqID;
+    db.query(
+        "DELETE FROM managerFAQ WHERE ID = ?",
+        [faqID],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log(result)
+                res.send({ result: result })
+            }
+        }
+    )
+})
 
 
 
