@@ -20,7 +20,8 @@ import { Dayjs } from 'dayjs';
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-
+import EventIcon from '@mui/icons-material/Event';
+import Logo from '../Logo.png';
 
 
 function preventDefault(event) {
@@ -133,8 +134,8 @@ export default function Orders(props) {
                     alignItems: 'center',
                 }}
             >
-                <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                    <LockOutlinedIcon />
+                <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+                    <EventIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
                     Create Reservation
