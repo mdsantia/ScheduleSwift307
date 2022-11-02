@@ -8,6 +8,8 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PeopleIcon from '@mui/icons-material/People';
 import BallotIcon from "@mui/icons-material/Ballot";
 import BentoIcon from "@mui/icons-material/Bento";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import Logo from '../Logo.png';
 
 export const mainListItems = (
     <React.Fragment>
@@ -31,7 +33,7 @@ export const mainListItems = (
         </ListItemButton>
         <ListItemButton>
             <ListItemIcon>
-                <PeopleIcon />
+                <AccountCircleIcon />
             </ListItemIcon>
             <ListItemText primary="My Account" />
         </ListItemButton>
