@@ -6,6 +6,7 @@ import ListSubheader from '@mui/material/ListSubheader';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PeopleIcon from '@mui/icons-material/People';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import BallotIcon from "@mui/icons-material/Ballot";
 import BentoIcon from "@mui/icons-material/Bento";
 import { Navigate, useNavigate, useLocation, Link } from "react-router-dom";
@@ -32,7 +33,7 @@ export const mainListItems = (
         </ListItemButton>
         <ListItemButton component={Link} to="/customerAccount">
             <ListItemIcon>
-                <PeopleIcon />
+                <AccountCircleIcon />
             </ListItemIcon>
             <ListItemText primary="Account Info" />
         </ListItemButton>
