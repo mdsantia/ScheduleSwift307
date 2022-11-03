@@ -22,8 +22,11 @@ import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import enUS from 'date-fns/locale/en-US';
 import moment from 'moment';
+import { Navigate, useNavigate, useLocation } from "react-router-dom";
 
 export default function Orders(props) {
+    const { state } = useLocation();
+    const navigate = useNavigate();
     var [allEvents, setAllEvents] = useState([]);
     const locales = {
         'en-US': enUS,
@@ -45,7 +48,8 @@ export default function Orders(props) {
                 var event = {
                     title: "Reservation #" + result.data.result[i].ID,
                     start: new Date(result.data.result[i].startTime),
-                    end: new Date(result.data.result[i].endTime)
+                    end: new Date(result.data.result[i].endTime),
+                    desc: "Reservation Made By " + result.data.result[i].reservedBy,
                 }
             }
             events.push(event);
@@ -53,11 +57,20 @@ export default function Orders(props) {
             setAllEvents(events);
         })
     }
-    console.log(allEvents);
 
     useEffect(() => {
         getEvents(props.businessName)
     }, []);
+
+    const handleSelectEvent = (event) => {
+        navigate("/managerEditForm", {
+            state: {
+                username: (event.desc).substring(20),
+                businessName: state.businessName,
+                ID: (event.title).substring(13)
+            }
+         });
+    }
         
     return (
         <React.Fragment>
@@ -71,6 +84,7 @@ export default function Orders(props) {
                         backgroundColor: '#694a2e'
                     }
                 })}
+                onSelectEvent={handleSelectEvent}
             />
         </React.Fragment>
     );
