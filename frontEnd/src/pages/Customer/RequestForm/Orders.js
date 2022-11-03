@@ -37,26 +37,114 @@ export default function Orders(props) {
     const [nameArray, setNameArray] = useState([]);
     const [minArray, setMinArray] = useState([]);
     const [maxArray, setMaxArray] = useState([]);
+    const [availableArray, setAvailableArray] = useState([]);
     const [priceArray, setPriceArray] = useState([]);
     const [total, setTotal] = useState(0);
     const [numPeople, setNumPeople] = useState([]);
     const [maxNumPeople, setMaxNumPeople] = useState([]);
+    const [availableNumPeople, setAvailableNumPeople] = useState([]);
     const [numArray, setNumArray] = useState([]);
     const [reservationID, setReservationID] = useState(null);
     const businessName = state.businessName;
-    const year = new Date().getFullYear();
-    const month = new Date().getMonth() + 1;
-    const day = new Date().getDate();
     const navigate = useNavigate();
-    const formattedDate = `${year}-${month}-${day}`;
-    const [currentDate, setCurrentDate] = useState(Dayjs | null);
+    const [currentDate, setCurrentDate] = useState(null);
     const [openTime, setOpenTime] = useState(Dayjs | null);
     const [closeTime, setCloseTime] = useState(Dayjs | null);
     const [closed, setClosed] = useState('');
-
+    const [MAXSTRING, setMAXSTRING] = useState(null);
+    
     useEffect(() => {
         insertValues();
     }, [])
+
+    function updateMaxString(availableNumPeople, nameArray, availableArray) {
+        var string = `Max Party Size: ${availableNumPeople}`
+
+        for (let i = 0; i < nameArray.length; i++) {
+            string += `, Max ${nameArray[i]}: ${availableArray[i]}`; 
+        }
+
+        setMAXSTRING(string);
+    }
+
+    function timeDiff(start, end) {
+        var arg1 = new Date(start);
+        var arg2 = new Date(end);
+        arg1.setDate((new Date(currentDate)).getDate());
+        arg2.setDate((new Date(currentDate)).getDate());
+        return arg1.getTime() - arg2.getTime();
+    }
+
+    function getConcurrent(date, start, end, maxNumPeople, maxArray, nameArray) {
+        if (date == null || maxArray == null) {
+            return;
+        }
+        var stringdate = "";
+        console.log(new String(date));
+        if (date.$M) {
+            var valArr = (new String(date)).split(" ");
+            if (date.$M + 1 < 10) {
+                stringdate = `${date.$y}-0${date.$M + 1}-${valArr[1]}`
+            } else {
+                stringdate = `${date.$y}-${date.$M + 1}-${valArr[1]}`
+            }
+        } else if (new String(date).includes("00:00:00")) {
+            var valArr = (new String(date)).split(" ");
+            if (new Date(date).getMonth() + 1 < 10) {
+                stringdate = `${new Date(date).getFullYear()}-0${new Date(date).getMonth() + 1}-${valArr[2]}`
+            } else {
+                stringdate = `${new Date(date).getFullYear()}-${new Date(date).getMonth() + 1}-${valArr[2]}`
+            }
+            console.log(stringdate)
+        } else {
+            var day = date;
+            if (new String(date).includes("T")) {
+                day = new Date(date);
+            } else if (new String(date).includes("00:00:00")) {
+                new Date(`${date}T00:00`);
+            }
+            if (day.getMonth() + 1 < 10) {
+                stringdate = `${day.getYear()}-0${day.getMonth() + 1}-`
+            } else {
+                stringdate = `${day.getFullYear()}-${day.getMonth() + 1}-`
+            }
+            if (parseInt(day.getDay()) < 10) {
+                stringdate = stringdate.concat(`0${day.getDay()}`);
+            } else {
+                stringdate = stringdate.concat(`${day.getDay()}`);
+            }
+        }
+        Axios.post("http://localhost:3001/api/getMaxAvailable", {
+            businessName: businessName,
+            date: stringdate
+        }).then((result) => {
+            if (result.data.err) {
+                console.log("There are no reservations that day.");
+                setAvailableArray(maxArray);
+                setAvailableNumPeople(maxNumPeople);
+                updateMaxString(maxNumPeople, nameArray, maxArray);
+            } else {
+                let people = parseInt(maxNumPeople);
+                let available = [...maxArray];
+                result = result.data.result;
+                for (let i = 0; i < result.length; i++) {
+                    if (result[i].isReserved && result[i].ID != reservationID) {
+                        if (timeDiff(start, result[i].endTime) > 0 || 
+                        timeDiff(end, result[i].startTime) > 0) {
+                            var numReservable = result[i].numReservable.split(";");
+                            for (let j = 0; j < numReservable.length; j++) {
+                                available[j] = available[j] - numReservable[j];
+                            }
+                            people = people - result[i].numPeople;
+                        }
+                    }
+                }
+                setAvailableArray(available);
+                setAvailableNumPeople(parseInt(people));
+                updateMaxString(people, nameArray, available);
+            }
+        })
+    }
 
     function calculateTotal(num) {
         var tot = 0;
@@ -65,27 +153,13 @@ export default function Orders(props) {
                 tot = tot + parseFloat(priceArray[i]) * num[i];
             }
         }
-        setTotal(tot);
+        setTotal(tot.toFixed(2));
     }
 
     function insertValues() {
-        var date = formattedDate;
-        if (state.ID) {
-            setReservationID(state.ID);
-            // getNumArray
-            Axios.post("http://localhost:3001/api/getReservation", {
-                ID: state.ID
-            }).then((result) => {
-                // UPDATE numValues
-                let numValues = String(result.data.result[0].numReservable).split(";");
-                setNumArray(numValues);
-                setNumPeople(result.data.result[0].numPeople);
-                setStartTime(result.data.result[0].startTime);
-                date = result.data.result[0].reservationDate;
-                setEndTime(result.data.result[0].endTime);
-            })
-        }
-        setCurrentDate(date);
+        let ReservedItems = "";
+        let maxs = "";
+        let maxPeople = 0;
         Axios.post("http://localhost:3001/api/getFacilitysData", {
             businessName: businessName
         }).then((result) => {
@@ -97,26 +171,31 @@ export default function Orders(props) {
                     setNumReservableItems(1);
                 } else {
                     setNumReservableItems(parseInt(result.data.result[0].numReservable));
-
+    
                     // UPDATE NUM OF RESERVABLES
-                    setMaxNumPeople(result.data.result[0].numPeople);
-
+                    maxPeople = result.data.result[0].numPeople;
+                    setMaxNumPeople(maxPeople);
+                    setAvailableNumPeople(maxPeople);
+    
                     // UPDATE NAMES
-                    let ReservedItems = String(result.data.result[0].reservableItem).split(";");
+                    ReservedItems = String(result.data.result[0].reservableItem).split(";");
                     setNameArray(ReservedItems);
                     
                     // UPDATE PRICES
                     let prices = String(result.data.result[0].prices).split(";");
                     setPriceArray(prices);
-
+    
                     // UPDATE MAXIMUMS
-                    let maxs = String(result.data.result[0].maxs).split(";");
+                    maxs = String(result.data.result[0].maxs).split(";");
                     setMaxArray(maxs);
-
+                    setAvailableArray(maxs);
+    
+                    updateMaxString(maxPeople, ReservedItems, maxs)
+    
                     // UPDATE MINIMUMS
                     let mins = String(result.data.result[0].mins).split(";");
                     setMinArray(mins);
-
+    
                     let Sun = result.data.result[0].Sun;
                     let Mon = result.data.result[0].Mon;
                     let Tues = result.data.result[0].Tues;
@@ -152,9 +231,30 @@ export default function Orders(props) {
                 }
             }
         })
+        if (state.ID) {
+            setReservationID(state.ID);
+            // getNumArray
+            Axios.post("http://localhost:3001/api/getReservation", {
+                ID: state.ID
+            }).then((result) => {
+                // UPDATE numValues
+                let numValues = String(result.data.result[0].numReservable).split(";");
+                setNumArray(numValues);
+                setNumPeople(result.data.result[0].numPeople);
+                setStartTime(result.data.result[0].startTime);
+                var date = new Date(`${result.data.result[0].reservationDate}T00:00`);
+                setEndTime(result.data.result[0].endTime);
+                setCurrentDate(date);
+                getConcurrent(date,
+                    result.data.result[0].startTime, result.data.result[0].endTime, 
+                    maxPeople, maxs, ReservedItems)
+            })
+        } else {
+            getConcurrent(null, null, null, null, maxPeople, maxs, ReservedItems)
+        }
     }
 
-    function makeBox() {
+    function makeBox(max) {
         for (let element = 1; element <= numReservableItems; element++) {
             // Then the code pushes each time it loops to the empty array I initiated.
             // alert(minArray[element - 1]);
@@ -192,10 +292,10 @@ export default function Orders(props) {
                         required
                         fullWidth
                         name={'Value' + element}
-                        label={'Value ' + element}
+                        label={'# of Units '}
                         type="number"
                         id={element}
-                        InputProps={{ inputProps: { min: minArray[element - 1], max: maxArray[element - 1], step: 1 } }}
+                        InputProps={{ inputProps: { min: minArray[element - 1], max: max[element - 1], step: 1 } }}
                         value={numArray[element - 1]}
                         onChange={(newValue) => { 
                             let newArr = [...numArray];
@@ -285,7 +385,7 @@ export default function Orders(props) {
         }
     }
 
-    if (currentDate) {
+    if (MAXSTRING) {
     return (
         <React.Fragment>
             <Box
@@ -304,6 +404,12 @@ export default function Orders(props) {
                 </Typography>
                 <Typography style={{color:"#98622E"}} component="h5" variant="h8">
                     * Prices are assigned per unit of reservable item.
+                </Typography>
+                <Typography style={{color:"#98622E"}} component="h5" variant="h8">
+                    * Remaining reservable units are:
+                </Typography>
+                <Typography style={{color:"#98402E"}} component="h5" variant="h10">
+                    {MAXSTRING}
                 </Typography>
                 <Typography component="p" variant="p">
                     Reservation ID: {reservationID}
@@ -329,7 +435,8 @@ export default function Orders(props) {
                                     label="Select Date"
                                     validate="true"
                                     value={currentDate}
-                                    onChange={(newValue) => { setCurrentDate(newValue) }}
+                                    onChange={(newValue) => { setCurrentDate(newValue); 
+                                        getConcurrent(newValue, startTime, endTime, maxNumPeople, maxArray, nameArray) }}
                                     renderInput={(params) => <TextField {...params}/>}
                                     shouldDisableDate={(date) => {
                                         if (closed[new Date(date).getDay()]) {
@@ -346,7 +453,8 @@ export default function Orders(props) {
                                     label="Start Time"
                                     value={startTime}
                                     fullWidth
-                                    onChange={(newValue) => { setStartTime(newValue) }}
+                                    onChange={(newValue) => { setStartTime(newValue);
+                                        getConcurrent(currentDate, newValue, endTime, maxNumPeople, maxArray, nameArray) }}
                                     renderInput={(params) => <TextField {...params} required/>}
                                     shouldDisableTime={(timeValue, clockType) => {
                                         const openHour = new Date((openTime[new Date(currentDate).getDay()])).getHours()
@@ -375,7 +483,8 @@ export default function Orders(props) {
                                     label="End Time"
                                     value={endTime}
                                     fullWidth
-                                    onChange={(newValue) => { setEndTime(newValue) }}
+                                    onChange={(newValue) => { setEndTime(newValue); 
+                                        getConcurrent(currentDate, startTime, newValue, maxNumPeople, maxArray, nameArray) }}
                                     renderInput={(params) => <TextField {...params} required />}
                                     shouldDisableTime={(timeValue, clockType) => {
                                         const openHour = new Date((openTime[new Date(currentDate).getDay()])).getHours()
@@ -408,19 +517,20 @@ export default function Orders(props) {
                                     required
                                     fullWidth
                                     name="numPeople"
-                                    label="Max Party Size"
+                                    label="Party Size"
                                     type="number"
                                     id="numPeople"
-                                    InputProps={{ inputProps: { max: maxNumPeople,  min: 1, step: 1 } }}
+                                    InputProps={{ inputProps: { max: availableNumPeople,  min: 1, step: 1 } }}
                                     value={numPeople}
                                     onChange={(newValue) => { 
                                         setNumPeople(parseInt(newValue.target.value));
+                                        getConcurrent(currentDate, startTime, endTime, maxNumPeople, maxArray, nameArray);
                                     }}
                                 />
                             </Grid>
                         {/* And here I render the box array */}
                             {/* There is going to be a max of 10 items */}
-                            {makeBox()}
+                            {makeBox(availableArray)}
                             <Grid item xs={12} sm={6}>
                                 {box[0]}
                             </Grid>
@@ -457,7 +567,7 @@ export default function Orders(props) {
                     </Typography>
                     <Button
                         type="submit"
-                        // disabled={ closed[new Date(currentDate).getDay()] ? true : false}
+                        disabled={ priceArray[0] ? false : true}
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}

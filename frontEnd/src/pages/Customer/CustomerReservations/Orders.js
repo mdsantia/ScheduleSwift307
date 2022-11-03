@@ -130,7 +130,7 @@ export default function Orders(props) {
                             <TableCell>{row.time}</TableCell>
                             <TableCell>{row.name}</TableCell>
                             <TableCell>{row.paymentMethod}</TableCell>
-                            <TableCell>{`$${row.amount}`}</TableCell>
+                            <TableCell>{`$${parseFloat(row.amount).toFixed(2)}`}</TableCell>
                             <TableCell align="right"><Button name={row.name} id={row.id} onClick={edit}>
                                 Edit</Button></TableCell>
                             <TableCell align="right"><Button onClick={(e) => deleteReservation(row.id)}>

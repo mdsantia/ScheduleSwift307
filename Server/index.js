@@ -8,6 +8,7 @@ const SecurityKey = "abcedfghijklmnopqrstuvwx";
 const mysql = require("mysql");
 const nodemailer = require("nodemailer");
 const { send } = require("process");
+const e = require("express");
 
 const db = mysql.createPool({
     host: "localhost",
@@ -940,6 +941,28 @@ app.post("/api/managerCreateReservation", (req, res) => {
             }
             if (result) {
                 res.send({ result })
+            }
+        }
+    )
+})
+
+app.post("/api/getMaxAvailable", (req, res) => {
+    const businessName = req.body.businessName;
+    const date = req.body.date;
+    db.query(
+        "SELECT * FROM reservations WHERE businessName = ? AND reservationDate = ?",
+        [businessName, date],
+        (err, result) => {
+            console.log( `Reservation on ${date}:`)
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            }
+            if (result.length > 0) {
+                console.log( {result} )
+                res.send({ result : result })
+            } else {
+                res.send({err : "none"});
             }
         }
     )

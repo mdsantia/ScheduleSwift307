@@ -119,7 +119,7 @@ export default function Orders(props) {
                                 <TableCell>{reserve.businessName}</TableCell>
                                 <TableCell>{reserve.reservableItem}</TableCell>
                                 <TableCell>{reserve.isReserved}</TableCell>
-                                <TableCell align="right">{`$${total(reserve.numReservable, reserve.price)}`}</TableCell>
+                                <TableCell align="right">{`$${parseFloat(total(reserve.numReservable, reserve.price)).toFixed(2)}`}</TableCell>
                                 <TableCell><Button onClick={() => editReservation(reserve.ID)}>Edit</Button></TableCell>
                                 <TableCell><Button onClick={() => deleteReservation(reserve.ID)}>Delete</Button></TableCell>
                             </TableRow>

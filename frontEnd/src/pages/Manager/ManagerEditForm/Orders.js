@@ -190,7 +190,7 @@ export default function Orders(props) {
                         required
                         fullWidth
                         name={'Value' + element}
-                        label={'Value ' + element}
+                        label={'# of Units ' + element}
                         type="number"
                         id={element}
                         InputProps={{ inputProps: { min: minArray[element - 1], max: maxArray[element - 1], step: 1 } }}
@@ -406,7 +406,7 @@ export default function Orders(props) {
                                     required
                                     fullWidth
                                     name="numPeople"
-                                    label="Max Party Size"
+                                    label="Party Size"
                                     type="number"
                                     id="numPeople"
                                     InputProps={{ inputProps: { max: maxNumPeople,  min: 1, step: 1 } }}
