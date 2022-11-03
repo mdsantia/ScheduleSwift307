@@ -31,7 +31,7 @@ export default function Orders(props) {
     }
     
     function editReservation (reserveID, businessName) {
-        navigate("/managerEditForm", {
+        navigate("/requestForm", {
             state: {
                 username: state.username,
                 password: state.password,
@@ -76,96 +76,6 @@ export default function Orders(props) {
         getReservations()
     }, []);
 
-    // Generate Order Data
-    // function createData(id, date, time, name, paymentMethod, price, numReservable, reservables) {
-    //     var amount = 0;
-    //     if (!price.includes(";")) {
-    //         amount = price;
-    //         return { id, date, time, name, paymentMethod, amount };
-    //     }
-    //     const numReservableItems = reservables.split(";").length;
-    //     const priceArray = price.split(";");
-    //     const num = numReservable.split(";");
-    //     for (let i = 0; i < numReservableItems; i++) {
-    //         if (num[i]) {
-    //             amount = amount + parseFloat(priceArray[i]) * num[i];
-    //         }
-    //     }
-    //     return { id, date, time, name, paymentMethod, amount };
-    // }
-
-    // useEffect(() => {
-    //     startFill();
-    // }, []);
-
-    // function startFill() {
-    //     if (rows.length === 0) {
-    //         Axios.post("http://localhost:3001/api/activeEvents", {
-    //             username : state.username,
-    //         }).then((result) => {
-    //             if (!result.data.message) {
-    //                 let row = [];
-    //                 for (let entryNum = 0; entryNum < 5; entryNum++) {
-    //                     if (result.data[entryNum]) {
-    //                         row.push(createData(result.data[entryNum].ID, result.data[entryNum]["reservationDate"],
-    //                         (new Date(result.data[entryNum]["startTime"])).toLocaleTimeString(), 
-    //                         result.data[entryNum]["businessName"], 'Yes', 
-    //                         result.data[entryNum]["price"], 
-    //                         result.data[entryNum]["numReservable"], result.data[entryNum]["reservableItem"]));
-    //                         setRows(row);
-    //                         setNumEntries(entryNum+1);
-    //                     } else {
-    //                         break;
-    //                     }
-    //                 }
-    //             }
-    //         })
-    //     }
-    // }
-
-    // const edit = (e) => {
-    //     navigate("/requestForm", {
-    //         state: {
-    //             username: state.username,
-    //             password: state.password,
-    //             businessName: e.currentTarget.name,
-    //             ID: e.currentTarget.id
-    //         }
-    //     })
-    // }
-
-    // function deleteReservation(resID) {
-    //     Axios.post("http://localhost:3001/api/managerDeleteReservation", {
-    //         reservationID: resID
-    //     }).then((result) => {
-    //         if (result.data.result.affectedRows === 0) {
-    //             // setError("No Reservation with that ID exists")
-    //         } else {
-    //             // setError("");
-    //             startFill();
-    //             alert("Your reservation has been cancelled!\nA confirmation email has been sent to you containing the details of your cancelled reservation.");
-    //         }
-    //     })
-    // }
-
-    // const addRow = (e) => {
-    //     e.preventDefault();
-    //     Axios.post("http://localhost:3001/api/activeEvents", {
-    //         username : state.username,
-    //     }).then((result) => {
-    //         if (result.data.message || result.data.err) {
-    //             alert(`There are no more associated active reservations to your account.`);
-    //         } else {
-    //             for (let entryNum = 0 + numEntries; entryNum < 5 + numEntries; entryNum++) {
-    //                 rows.push(createData(result.data[entryNum]["ID"], result.data[entryNum]["reservationDate"],
-    //                 result.data[entryNum]["startTime"], result.data[entryNum]["businessName"], 'Yes', result.data[entryNum]["price"]));
-    //                 setRows(rows);
-    //                 setNumEntries(entryNum+1);
-    //             }
-    //         }
-    //     })
-    // }
-
     console.log(reservations);
     console.log(reservations.length);
     if (reservations.length > 0) {
@@ -188,7 +98,7 @@ export default function Orders(props) {
                         {reservations.map((reserve) => (
                             <TableRow key={reserve.ID}>
                                 <TableCell>{reserve.reservationDate}</TableCell>
-                                <TableCell>{reserve.startTime}</TableCell>
+                                <TableCell>{(new Date(reserve.startTime)).toLocaleTimeString()}</TableCell>
                                 <TableCell>{reserve.reservedBy}</TableCell>
                                 <TableCell>{reserve.isReserved}</TableCell>
                                 <TableCell>{`$${parseFloat(total(reserve.numReservable, reserve.price)).toFixed(2)}`}</TableCell>
