@@ -15,13 +15,14 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Axios from 'axios';
 import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { useSlotProps } from '@mui/base';
+import { MenuUnstyled, useSlotProps } from '@mui/base';
 import { Dayjs } from 'dayjs';
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import EventIcon from '@mui/icons-material/Event';
+import { MenuItem, Select } from '@mui/material';
 
 
 function preventDefault(event) {
@@ -43,10 +44,95 @@ export default function Orders(props) {
     const navigate = useNavigate();
     const formattedDate = `${year}-${month}-${day}`;
     const [currentDate, setCurrentDate] = useState(Dayjs | null);
+    var paymentDetails = [];
+    const [paymentStatus, setPaymentStatus] = useState("required");
+    const [isPayment, setIsPayment] = useState(false);
+    const [paymentNum, setPaymentNum] = useState(0);
+
     useEffect(() => {
         insertValues();
         setCurrentDate(formattedDate);
     }, [])
+
+    function makeDetails() {
+        if (isPayment) {
+            if (paymentStatus === "depositFixed") {
+            paymentDetails.push(
+                <Grid container={2}><Grid item xs={12} sm={6}>
+                    <Select
+                    fullWidth
+                    value={paymentStatus}
+                    label="Select Payment Details"
+                    onChange={(newVal) => { setPaymentStatus(newVal.target.value) }}>
+                    <MenuItem value={"required"}>Complete Payment Required</MenuItem>
+                    <MenuItem value={"depositPer"}>Deposit By Percentage Of Total</MenuItem>
+                    <MenuItem value={"depositFixed"}>Fixed Amount Deposit</MenuItem>
+                    <MenuItem value={"optional"}>Allow Customer To For Payment</MenuItem>
+                    </Select>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField
+                    fullWidth
+                    value={parseFloat(paymentNum).toFixed(2)}
+                    InputProps={{inputProps : {min:0.01, step:0.10}}}
+                    type="number"
+                    label="Minimum Deposit Payment Required in $:"
+                    onChange={(newVal) => { setPaymentNum(parseFloat(newVal.target.value)) }}>
+                    </TextField>
+                </Grid></Grid>);
+            } else if (paymentStatus === "depositPer") {
+                    paymentDetails.push(
+                    <Grid container={2}><Grid item xs={12} sm={6}>
+                        <Select
+                        fullWidth
+                        value={paymentStatus}
+                        label="Select Payment Details"
+                        onChange={(newVal) => { setPaymentStatus(newVal.target.value) }}>
+                        <MenuItem value={"required"}>Complete Payment Required</MenuItem>
+                        <MenuItem value={"depositPer"}>Deposit By Percentage Of Total</MenuItem>
+                        <MenuItem value={"depositFixed"}>Fixed Amount Deposit</MenuItem>
+                        <MenuItem value={"optional"}>Allow Customer To For Payment</MenuItem>
+                        </Select>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                        fullWidth
+                        value={parseFloat(paymentNum).toFixed(1)}
+                        InputProps={{inputProps : {min:1, max:100, step:0.10}}}
+                        type="number"
+                        label="Minimum Deposit Payment Required in %:"
+                        onChange={(newVal) => { setPaymentNum(parseFloat(newVal.target.value)) }}>
+                        </TextField>
+                    </Grid></Grid>);
+            } else {
+                paymentDetails = [];
+                paymentDetails.push(
+                <Grid container={2}><Grid item xs={12} sm={6}>
+                    <Select
+                    fullWidth
+                    value={paymentStatus}
+                    label="Select Payment Details"
+                    onChange={(newVal) => { setPaymentStatus(newVal.target.value) }}>
+                    <MenuItem value={"required"}>Complete Payment Required</MenuItem>
+                    <MenuItem value={"depositPer"}>Deposit By Percentage Of Total</MenuItem>
+                    <MenuItem value={"depositFixed"}>Fixed Amount Deposit</MenuItem>
+                    <MenuItem value={"optional"}>Allow Customer To For Payment</MenuItem>
+                    </Select>
+                </Grid></Grid>);
+            }
+        }
+    }
+
+    const UpdatePayment = (event) => {
+        event.preventDefault();
+        if (isPayment) {
+            setIsPayment(false);
+            paymentDetails = null;
+            return;
+        } else {
+            setIsPayment(true);
+        }
+    }
 
     function insertValues() {
         Axios.post("http://localhost:3001/api/getFacilitysData", {
@@ -232,6 +318,7 @@ export default function Orders(props) {
             businessName: currentDate
         });
     }
+
     return (
         <React.Fragment>
             <Box
@@ -365,7 +452,16 @@ export default function Orders(props) {
                     >
                         Remove Reservable Item
                     </Button></Grid></Grid>
-                    
+                    <Grid>{makeDetails()} {paymentDetails[0]}</Grid>
+                    <Button
+                        onClick={UpdatePayment}
+                        // fullWidth
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2 }}
+                    >
+                        Add/Remove Payment Requirements
+                    </Button>
+
                     <Button
                         type="submit"
                         fullWidth
