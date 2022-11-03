@@ -47,12 +47,12 @@ export default function Orders(props) {
             for (let i = 0; i < result.data.result.length; i++) {
                 var event = {
                     title: "Reservation #" + result.data.result[i].ID,
-                    start: new Date(result.data.result[i].startTime),
-                    end: new Date(result.data.result[i].endTime),
+                    start: new Date(result.data.result[i].reservationDate),
+                    end: new Date(result.data.result[i].reservationDate),
                     desc: "Reservation Made By " + result.data.result[i].reservedBy,
                 }
+                events.push(event);
             }
-            events.push(event);
             allEvents = events;
             setAllEvents(events);
         })
