@@ -67,7 +67,7 @@ export default function Orders(props) {
                     <MenuItem value={"required"}>Complete Payment Required</MenuItem>
                     <MenuItem value={"depositPer"}>Deposit By Percentage Of Total</MenuItem>
                     <MenuItem value={"depositFixed"}>Fixed Amount Deposit</MenuItem>
-                    <MenuItem value={"optional"}>Allow Customer To For Payment</MenuItem>
+                    <MenuItem value={"optional"}>Allow Customer To Opt For Payment</MenuItem>
                     </Select>
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -91,7 +91,7 @@ export default function Orders(props) {
                         <MenuItem value={"required"}>Complete Payment Required</MenuItem>
                         <MenuItem value={"depositPer"}>Deposit By Percentage Of Total</MenuItem>
                         <MenuItem value={"depositFixed"}>Fixed Amount Deposit</MenuItem>
-                        <MenuItem value={"optional"}>Allow Customer To For Payment</MenuItem>
+                        <MenuItem value={"optional"}>Allow Customer To Opt For Payment</MenuItem>
                         </Select>
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -116,7 +116,7 @@ export default function Orders(props) {
                     <MenuItem value={"required"}>Complete Payment Required</MenuItem>
                     <MenuItem value={"depositPer"}>Deposit By Percentage Of Total</MenuItem>
                     <MenuItem value={"depositFixed"}>Fixed Amount Deposit</MenuItem>
-                    <MenuItem value={"optional"}>Allow Customer To For Payment</MenuItem>
+                    <MenuItem value={"optional"}>Allow Customer To Opt For Payment</MenuItem>
                     </Select>
                 </Grid></Grid>);
             }
