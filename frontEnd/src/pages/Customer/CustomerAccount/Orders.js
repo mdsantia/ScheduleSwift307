@@ -21,7 +21,6 @@ import Axios from 'axios';
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { InputLabel } from '@mui/material';
-import Logo from './Logo.png';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 // Generate Order Data

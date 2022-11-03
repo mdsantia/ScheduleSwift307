@@ -1222,20 +1222,21 @@ app.post("/api/managerChangePrice", (req, res) => {
     console.log(id);
     console.log(newPrice);
 
+    
     db.query(
         "UPDATE reservations SET price = ? WHERE ID = ?",
         [newPrice, id],
-        (err, result) => {
-            console.log(result);
+        (err, result) => {          
+        console.log(result);
             if (err) {
                 console.log(err);
                 res.send({ err: err })
             }
             if (result) {
                 res.send({ result })
-            }
-        }
-    )
+            }}
+                
+        )
 })
 
 app.post("/api/addManagerFAQ", (req, res) => {
@@ -1289,6 +1290,35 @@ app.post("/api/managerDeleteFAQ", (req, res) => {
             if (result) {
                 console.log(result)
                 res.send({ result: result })
+            }
+        }
+    )
+})
+
+
+app.post("/api/employeeDeleteReservation", (req, res) => {
+    const reservationID = req.body.reservationID;
+    db.query(
+        "SELECT * FROM reservations WHERE ID = ?",
+        [reservationID], (err3, result3) => {
+            if (err3) {
+                console.log(err3);
+                console.log("Unable to find reservation");
+            } else {
+                db.query(
+                    "DELETE FROM reservations WHERE ID = ?",
+                    [reservationID],
+                    (err, result) => {
+                        if (err) {
+                            console.log(err)
+                            res.send({ err: err })
+                        }
+                        if (result) {
+                            console.log({ result })
+                            res.send({ result })
+                        }
+                    }
+                )
             }
         }
     )

@@ -30,7 +30,7 @@ import { mainListItems } from './listItems';
 import Orders from './Orders';
 import { useLocation, Navigate, useNavigate } from 'react-router-dom';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import Logo from './Logo.png';
+import Logo from '../Logo.png';
 
 function Copyright(props) {
     return (

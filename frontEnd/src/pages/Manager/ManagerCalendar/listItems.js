@@ -8,41 +8,44 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PeopleIcon from '@mui/icons-material/People';
 import BallotIcon from "@mui/icons-material/Ballot";
 import BentoIcon from "@mui/icons-material/Bento";
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { Navigate, useNavigate, useLocation, Link } from "react-router-dom";
-import Logo from '../Logo.png';
+import DateRangeIcon from '@mui/icons-material/DateRange';
 
 export const mainListItems = (
     <React.Fragment>
-        <ListItemButton component={Link} to="/customerMain">
+        <ListItemButton>
             <ListItemIcon>
                 <DashboardIcon />
             </ListItemIcon>
             <ListItemText primary="Dashboard" />
         </ListItemButton>
-        <ListItemButton component={Link} to="/customerReservations">
+        <ListItemButton>
             <ListItemIcon>
                 <BallotIcon />
             </ListItemIcon>
-            <ListItemText primary="My Reservations" />
+            <ListItemText primary="Reservations" />
         </ListItemButton>
-        <ListItemButton component={Link} to="/customerReserve">
+        <ListItemButton>
+            <ListItemIcon>
+                <DateRangeIcon />
+            </ListItemIcon>
+            <ListItemText primary="Calendar" />
+        </ListItemButton>
+        <ListItemButton>
             <ListItemIcon>
                 <BentoIcon />
             </ListItemIcon>
-            <ListItemText primary="Make Reservations" />
+            <ListItemText primary="Update Notes" />
         </ListItemButton>
-        <ListItemButton component={Link} to="/customerAccount">
-            <ListItemIcon>
-                <AccountCircleIcon />
-            </ListItemIcon>
-            <ListItemText primary="Account Info" />
-        </ListItemButton>
-        <ListItemButton component={Link} to="/customerStats">
+        <ListItemButton>
             <ListItemIcon>
                 <PeopleIcon />
             </ListItemIcon>
-            <ListItemText primary="Account Statistics" />
+            <ListItemText primary="My Account" />
+        </ListItemButton><ListItemButton>
+            <ListItemIcon>
+                <PeopleIcon />
+            </ListItemIcon>
+            <ListItemText primary="Create Accounts" />
         </ListItemButton>
-    </React.Fragment >
+    </React.Fragment>
 );

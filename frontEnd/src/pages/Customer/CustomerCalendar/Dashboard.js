@@ -26,14 +26,12 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PeopleIcon from '@mui/icons-material/People';
 import BallotIcon from "@mui/icons-material/Ballot";
 import BentoIcon from "@mui/icons-material/Bento";
-import DateRangeIcon from '@mui/icons-material/DateRange';
-import ListAltIcon from '@mui/icons-material/ListAlt';
 import { mainListItems } from './listItems';
 import Orders from './Orders';
-import { Navigate, useNavigate, useLocation } from "react-router-dom";
-import { useState } from 'react';
+import { useLocation, Navigate, useNavigate } from 'react-router-dom';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Logo from '../Logo.png';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 function Copyright(props) {
     return (
@@ -132,7 +130,6 @@ const mdTheme = createTheme({
 
 function DashboardContent() {
     const { state } = useLocation();
-    console.log(state);
     const navigate = useNavigate();
     const [open, setOpen] = React.useState(true);
     const toggleDrawer = () => {
@@ -168,7 +165,7 @@ function DashboardContent() {
                             noWrap
                             sx={{ flexGrow: 1 }}
                         >
-                            Manager View
+                            ScheduleSwift
                         </Typography>
                         <IconButton color="inherit">
                             <Badge color="secondary">
@@ -186,7 +183,7 @@ function DashboardContent() {
                             px: [1],
                         }}
                     >
-                        <img src={Logo} style={styles.logoContainer} />
+                        <img src={Logo} alt="Logo" style={styles.logoContainer}/>
                         <IconButton onClick={toggleDrawer}>
                             <ChevronLeftIcon />
                         </IconButton>
@@ -194,95 +191,62 @@ function DashboardContent() {
                     <Divider />
                     <List component="nav">
                         <ListItemButton onClick={() => {
-                            navigate("/managerMain", {
+                            navigate("/customerMain", {
                                 state: {
                                     username: state.username,
-                                    password: state.password,
-                                    businessName: state.businessName
+                                    password: state.password
                                 }
                             })
                         }}>
                             <ListItemIcon>
-                                <DashboardIcon />
+                                <DashboardIcon/>
                             </ListItemIcon>
                             <ListItemText primary="Dashboard" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
-                            navigate("/FacilityForm", {
+                            navigate("/customerReservations", {
                                 state: {
                                     username: state.username,
-                                    password: state.password,
-                                    businessName: state.businessName
+                                    password: state.password
+                                }
+                            })
+                        }}>
+                            <ListItemIcon>
+                                <CalendarMonthIcon/>
+                            </ListItemIcon>
+                            <ListItemText primary="Calendar" />
+                        </ListItemButton>
+                        <ListItemButton onClick={() => {
+                            navigate("/customerCalendar", {
+                                state: {
+                                    username: state.username,
+                                    password: state.password
                                 }
                             })
                         }}>
                             <ListItemIcon>
                                 <BallotIcon />
                             </ListItemIcon>
-                            <ListItemText primary='Reservation Form' />
+                            <ListItemText primary='My Reservations' />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
-                            navigate("/managerCreateReservation", {
+                            navigate("/customerReserve", {
                                 state: {
                                     username: state.username,
-                                    password: state.password,
-                                    businessName: state.businessName
-                                }
-                            })
-                        }}>
-                            <ListItemIcon>
-                                <BallotIcon />
-                            </ListItemIcon>
-                            <ListItemText primary='Create Reservations' />
-                        </ListItemButton>
-                        <ListItemButton onClick={() => {
-                            navigate("/facilityReservations", {
-                                state: {
-                                    username: state.username,
-                                    password: state.password,
-                                    businessName: state.businessName
-                                }
-                            })
-                        }}>
-                            <ListItemIcon>
-                                <BallotIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Facility's Reservations" />
-                        </ListItemButton>
-                        <ListItemButton onClick={() => {
-                            navigate("/Calendar", {
-                                state: {
-                                    username: state.username,
-                                    password: state.password,
-                                    businessName: state.businessName
-                                }
-                            })
-                        }}>
-                            <ListItemIcon>
-                                <DateRangeIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Calendar View" />
-                        </ListItemButton>
-                        <ListItemButton onClick={() => {
-                            navigate("/managerNotes", {
-                                state: {
-                                    username: state.username,
-                                    password: state.password,
-                                    businessName: state.businessName
+                                    password: state.password
                                 }
                             })
                         }}>
                             <ListItemIcon>
                                 <BentoIcon />
                             </ListItemIcon>
-                            <ListItemText primary="Add Notes" />
+                            <ListItemText primary="Make Reservations" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
-                            navigate("/managerAccount", {
+                            navigate("/customerAccount", {
                                 state: {
                                     username: state.username,
-                                    password: state.password,
-                                    businessName: state.businessName
+                                    password: state.password
                                 }
                             })
                         }}>
@@ -292,18 +256,17 @@ function DashboardContent() {
                             <ListItemText primary="Account Info" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
-                            navigate("/managerCreateAccount", {
+                            navigate("/customerStats", {
                                 state: {
                                     username: state.username,
-                                    password: state.password,
-                                    businessName: state.businessName
+                                    password: state.password
                                 }
                             })
                         }}>
                             <ListItemIcon>
                                 <PeopleIcon />
                             </ListItemIcon>
-                            <ListItemText primary="Create Emp Account" />
+                            <ListItemText primary="Account Statistics" />
                         </ListItemButton>
                         <Divider sx={{ my: 1 }} />
                     </List>
@@ -326,7 +289,7 @@ function DashboardContent() {
                             {/* Recent Orders */}
                             <Grid item xs={12}>
                                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                                    <Orders username={state.username} password={state.password} businessName={state.businessName} />
+                                    <Orders username={state.username} password={state.password} />
                                 </Paper>
                             </Grid>
                         </Grid>
@@ -334,10 +297,10 @@ function DashboardContent() {
                     </Container>
                 </Box>
             </Box>
-        </ThemeProvider >
+        </ThemeProvider>
     );
 }
 
-export default function ManagerMain() {
+export default function CustomerCalendar() {
     return <DashboardContent />;
 }

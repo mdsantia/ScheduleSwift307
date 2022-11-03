@@ -29,7 +29,7 @@ import BentoIcon from "@mui/icons-material/Bento";
 import { mainListItems } from './listItems';
 import Orders from './Orders';
 import { Navigate, useNavigate, useLocation } from "react-router-dom";
-import Logo from './Logo.png';
+import Logo from '../Logo.png';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 function Copyright(props) {

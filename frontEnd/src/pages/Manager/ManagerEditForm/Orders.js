@@ -21,6 +21,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import EventIcon from '@mui/icons-material/Event';
+import Logo from '../Logo.png';
 
 function preventDefault(event) {
     event.preventDefault();
@@ -275,7 +277,6 @@ export default function Orders(props) {
                 endTime: endTime,
                 reservedBy: state.username,
                 numPeople: data.get('numPeople'),
-
                 numReservable: numReserved
             }).then((result) => {
                 alert(`Your reservation has been updated!\nAn confirmation email has been sent to you containing your Reservation ID and updated reservation details.`);
@@ -294,8 +295,8 @@ export default function Orders(props) {
                     alignItems: 'center',
                 }}
             >
-                <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                    <LockOutlinedIcon />
+                <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+                    <EventIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
                     {businessName} Reservation Request Form

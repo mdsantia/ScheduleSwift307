@@ -9,7 +9,6 @@ import { useState, useEffect } from 'react';
 import { Button, TextField, Grid, Typography } from '@mui/material';
 import Axios from 'axios';
 
-
 export default function Orders(props) {
     const [reservations, setReservations] = useState([]);
     const [deleteRes, setDeleteRes] = useState('');
@@ -26,7 +25,7 @@ export default function Orders(props) {
     }
 
     function deleteReservation(resID) {
-        Axios.post("http://localhost:3001/api/managerDeleteReservation", {
+        Axios.post("http://localhost:3001/api/employeeDeleteReservation", {
             reservationID: resID
         }).then((result) => {
             if (result.data.result.affectedRows === 0) {

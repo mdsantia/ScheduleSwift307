@@ -8,7 +8,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PeopleIcon from '@mui/icons-material/People';
 import BallotIcon from "@mui/icons-material/Ballot";
 import BentoIcon from "@mui/icons-material/Bento";
-import Logo from './Logo.png';
+import Logo from '../Logo.png';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Navigate, useNavigate, useLocation, Link } from "react-router-dom";
 

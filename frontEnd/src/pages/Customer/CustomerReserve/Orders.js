@@ -10,7 +10,7 @@ import { Button } from '@mui/material';
 import Axios from 'axios';
 import { useState, useEffect } from 'react';
 import { Navigate, useNavigate, useLocation } from 'react-router-dom';
-import Logo from './Logo.png';
+import Logo from '../Logo.png';
 
 function preventDefault(event) {
     event.preventDefault();
