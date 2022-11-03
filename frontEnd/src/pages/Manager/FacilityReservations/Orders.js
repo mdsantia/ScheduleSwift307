@@ -30,7 +30,6 @@ export default function Orders(props) {
             const allReserves = result.data.result;
             console.log(allReserves);
             setReservations(allReserves);
-
         })
     }
     function editReservation (reserveID) {
