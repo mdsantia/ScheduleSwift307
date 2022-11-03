@@ -80,7 +80,6 @@ export default function Orders(props) {
             return;
         }
         var stringdate = "";
-        console.log(new String(date));
         if (date.$M) {
             var valArr = (new String(date)).split(" ");
             if (date.$M + 1 < 10) {
@@ -95,7 +94,6 @@ export default function Orders(props) {
             } else {
                 stringdate = `${new Date(date).getFullYear()}-${new Date(date).getMonth() + 1}-${valArr[2]}`
             }
-            console.log(stringdate)
         } else {
             var day = date;
             if (new String(date).includes("T")) {
@@ -128,7 +126,7 @@ export default function Orders(props) {
                 let available = [...maxArray];
                 result = result.data.result;
                 for (let i = 0; i < result.length; i++) {
-                    if (result[i].isReserved && result[i].ID != reservationID) {
+                    if (result[i].isReserved && (result[i].ID != reservationID && result[i].ID != state.ID)) {
                         if (timeDiff(start, result[i].endTime) > 0 || 
                         timeDiff(end, result[i].startTime) > 0) {
                             var numReservable = result[i].numReservable.split(";");
@@ -146,11 +144,11 @@ export default function Orders(props) {
         })
     }
 
-    function calculateTotal(num) {
+    function calculateTotal(numReserve, price, num) {
         var tot = 0;
-        for (let i = 0; i < numReservableItems; i++) {
+        for (let i = 0; i < numReserve; i++) {
             if (num[i]) {
-                tot = tot + parseFloat(priceArray[i]) * num[i];
+                tot = tot + parseFloat(price[i]) * num[i];
             }
         }
         setTotal(tot.toFixed(2));
@@ -160,6 +158,7 @@ export default function Orders(props) {
         let ReservedItems = "";
         let maxs = "";
         let maxPeople = 0;
+        let prices = "";
         Axios.post("http://localhost:3001/api/getFacilitysData", {
             businessName: businessName
         }).then((result) => {
@@ -182,7 +181,7 @@ export default function Orders(props) {
                     setNameArray(ReservedItems);
                     
                     // UPDATE PRICES
-                    let prices = String(result.data.result[0].prices).split(";");
+                    prices = String(result.data.result[0].prices).split(";");
                     setPriceArray(prices);
     
                     // UPDATE MAXIMUMS
@@ -240,6 +239,7 @@ export default function Orders(props) {
                 // UPDATE numValues
                 let numValues = String(result.data.result[0].numReservable).split(";");
                 setNumArray(numValues);
+                calculateTotal(numValues.length, prices, numValues)
                 setNumPeople(result.data.result[0].numPeople);
                 setStartTime(result.data.result[0].startTime);
                 var date = new Date(`${result.data.result[0].reservationDate}T00:00`);
@@ -563,7 +563,7 @@ export default function Orders(props) {
                             </Grid>
                     </Grid>
                     <Typography component="p" variant="p">
-                        Total: ${total}
+                        Total: ${parseFloat(total).toFixed(2)}
                     </Typography>
                     <Button
                         type="submit"
