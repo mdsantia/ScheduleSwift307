@@ -34,6 +34,8 @@ import CustomerConfirmAccount from './pages/Customer/customerConfirmAccount';
 import ManagerConfirmAccount from './pages/Manager/managerConfirmAccount';
 import EmployeeReservations from './pages/Employee/EmployeeReservations/Dashboard';
 import ManagerEditForm from './pages/Manager/ManagerEditForm/Dashboard';
+import ManagerCalendar from './pages/Manager/ManagerCalendar/Dashboard';
+// import CustomerCalendar from './pages/Customer/CustomerCalendar/Dashboard';
 
 function App() {
   return (
@@ -73,6 +75,8 @@ function App() {
           <Route path="/employeeChangePassword" element={<EmployeeForgotPassword />} />
           <Route path="/managerChangePassword" element={<ManagerForgotPassword />} />
           <Route path="/employeeReservations" element={<EmployeeReservations />} />
+          <Route path="/Calendar" element={<ManagerCalendar />} />
+          {/* <Route path="/customerCalendar" element={<CustomerCalendar />} /> */}
         </Routes>
       </Router>
     </div>
