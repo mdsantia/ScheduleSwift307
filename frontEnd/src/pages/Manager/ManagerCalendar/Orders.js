@@ -14,14 +14,13 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { useEffect, useState } from 'react';
 import { Button, TextField, Grid, Typography, Divider } from '@mui/material';
 import { Dayjs } from 'dayjs';
-import { Calendar, momentLocalizer, dateFnsLocalizer } from 'react-big-calendar';
+import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
 import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import enUS from 'date-fns/locale/en-US';
-import moment from 'moment';
 import { Navigate, useNavigate, useLocation } from "react-router-dom";
 
 export default function Orders(props) {
@@ -47,8 +46,8 @@ export default function Orders(props) {
             for (let i = 0; i < result.data.result.length; i++) {
                 var event = {
                     title: "Reservation #" + result.data.result[i].ID,
-                    start: new Date(result.data.result[i].reservationDate),
-                    end: new Date(result.data.result[i].reservationDate),
+                    start: new Date(result.data.result[i].startTime),
+                    end: new Date(result.data.result[i].endTime),
                     desc: "Reservation Made By " + result.data.result[i].reservedBy,
                 }
                 events.push(event);

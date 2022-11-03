@@ -712,8 +712,8 @@ app.post("/api/updateReservation", (req, res) => {
     const reservable = req.body.reservable;
     const price = req.body.price;
     const reservedBy = req.body.reservedBy;
-    const startTime = req.body.startTime;
-    const endTime = req.body.endTime;
+    const startTime = reservationSubstring + req.body.startTime.substring(10,);
+    const endTime = reservationSubstring + req.body.endTime.substring(10,);
     const numPeople = req.body.numPeople;
     const numReservable = req.body.numReservable;
     db.query(
@@ -822,8 +822,8 @@ app.post("/api/createReservation", (req, res) => {
     const reservable = req.body.reservable;
     const price = req.body.price;
     const reservedBy = req.body.reservedBy;
-    const startTime = req.body.startTime;
-    const endTime = req.body.endTime;
+    const startTime = reservationSubstring + req.body.startTime.substring(10,);
+    const endTime = reservationSubstring + req.body.endTime.substring(10,);
     const numPeople = req.body.numPeople;
     const numReservable = req.body.numReservable;
     db.query(
