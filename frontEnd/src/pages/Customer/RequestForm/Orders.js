@@ -96,6 +96,12 @@ export default function Orders(props) {
         }
     }
 
+    function dayDiff(start, end) {
+        var arg1 = new Date(start);
+        var arg2 = new Date(end);
+        return Math.abs(arg1 - arg2);
+    }
+
     function updateMaxString(availableNumPeople, nameArray, availableArray) {
         var string = `Max Party Size: ${availableNumPeople}`
 
@@ -492,7 +498,7 @@ export default function Orders(props) {
                                         getConcurrent(newValue, startTime, endTime, maxNumPeople, maxArray, nameArray)} }}
                                     renderInput={(params) => <TextField {...params}/>}
                                     shouldDisableDate={(date) => {
-                                        if (closed[new Date(date).getDay()]) {
+                                        if (closed[new Date(date).getDay()] || date < new Date()) {
                                             return true;
                                         }
                                         return false;
@@ -625,7 +631,7 @@ export default function Orders(props) {
                     {notesBox[1]}
                     <Button
                         type="submit"
-                        disabled={ (priceArray[0] && !closed[new Date(currentDate).getDay()]) ? false : true}
+                        disabled={ (priceArray[0] && !closed[new Date(currentDate).getDay()] && (new Date(currentDate) > new Date())) ? false : true}
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}

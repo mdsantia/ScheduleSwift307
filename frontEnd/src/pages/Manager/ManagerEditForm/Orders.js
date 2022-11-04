@@ -67,6 +67,12 @@ export default function Orders(props) {
         setMAXSTRING(string);
     }
 
+    function dayDiff(start, end) {
+        var arg1 = new Date(start);
+        var arg2 = new Date(end);
+        return Math.abs(arg1 - arg2);
+    }
+
     function timeDiff(start, end) {
         var arg1 = new Date(start);
         var arg2 = new Date(end);
