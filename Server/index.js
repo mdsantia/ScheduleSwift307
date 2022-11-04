@@ -159,14 +159,11 @@ app.post('/api/activeEvents', (req, res) => {
             if (err) {
                 res.send({ err: err });
             }
-            if (result.length > 0) {
+            if (result) {
                 console.log("Found a match \n");
                 console.log("Query Result: \n")
-                console.log(result);
-                res.send(result);
-            } else {
-                console.log("No match. \n");
-                res.send({ message: "Events made by that user does not exist!" });
+                console.log({ result });
+                res.send({ result });
             }
         }
     )
