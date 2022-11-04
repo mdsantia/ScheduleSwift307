@@ -97,7 +97,7 @@ export default function Orders(props) {
                             <TableRow key={reserve.ID}>
                                 <TableCell>{reserve.reservationDate}</TableCell>
                                 <TableCell>{(new Date(reserve.startTime)).toLocaleTimeString()}</TableCell>
-                                <TableCell>{reserve.reservedBy}</TableCell>
+                                <TableCell>{reserve.businessName}</TableCell>
                                 <TableCell>{reserve.isReserved}</TableCell>
                                 <TableCell>{`$${parseFloat(total(reserve.numReservable, reserve.price)).toFixed(2)}`}</TableCell>
                                 <TableCell align="right"><Button onClick={() => editReservation(reserve.ID, reserve.businessName)}>
