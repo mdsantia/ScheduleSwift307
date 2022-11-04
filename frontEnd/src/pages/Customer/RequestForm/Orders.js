@@ -636,5 +636,9 @@ export default function Orders(props) {
             </Box>
         </React.Fragment>
     );
+    } else {
+        <React.Fragment>
+            Awaiting results.
+        </React.Fragment>
     }
 }
