@@ -360,7 +360,7 @@ export default function Orders(props) {
                             let newArr = [...numArray];
                             newArr[parseInt(newValue.target.id) - 1] = newValue.target.value;
                             setNumArray(newArr);
-                            calculateTotal(newArr, priceArray, newArr);
+                            calculateTotal(priceArray.length, priceArray, newArr);
                         }}
                     />
                     </Grid>
