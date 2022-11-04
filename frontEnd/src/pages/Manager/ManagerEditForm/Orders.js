@@ -307,7 +307,7 @@ export default function Orders(props) {
                             let newArr = [...numArray];
                             newArr[parseInt(newValue.target.id) - 1] = newValue.target.value;
                             setNumArray(newArr);
-                            calculateTotal(newArr);
+                            calculateTotal(priceArray.length, priceArray, newArr);
                         }}
                     />
                     </Grid>
@@ -445,7 +445,7 @@ export default function Orders(props) {
                                         getConcurrent(newValue, startTime, endTime, maxNumPeople, maxArray, nameArray) }}
                                     renderInput={(params) => <TextField {...params}/>}
                                     shouldDisableDate={(date) => {
-                                        if (closed[new Date(date).getDay()]) {
+                                        if (closed[new Date(date).getDay()] || date < new Date()) {
                                             return true;
                                         }
                                         return false;
@@ -459,8 +459,8 @@ export default function Orders(props) {
                                     label="Start Time"
                                     value={startTime}
                                     fullWidth
-                                    onChange={(newValue) => { setStartTime(newValue);
-                                        getConcurrent(currentDate, newValue, endTime, maxNumPeople, maxArray, nameArray) }}
+                                    onChange={(newValue) => { if(newValue != null && newValue.isValid()) {setStartTime(newValue);
+                                        getConcurrent(currentDate, newValue, endTime, maxNumPeople, maxArray, nameArray); }}}
                                     renderInput={(params) => <TextField {...params} required/>}
                                     shouldDisableTime={(timeValue, clockType) => {
                                         const openHour = new Date((openTime[new Date(currentDate).getDay()])).getHours()
@@ -573,7 +573,7 @@ export default function Orders(props) {
                     </Typography>
                     <Button
                         type="submit"
-                        disabled={ (priceArray[0]) ? false : true}
+                        disabled={ (priceArray[0] && !closed[new Date(currentDate).getDay()] && (new Date(currentDate) > new Date())) ? false : true}
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
