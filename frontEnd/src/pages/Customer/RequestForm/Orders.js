@@ -199,6 +199,7 @@ export default function Orders(props) {
                 tot = tot + parseFloat(price[i]) * num[i];
             }
         }
+        alert(tot);
         setTotal(tot.toFixed(2));
     }
 
@@ -354,7 +355,7 @@ export default function Orders(props) {
                             let newArr = [...numArray];
                             newArr[parseInt(newValue.target.id) - 1] = newValue.target.value;
                             setNumArray(newArr);
-                            calculateTotal(newArr);
+                            calculateTotal(newArr, priceArray, newArr);
                         }}
                     />
                     </Grid>
@@ -488,8 +489,8 @@ export default function Orders(props) {
                                     label="Select Date"
                                     validate="true"
                                     value={currentDate}
-                                    onChange={(newValue) => { setCurrentDate(newValue); 
-                                        getConcurrent(newValue, startTime, endTime, maxNumPeople, maxArray, nameArray) }}
+                                    onChange={(newValue) => {if(newValue != null && newValue.isValid()) { setCurrentDate(newValue); 
+                                        getConcurrent(newValue, startTime, endTime, maxNumPeople, maxArray, nameArray)} }}
                                     renderInput={(params) => <TextField {...params}/>}
                                     shouldDisableDate={(date) => {
                                         if (closed[new Date(date).getDay()]) {
@@ -625,7 +626,7 @@ export default function Orders(props) {
                     {notesBox[1]}
                     <Button
                         type="submit"
-                        disabled={ priceArray[0] ? false : true}
+                        disabled={ (priceArray[0] && !closed[new Date(currentDate).getDay()]) ? false : true}
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
