@@ -25,7 +25,7 @@ export default function Orders(props) {
     }
 
     function deleteReservation(resID) {
-        Axios.post("http://localhost:3001/api/employeeDeleteReservation", {
+        Axios.post("http://localhost:3001/api/managerDeleteReservation", {
             reservationID: resID
         }).then((result) => {
             if (result.data.result.affectedRows === 0) {
