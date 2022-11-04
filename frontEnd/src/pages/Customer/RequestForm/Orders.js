@@ -199,7 +199,6 @@ export default function Orders(props) {
                 tot = tot + parseFloat(price[i]) * num[i];
             }
         }
-        alert(tot);
         setTotal(tot.toFixed(2));
     }
 

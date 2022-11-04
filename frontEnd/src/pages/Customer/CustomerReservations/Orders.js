@@ -22,7 +22,7 @@ export default function Orders(props) {
         Axios.post("http://localhost:3001/api/activeEvents", {
             username: state.username
         }).then((result) => {
-            const allReserves = result.data;
+            const allReserves = result.data.result;
             setReservations(allReserves);
         })
     }
