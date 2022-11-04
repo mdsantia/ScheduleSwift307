@@ -120,9 +120,9 @@ export default function Orders(props) {
                         onChange={(newValue) => { let open = [...openTime]; open[day] = newValue; setOpenTime(open) }}
                         renderInput={(params) => <TextField {...params} required/>}
                         shouldDisableTime={(timeValue, clockType) => {
-                        if (clockType === 'minutes' && timeValue % 5) {
-                            return true;
-                        }
+                        // if (clockType === 'minutes' && timeValue % 5) {
+                        //     return true;
+                        // }
                         return false;
                         }}
                     />
@@ -137,9 +137,9 @@ export default function Orders(props) {
                         onChange={(newValue) => { let close = [...closeTime]; close[day] = newValue; setCloseTime(close) }}
                         renderInput={(params) => <TextField {...params} required/>}
                         shouldDisableTime={(timeValue, clockType) => {
-                        if (clockType === 'minutes' && timeValue % 5) {
-                            return true;
-                        }
+                        // if (clockType === 'minutes' && timeValue % 5) {
+                        //     return true;
+                        // }
                         return false;
                         }}
                     />
