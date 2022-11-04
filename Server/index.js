@@ -99,14 +99,16 @@ app.post("/api/updateTimes", (req, res) => {
 app.post("/api/updateMinMax", (req, res) => {
     const businessName = req.body.businessName;
     const reservableItems = req.body.reservableItems;
+    const paymentRequire = req.body.paymentRequire;
+    const paymentValue = req.body.paymentValue;
     const prices = req.body.prices;
     const maxs = req.body.maxs;
     const mins = req.body.mins;
     const numPeople = req.body.numPeople;
     const numReservable = req.body.numReservable;
     db.query(
-        "UPDATE facilityData SET `reservableItem` = ?, `prices` = ?, `maxs` = ?, `mins` = ?, `numPeople` = ?, `numReservable` = ? WHERE businessName = ?",
-        [reservableItems, prices, maxs, mins, numPeople, numReservable, businessName],
+        "UPDATE facilityData SET `paymentValue` = ?, `paymentRequire` = ?, `reservableItem` = ?, `prices` = ?, `maxs` = ?, `mins` = ?, `numPeople` = ?, `numReservable` = ? WHERE businessName = ?",
+        [paymentValue, paymentRequire, reservableItems, prices, maxs, mins, numPeople, numReservable, businessName],
         (err, result) => {
             if (err) {
                 console.log(err)
@@ -337,7 +339,7 @@ app.post("/api/managerRegister", (req, res) => {
                 res.send({ message: "Business name has already been taken"});
             }
         } else {
-            db.query("INSERT INTO facilityData (businessName) VALUES (?)", [businessName], (err, result) => {
+            db.query("INSERT INTO facilityData (businessName, paymentRequire) VALUES (?, ?)", [businessName, "none"], (err, result) => {
                 if (err) {
                     console.log(err);
                 }
@@ -1234,6 +1236,62 @@ app.post("/api/managerChangePrice", (req, res) => {
             }}
                 
         )
+})
+
+app.post("/api/addReservationNote", (req, res) => {
+    const businessName = req.body.businessName;
+    const note = req.body.note;
+    db.query(
+        "INSERT INTO reservationNotes (businessName, note) VALUES (?,?)",
+        [businessName, note],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result })
+            }
+        }
+    )
+})
+
+app.post("/api/reservationGetNotes", (req, res) => {
+    const businessName = req.body.businessName;
+
+    db.query(
+        "SELECT * FROM reservationNotes WHERE businessName = ?",
+        [businessName],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            }
+            if (result) {
+                console.log(result)
+                res.send({ result: result })
+            }
+        }
+    )
+
+})
+
+app.post("/api/reservationDeleteNote", (req, res) => {
+    const noteID = req.body.noteID;
+    console.log(noteID);
+    db.query(
+        "DELETE FROM reservationNotes WHERE ID = ?",
+        [noteID],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log(result)
+                res.send({ result: result })
+            }
+        }
+    )
 })
 
 app.post("/api/addManagerFAQ", (req, res) => {

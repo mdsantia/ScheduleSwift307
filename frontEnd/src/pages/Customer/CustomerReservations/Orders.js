@@ -14,8 +14,6 @@ import Logo from '../Logo.png';
 
 export default function Orders(props) {
     const { state } = useLocation();
-    // const [ numEntries, setNumEntries ] = useState([]);
-    // const [rows, setRows] = useState([]);
     const navigate = useNavigate();
     const [reservations, setReservations] = useState([]);
     const [error, setError] = useState('');
@@ -24,8 +22,7 @@ export default function Orders(props) {
         Axios.post("http://localhost:3001/api/activeEvents", {
             username: state.username
         }).then((result) => {
-            const allReserves = result.data.result;
-            console.log(allReserves);
+            const allReserves = result.data;
             setReservations(allReserves);
         })
     }
@@ -50,7 +47,8 @@ export default function Orders(props) {
             } else {
                 setError("");
                 getReservations();
-                alert("Your reservation has been cancelled!\nA confirmation email has been sent to you containing the details of your cancelled reservation.");
+                alert("Your reservation has been cancelled!\nA confirmation email has been sent to you containing the\
+                 details of your cancelled reservation.");
             }
         })
     }

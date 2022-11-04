@@ -1,15 +1,11 @@
 import * as React from 'react';
 import Link from '@mui/material/Link';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Axios from 'axios';
@@ -23,6 +19,13 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import EventIcon from '@mui/icons-material/Event';
 import { MenuItem, Select } from '@mui/material';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Title from './Title';
+import { Button, TextField, Grid, Typography, Divider } from '@mui/material';
 
 
 function preventDefault(event) {
@@ -48,11 +51,50 @@ export default function Orders(props) {
     const [paymentStatus, setPaymentStatus] = useState("required");
     const [isPayment, setIsPayment] = useState(false);
     const [paymentNum, setPaymentNum] = useState(0);
+    const [notes, setNotes] = useState([]);
+    const [note, setNote] = useState('');
 
     useEffect(() => {
         insertValues();
         setCurrentDate(formattedDate);
     }, [])
+
+    function getNotes(businessName) {
+        Axios.post("http://localhost:3001/api/reservationGetNotes", {
+            businessName: props.businessName
+        }).then((result) => {
+            const notes = result.data.result;
+            setNotes(notes);
+        })
+    }
+
+    const addNote = (event) => {
+        event.preventDefault();
+        Axios.post("http://localhost:3001/api/addReservationNote", {
+            businessName: props.businessName,
+            note: note
+        }).then((result) => {
+            if (result.data.err) {
+                alert("Error! Something has gone wrong!")
+            } else {
+                setNote('');
+                getNotes(props.businessName);
+            }
+        })
+    }
+
+    function clearNote(noteID) {
+        alert(noteID)
+        Axios.post("http://localhost:3001/api/reservationDeleteNote", {
+            noteID: parseInt(noteID)
+        }).then((result) => {
+            if (result.data.result.affectedRows === 0) {
+                alert("no!")
+            } else {
+                getNotes(props.businessName);
+            }
+        })
+    }
 
     function makeDetails() {
         if (isPayment) {
@@ -142,6 +184,11 @@ export default function Orders(props) {
                 alert("Facility data missing!");
             } else {
                 // UPDATE NUM OF RESERVABLES
+                if (result.data.result[0].paymentRequire != "none") {
+                    setIsPayment(true);
+                    setPaymentStatus(result.data.result[0].paymentRequire);
+                    setPaymentNum(parseFloat(result.data.result[0].paymentValue));
+                } 
                 if (!result.data.result[0].numReservable) {
                     setNumReservableItems(1);
                 } else {
@@ -168,6 +215,7 @@ export default function Orders(props) {
                 }
             }
         })
+        getNotes(props.businessName);
     }
 
     function makeBox() {
@@ -295,9 +343,17 @@ export default function Orders(props) {
                 minimums = minimums.concat(";", data.get("Min" + element));
             }
         }
+        let paymentRequire = "none"
+        let paymentValue = 0;
+        if (isPayment) {
+            paymentRequire = paymentStatus;
+            paymentValue = paymentNum;
+        }
         Axios.post("http://localhost:3001/api/updateMinMax", {
             businessName: data.get('business'),
             reservableItems: ReservedItems,
+            paymentRequire: paymentRequire,
+            paymentValue: paymentValue,
             prices: prices,
             maxs: maximums,
             mins: minimums,
@@ -461,6 +517,44 @@ export default function Orders(props) {
                     >
                         Add/Remove Payment Requirements
                     </Button>
+
+                    <Title>Notes</Title>
+                <Table size="small">
+                    {/* <TableHead>
+                        <TableRow>
+                            <TableCell size="small">Notes:</TableCell>
+                        </TableRow>
+                    </TableHead> */}
+                    <TableBody>
+                        {notes.map((note, index) => (
+                            <TableRow>
+                                <TableCell><strong>{note.note}</strong></TableCell>
+                                <TableCell align="right"><Button onClick={() => clearNote(note.ID)}>Clear</Button></TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                <br></br>
+                <br></br>
+                <Divider> Add Additional Notes for the customer </Divider>
+                <TextField
+                    margin="normal"
+                    fullWidth
+                    // id={}
+                    label="Note"
+                    name="Note"
+                    value={note}
+                    autoComplete="note"
+                    onChange={(e) => setNote(e.target.value)}
+                />
+                <Button
+                    onClick={addNote}
+                    fullWidth
+                    variant="contained"
+                    sx={{ mt: 3, mb: 2 }}
+                >
+                    Add Notes
+                </Button>
 
                     <Button
                         type="submit"

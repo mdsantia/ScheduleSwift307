@@ -1,15 +1,11 @@
 import * as React from 'react';
 import Link from '@mui/material/Link';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Axios from 'axios';
@@ -23,6 +19,9 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Logo from '../Logo.png';
 import EventIcon from '@mui/icons-material/Event';
+import Title from './Title';
+import {TableCell, Table, TableBody, TableRow} from '@mui/material';
+import { Button, TextField, Grid, Typography, Divider } from '@mui/material';
 
 function preventDefault(event) {
     event.preventDefault();
@@ -30,6 +29,8 @@ function preventDefault(event) {
 
 export default function Orders(props) {
     const box = [];
+    const notesBox = [];
+    const paymentBox = [];
     const { state } = useLocation();
     const [startTime, setStartTime] = useState(null);
     const [endTime, setEndTime] = useState(null);
@@ -52,10 +53,48 @@ export default function Orders(props) {
     const [closeTime, setCloseTime] = useState(Dayjs | null);
     const [closed, setClosed] = useState('');
     const [MAXSTRING, setMAXSTRING] = useState(null);
+    const [notes, setNotes] = useState([]);
+    const [paymentRequire, setPaymentRequire] = useState("none");
+    const [paymentValue, setPaymentValue] = useState(0);
     
     useEffect(() => {
         insertValues();
     }, [])
+
+    function updatePayment() {
+        let str = "";
+        if (paymentRequire != "none") {
+            if (paymentRequire.includes("deposit")) {
+                str = `You are required to pay a deposit of `;
+                if (paymentRequire.includes("Per")) {
+                    str = str.concat(`at least ${paymentValue.toFixed(1)}%`);
+                } else {
+                    str = str.concat(`at least $${paymentValue.toFixed(2)}`);
+                }
+            } else if (paymentRequire.includes("require")) {
+                str = `You are required to pay all the expenses up front.`
+            } else {
+                str = `You can any pay any amount at any time`
+            }
+            paymentBox.push(str);
+        }
+    }
+
+    function updateNotesBox() {
+        if (notesBox.length == 0 && notes.length > 0) {
+            notesBox.push(<Title>Reservation Notes</Title>);
+            notesBox.push(
+            <Table size="small">
+                <TableBody>
+                    {notes.map((note, index) => (
+                        <TableRow>
+                            <TableCell><strong>{note.note}</strong></TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>);
+        }
+    }
 
     function updateMaxString(availableNumPeople, nameArray, availableArray) {
         var string = `Max Party Size: ${availableNumPeople}`
@@ -144,6 +183,15 @@ export default function Orders(props) {
         })
     }
 
+    function getNotes(businessName) {
+        Axios.post("http://localhost:3001/api/reservationGetNotes", {
+            businessName: state.businessName
+        }).then((result) => {
+            const notes = result.data.result;
+            setNotes(notes);
+        })
+    }
+
     function calculateTotal(numReserve, price, num) {
         var tot = 0;
         for (let i = 0; i < numReserve; i++) {
@@ -159,12 +207,17 @@ export default function Orders(props) {
         let maxs = "";
         let maxPeople = 0;
         let prices = "";
+        getNotes(props.businessName);
         Axios.post("http://localhost:3001/api/getFacilitysData", {
             businessName: businessName
         }).then((result) => {
             if (result.data.err) {
                 alert("Facility data missing!");
             } else {
+                if (result.data.result[0].paymentRequire != "none") {
+                    setPaymentRequire(result.data.result[0].paymentRequire);
+                    setPaymentValue(parseFloat(result.data.result[0].paymentValue));
+                } 
                 // UPDATE NUM OF RESERVABLES
                 if (!result.data.result[0].numReservable) {
                     setNumReservableItems(1);
@@ -562,9 +615,14 @@ export default function Orders(props) {
                                 {box[9]}
                             </Grid>
                     </Grid>
+                    {updatePayment()}
                     <Typography component="p" variant="p">
-                        Total: ${parseFloat(total).toFixed(2)}
+                        Total: ${parseFloat(total).toFixed(2)} {paymentBox[0]}
                     </Typography>
+                    <br></br>
+                    {updateNotesBox()}
+                    {notesBox[0]}
+                    {notesBox[1]}
                     <Button
                         type="submit"
                         disabled={ priceArray[0] ? false : true}
@@ -578,5 +636,9 @@ export default function Orders(props) {
             </Box>
         </React.Fragment>
     );
+    } else {
+        <React.Fragment>
+            Awaiting results.
+        </React.Fragment>
     }
 }

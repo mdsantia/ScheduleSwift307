@@ -567,7 +567,7 @@ export default function Orders(props) {
                     </Typography>
                     <Button
                         type="submit"
-                        disabled={ priceArray[0] ? false : true}
+                        disabled={ (priceArray[0]) ? false : true}
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
