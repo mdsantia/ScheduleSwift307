@@ -298,7 +298,7 @@ export default function Orders(props) {
         event.preventDefault();
         console.log(numReservableItems);
         if (event.currentTarget.id === 'Add') {
-            if (numReservableItems <= 10) {
+            if (numReservableItems < 10) {
                 setNumReservableItems(numReservableItems + 1);
             }
         } else if (event.currentTarget.id === "Remove") {
