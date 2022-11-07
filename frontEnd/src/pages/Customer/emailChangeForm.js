@@ -91,41 +91,84 @@ const EmailChangeForm = () => {
         if (newEmail === '') {
             setEmailStatus("Please enter in a new email address.");
         } else {
-            Axios.post("http://localhost:3001/api/changeEmail", {
-                username: state.username,
-                email: newEmail,
-            });
-            Axios.post("http://localhost:3001/api/sendConfirmEmail", {
-                username: state.username,
-                email: newEmail,
-                firstName: state.firstName,
-                confirmCode: uniqueConfirmCode
-            });
-            alert("Your email address has been successfully changed!\nAn email containing a new confirmation code has automatically been sent to this email address.");
-            navigate("/customerConfirmAccount", {
-                state: {
+            if (state.businessName) {
+                Axios.post("http://localhost:3001/api/changeEmail", {
                     username: state.username,
-                    password: state.password,
+                    email: newEmail,
+                    businessName: state.businessName
+                });
+                Axios.post("http://localhost:3001/api/sendConfirmEmail", {
+                    username: state.username,
                     email: newEmail,
                     firstName: state.firstName,
-                    confirmCode: uniqueConfirmCode,
-                    endTime: endTime
-                }
-            });
+                    businessName: state.businessName,
+                    confirmCode: uniqueConfirmCode
+                });
+            } else {
+                Axios.post("http://localhost:3001/api/changeEmail", {
+                    username: state.username,
+                    email: newEmail
+                });
+                Axios.post("http://localhost:3001/api/sendConfirmEmail", {
+                    username: state.username,
+                    email: newEmail,
+                    firstName: state.firstName,
+                    confirmCode: uniqueConfirmCode
+                });
+            }
+            alert("Your email address has been successfully changed!\nAn email containing a new confirmation code has automatically been sent to this email address.");
+            if (state.businessName) {
+                navigate("/managerConfirmAccount", {
+                    state: {
+                        username: state.username,
+                        password: state.password,
+                        businessName: state.businessName,
+                        email: newEmail,
+                        firstName: state.firstName,
+                        confirmCode: uniqueConfirmCode,
+                        endTime: endTime
+                    }
+                });
+            } else {
+                navigate("/customerConfirmAccount", {
+                    state: {
+                        username: state.username,
+                        password: state.password,
+                        email: newEmail,
+                        firstName: state.firstName,
+                        confirmCode: uniqueConfirmCode,
+                        endTime: endTime
+                    }
+                });
+            }
         }
     };
 
     const handleGoBack = () => {
-        navigate("/customerConfirmAccount", {
-            state: {
-                username: state.username,
-                password: state.password,
-                email: state.email,
-                firstName: state.firstName,
-                confirmCode: state.confirmCode,
-                endTime: state.endTime,
-            }
-        });
+        if (state.businessName) {
+            navigate("/managerConfirmAccount", {
+                state: {
+                    username: state.username,
+                    password: state.password,
+                    businessName: state.businessName,
+                    email: state.email,
+                    firstName: state.firstName,
+                    confirmCode: state.confirmCode,
+                    endTime: state.endTime,
+                }
+            });
+        } else {
+            navigate("/customerConfirmAccount", {
+                state: {
+                    username: state.username,
+                    password: state.password,
+                    email: state.email,
+                    firstName: state.firstName,
+                    confirmCode: state.confirmCode,
+                    endTime: state.endTime,
+                }
+            });
+        }
     }
 
     return (

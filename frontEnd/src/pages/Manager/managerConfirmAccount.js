@@ -100,6 +100,20 @@ const ManagerConfirmAccount = () => {
          setEmailResentStatus("The confirmation email has been resent.");
     };
 
+    const handleEmailChange = () => {
+        navigate("/emailChangeForm", {
+            state: {
+                username: state.username,
+                password: state.password,
+                businessName: state.businessName,
+                email: state.email,
+                firstName: state.firstName,
+                confirmCode: uniqueConfirmCode,
+                endTime: endTime
+            }
+        });
+    }
+
     const handleConfirmation = (event) => {
         event.preventDefault();
         setConfirmStatus('');
@@ -189,6 +203,18 @@ const ManagerConfirmAccount = () => {
                     Resend Confirmation Email
                     </Button>
                     <Typography color="green" justifyContent="flex-end" component="h1" variant="body2">{emailResentStatus}</Typography>
+                    <Grid container>
+                        <Grid item xs>
+                            <Link onClick={handleEmailChange} variant="body2">
+                                Wrong Email Address? Change Email
+                            </Link>
+                        </Grid>
+                        <Grid item>
+                            <Link href="/" variant="body2">
+                                Back to Welcome Page
+                            </Link>
+                        </Grid>
+                    </Grid>
                     <Copyright sx={{ mt: 5 }} />
                 </Box>
             </Container>
