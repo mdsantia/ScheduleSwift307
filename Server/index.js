@@ -169,6 +169,20 @@ app.post('/api/activeEvents', (req, res) => {
     )
 })
 
+app.post("/api/changeEmail", (req, res) => {
+    const username = req.body.username;
+    const email = req.body.email;
+    const sqlInsert = "UPDATE userData SET emailAddress = ? WHERE username = ?";
+    db.query(sqlInsert, [email, username], (err, result) => {
+        if (err) {
+            console.log("Unable to update email address");
+            console.log(err);
+        } else {
+            console.log("Successfully udpated email address");
+        }
+    });
+})
+
 app.post("/api/sendConfirmEmail", (req, res) => {
     const username = req.body.username;
     const firstName = req.body.firstName;
