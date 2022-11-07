@@ -172,7 +172,12 @@ app.post('/api/activeEvents', (req, res) => {
 app.post("/api/changeEmail", (req, res) => {
     const username = req.body.username;
     const email = req.body.email;
-    const sqlInsert = "UPDATE userData SET emailAddress = ? WHERE username = ?";
+    var sqlInsert;
+    if (req.body.businessName === undefined) {
+        sqlInsert = "UPDATE userData SET emailAddress = ? WHERE username = ?";
+    } else {
+        sqlInsert = "UPDATE managerData SET emailAddress = ? WHERE username = ?";
+    }
     db.query(sqlInsert, [email, username], (err, result) => {
         if (err) {
             console.log("Unable to update email address");
