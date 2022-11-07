@@ -14,6 +14,7 @@ import { useState } from 'react';
 import Axios from 'axios';
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import Logo from '../ScheduleSwift logo.png';
+import { stepButtonClasses } from '@mui/material';
 
 function Copyright(props) {
     return (
@@ -66,18 +67,15 @@ const makeUniqueID = (length) => {
     return result;
 }
 
-const CustomerConfirmAccount = () => {
+const EmailChangeForm = () => {
     const { state } = useLocation();
     const navigate = useNavigate();
-    const [confirmStatus, setConfirmStatus] = useState('');
-    const [inputConfirmCode, setInputConfirmCode] = useState('');
-    const [emailResentStatus, setEmailResentStatus] = useState('');
+    const [newEmail, setNewEmail] = useState('');
+    const [emailStatus, setEmailStatus] = useState('');
     var [uniqueConfirmCode, setUniqueConfirmCode] = useState(state.confirmCode);
     var [endTime, setEndTime] = useState(state.endTime);
 
-    const handleResend = () => {
-        setEmailResentStatus('');
-        setConfirmStatus('');
+    const handleSubmit = () => {
         const newConfirmCode = makeUniqueID(8);
         const newEndTime = new Date();
         newEndTime.setMinutes((newEndTime.getMinutes() + 1));
@@ -90,59 +88,49 @@ const CustomerConfirmAccount = () => {
         // } else {
         // endTime.setHours(startTime.getHours());
         // }
-        Axios.post("http://localhost:3001/api/sendConfirmEmail", {
-            username: state.username,
-            email: state.email,
-            firstName: state.firstName,
-            confirmCode: uniqueConfirmCode,
-         })
-         setEmailResentStatus("The confirmation email has been resent.");
+        if (newEmail === '') {
+            setEmailStatus("Please enter in a new email address.");
+        } else {
+            Axios.post("http://localhost:3001/api/changeEmail", {
+                username: state.username,
+                email: newEmail,
+            });
+            Axios.post("http://localhost:3001/api/sendConfirmEmail", {
+                username: state.username,
+                email: newEmail,
+                firstName: state.firstName,
+                confirmCode: uniqueConfirmCode
+            });
+            alert("Your email address has been successfully changed!\nAn email containing a new confirmation code has automatically been sent to this email address.");
+            navigate("/customerConfirmAccount", {
+                state: {
+                    username: state.username,
+                    password: state.password,
+                    email: newEmail,
+                    firstName: state.firstName,
+                    confirmCode: uniqueConfirmCode,
+                    endTime: endTime
+                }
+            });
+        }
     };
 
-    const handleEmailChange = () => {
-        navigate("/emailChangeForm", {
+    const handleGoBack = () => {
+        navigate("/customerConfirmAccount", {
             state: {
                 username: state.username,
                 password: state.password,
                 email: state.email,
                 firstName: state.firstName,
-                confirmCode: uniqueConfirmCode,
-                endTime: endTime
+                confirmCode: state.confirmCode,
+                endTime: state.endTime,
             }
         });
-    }
-
-    const handleConfirmation = (event) => {
-        event.preventDefault();
-        setConfirmStatus('');
-        setEmailResentStatus('');
-        if (inputConfirmCode !== uniqueConfirmCode) {
-            setConfirmStatus("Incorrect Confirmation Code.");
-        } else {
-            Axios.post("http://localhost:3001/api/customerConfirmAccount", {
-                confirmCode: uniqueConfirmCode,
-                username: state.username,
-                endTime: endTime,
-            }).then((result) => {
-                if (result.data.message) {
-                    setConfirmStatus("The confirmation code has expired.");
-                } else {
-                    alert("Your Account Has Been Successfully Activated!");
-                    navigate("/customerMain", {
-                    state: {
-                        username: state.username,
-                        password: state.password
-                    }
-                    });
-                }
-            })
-        }
     }
 
     return (
         <ThemeProvider theme={theme}>
             <Container component="main" maxWidth="xs">
-                {/* <img src={Logo} alt="Logo"/> */}
                 <CssBaseline />
                 <Box
                     sx={{
@@ -154,69 +142,48 @@ const CustomerConfirmAccount = () => {
                 >
                     <img src={Logo} alt='Logo'/>
                     <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}><LockOutlinedIcon /></Avatar>
-                    <Typography component="h1" variant="h5"><b>Confirm Account</b></Typography>
+                    <Typography component="h1" variant="h5"><b>Change Email Address</b></Typography>
                     <Typography justifyContent="flex-end" component="h1" variant="body2">
-                        A confirmation code has been sent to
+                        The current email address connected to your account is:
                     </Typography>
                     <span><b>{state.email}</b></span>
                     <Typography justifyContent="flex-end" component="h1" variant="body2">
-                        Enter the confirmation code below in order to activate your account. Once your account is activated, you will
-                        be automatically redirected to the main page. This confirmation code will expire after 10 minutes.
+                        Please enter the new email address you would like to connect your account to:
                     </Typography>
-                    <Typography justifyContent="flex-end" component="h1" variant="body2">
-                        If you did not receive an email or if the confirmation code expired before you were able to activate your account, hit 
-                    </Typography>    
-                    <span><b>"Resend Confirmation Email"</b></span>
-                    <Typography justifyContent="flex-end" component="h1" variant="body2">
-                        and an email with a new confirmation code will be re-sent.
-                    </Typography>
-                    <Box component="form" validate="true"  onSubmit={handleConfirmation} sx={{ mt: 3 }}>
+                    <Box component="form" validate="true"  onSubmit={handleSubmit} sx={{ mt: 3 }}>
                         <TextField
-                            name="confirmCode"
+                            name="newEmail"
                             required
                             fullWidth
-                            id="confirmCode"
-                            label="Confirmation Code"
+                            id="newEmail"
+                            label="New Email Address "
                             autoFocus
-                            onChange={(e) => setInputConfirmCode(e.target.value)}
+                            onChange={(e) => setNewEmail(e.target.value)}
                         />
                     </Box>
-                    <Typography color="error.main" justifyContent="flex-end" component="h1" variant="body2">{confirmStatus}</Typography>
+                    <Typography color="error.main" justifyContent="flex-end" component="h1" variant="body2">{emailStatus}</Typography>  
                     <Button
                         type="submit"
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
-                        onClick={handleConfirmation}
+                        onClick={handleSubmit}
                     >
-                    Confirm Account
+                        Submit
                     </Button>
                     <Button
                         type="submit"
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
-                        onClick={handleResend}
+                        onClick={handleGoBack}
                     >
-                    Resend Confirmation Email
+                        Go Back
                     </Button>
-                    <Typography color="green" justifyContent="flex-end" component="h1" variant="body2">{emailResentStatus}</Typography>
-                    <Grid container>
-                        <Grid item xs>
-                            <Link onClick={handleEmailChange} variant="body2">
-                                Wrong Email Address? Change Email
-                            </Link>
-                        </Grid>
-                        <Grid item>
-                            <Link href="/" variant="body2">
-                                Back to Welcome Page
-                            </Link>
-                        </Grid>
-                    </Grid>
                     <Copyright sx={{ mt: 5 }} />
                 </Box>
             </Container>
         </ThemeProvider>
     );
 }
-export default CustomerConfirmAccount;
+export default EmailChangeForm;
