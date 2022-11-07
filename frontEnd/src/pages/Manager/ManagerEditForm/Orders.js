@@ -497,7 +497,7 @@ export default function Orders(props) {
                                         const openMinute = new Date((openTime[new Date(currentDate).getDay()])).getMinutes()
                                         const closeHour = new Date((closeTime[new Date(currentDate).getDay()])).getHours()
                                         const closeMinute = new Date((closeTime[new Date(currentDate).getDay()])).getMinutes()
-                                    if ((clockType === 'hours' && timeValue < openHour) || (clockType === 'hours' && timeValue === openHour && openMinute === 0) || 
+                                    if ((clockType === 'hours' && timeValue < openHour) || 
                                         (clockType === 'hours' && timeValue > closeHour)) {
                                             return true;
                                         }
@@ -573,7 +573,12 @@ export default function Orders(props) {
                     </Typography>
                     <Button
                         type="submit"
-                        disabled={ (priceArray[0] && !closed[new Date(currentDate).getDay()] && (new Date(currentDate) > new Date())) ? false : true}
+                        disabled={ (priceArray[0] && !closed[new Date(currentDate).getDay()] && (new Date(currentDate) > new Date())
+                            && (timeDiff(new Date(openTime[new Date(currentDate).getDay()]), startTime) <= 0) &&
+                            (timeDiff(new Date(closeTime[new Date(currentDate).getDay()]), endTime) >= 0) &&
+                            (timeDiff(new Date(new Date(currentDate)), endTime) !== 0) && (new Date(startTime).getMinutes() % 5 === 0)
+                            (timeDiff(startTime, endTime) < 0) && (new Date(endTime).getMinutes() % 5 === 0)
+                            ) ? false : true}
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}

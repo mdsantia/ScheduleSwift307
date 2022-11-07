@@ -23,6 +23,17 @@ function createDay(int, day) {
     return {int, day};
 }
 
+function timeDiff(start, end) {
+    var arg1 = new Date(start);
+    var arg2 = new Date(end);
+    arg1.setDate((new Date("2022-03-11")).getDate());
+    arg2.setDate((new Date("2022-03-11")).getDate());
+    if (arg1.toString() === arg2.toString()) {
+        return 0;
+    }
+    return arg1.getTime() - arg2.getTime();
+}
+
 export default function Orders(props) {
     const year = new Date().getFullYear();
     const month = new Date().getMonth() + 1;
@@ -131,15 +142,30 @@ export default function Orders(props) {
             row.push(
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <TimePicker
+                        validate
                         label="Close Time"
                         value={closeTime[day]}
                         fullWidth
                         onChange={(newValue) => { let close = [...closeTime]; close[day] = newValue; setCloseTime(close) }}
                         renderInput={(params) => <TextField {...params} required/>}
                         shouldDisableTime={(timeValue, clockType) => {
+                            const openHour = new Date((openTime[day])).getHours()
+                            const openMinute = new Date((openTime[day])).getMinutes()
+                        if ((clockType === 'hours' && timeValue < openHour)) {
+                                return true;
+                            }
+                        // if ((clockType === 'minutes' && (new Date(closeTime[day]).getHours()) === openHour && timeValue <= openMinute)
+                        //     || ((new Date(closeTime[day]).getHours()) === closeHour && clockType === 'minutes' && timeValue > closeMinute)) {
+                        //         return true;
+                        //     }
+                        if ((clockType === 'hours' && timeValue < (new Date(`${openTime[day]}`).getHours()))
+                            || ((new Date(`${openTime[day]}`).getHours()) === (new Date(`${closeTime[day]}`).getHours()) && 
+                                clockType === 'minutes' && timeValue <= (new Date(`${openTime[day]}`).getMinutes()) )) {
+                                return true;
+                            }
                         // if (clockType === 'minutes' && timeValue % 5) {
-                        //     return true;
-                        // }
+                        //         return true;
+                        //     }
                         return false;
                         }}
                     />
@@ -240,6 +266,9 @@ export default function Orders(props) {
                     </Table>
                     <Button
                             type="submit"
+                            disabled={
+                                ((timeDiff(openTime[0]), closeTime[0]) > 0)
+                             ? false : true }
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
