@@ -172,54 +172,54 @@ export default function Orders(props) {
             } else {
                 result = result.data.result;
                 
-                // BUILD CONCURRENCY TABLE
-                {var table = [];
-                for (let i = 0; i < result.length + 1; i++) {
-                    table.push(new Array(result.length + 1));
-                }
-                for (let i = 0; i < result.length; i++) {
-                    if (result[i].isReserved && (result[i].ID != reservationID && result[i].ID != state.ID)) {
-                        if ((timeDiff(start, result[i].endTime) < 0 && 
-                        timeDiff(end, result[i].startTime) > 0) || 
-                        (timeDiff(start, result[i].endTime) > 0 && 
-                        timeDiff(end, result[i].startTime) < 0)) {
-                            table[i][result.length] = 1;
-                            table[result.length][i] = 1;
-                        }
-                        else {
-                            table[i][result.length] = 0;
-                            table[result.length][i] = 0;
-                        }
-                    } else {
-                        table[i][result.length] = 0;
-                        table[result.length][i] = 0;
-                    }
-                }
-                for (let j = 0; j < result.length; j++) {
-                    for (let i = 0; i < result.length; i++) {
-                        if (result[i].isReserved && (result[i].ID != reservationID && result[i].ID != state.ID) &&
-                            result[j].isReserved && (result[j].ID != reservationID && result[j].ID != state.ID) 
-                            && result[i].ID !== result[j].ID) {
-                            if ((timeDiff(result[j].startTime, result[i].endTime) < 0 && 
-                            timeDiff(result[j].endTime, result[i].startTime) > 0) || 
-                            (timeDiff(result[j].startTime, result[i].endTime) > 0 && 
-                            timeDiff(result[j].endTime, result[i].startTime) < 0)) {
-                                table[i][j] = 1;
-                                table[j][i] = 1;
-                            }
-                            else {
-                                table[i][j] = 0;
-                                table[j][i] = 0;
-                            }
-                        } else {
-                            table[i][j] = 0;
-                            table[j][i] = 0;
-                        }
-                    }
-                table[result.length][result.length] = 0}
-                }
+                {// BUILD CONCURRENCY TABLE
+                // {var table = [];
+                // for (let i = 0; i < result.length + 1; i++) {
+                //     table.push(new Array(result.length + 1));
+                // }
+                // for (let i = 0; i < result.length; i++) {
+                //     if (result[i].isReserved && (result[i].ID != reservationID && result[i].ID != state.ID)) {
+                //         if ((timeDiff(start, result[i].endTime) < 0 && 
+                //         timeDiff(end, result[i].startTime) > 0) || 
+                //         (timeDiff(start, result[i].endTime) > 0 && 
+                //         timeDiff(end, result[i].startTime) < 0)) {
+                //             table[i][result.length] = 1;
+                //             table[result.length][i] = 1;
+                //         }
+                //         else {
+                //             table[i][result.length] = 0;
+                //             table[result.length][i] = 0;
+                //         }
+                //     } else {
+                //         table[i][result.length] = 0;
+                //         table[result.length][i] = 0;
+                //     }
+                // }
+                // for (let j = 0; j < result.length; j++) {
+                //     for (let i = 0; i < result.length; i++) {
+                //         if (result[i].isReserved && (result[i].ID != reservationID && result[i].ID != state.ID) &&
+                //             result[j].isReserved && (result[j].ID != reservationID && result[j].ID != state.ID) 
+                //             && result[i].ID !== result[j].ID) {
+                //             if ((timeDiff(result[j].startTime, result[i].endTime) < 0 && 
+                //             timeDiff(result[j].endTime, result[i].startTime) > 0) || 
+                //             (timeDiff(result[j].startTime, result[i].endTime) > 0 && 
+                //             timeDiff(result[j].endTime, result[i].startTime) < 0)) {
+                //                 table[i][j] = 1;
+                //                 table[j][i] = 1;
+                //             }
+                //             else {
+                //                 table[i][j] = 0;
+                //                 table[j][i] = 0;
+                //             }
+                //         } else {
+                //             table[i][j] = 0;
+                //             table[j][i] = 0;
+                //         }
+                //     }
+                // table[result.length][result.length] = 0}
+                // }
 
-                var tempAvailable = [];
+                // var tempAvailable = [];
                 //TODO
                 // var tempPeople = [];
                 // var numOverlaps = 0;
@@ -228,7 +228,7 @@ export default function Orders(props) {
                 //         numOverlaps++;
                 //     }
                 // }
-                // for (let i = 0; i < table[result.length].length - 1; i++) {
+                {// for (let i = 0; i < table[result.length].length - 1; i++) {
                 //     if (table[result.length][i]) {
                 //         var tracker = [];
                 //         for (let j = 0; j < table[result.length].length - 1; j++) {
@@ -249,15 +249,78 @@ export default function Orders(props) {
                 //     }
                 // }
                 // console.log(table);
+                }
+                
+                // if (tempAvailable.length == 0) {
+                //     endAvailable = [...maxArray];
+                //     endPeople = maxNumPeople;
+                // } else {
+                //     // TODO
+                // }
+                }
 
-                var endAvailable = [];
-                var endPeople = 0;
+                var arrayInBlock = [...result];
+                // BUILD LIST OF ALL CONCURRENT RESERVATIONS IN SLOT
+                for (let i = 0; i < result.length; i++) {
+                    if (result[i].isReserved && (result[i].ID != reservationID && result[i].ID != state.ID)) {
+                        if ((timeDiff(start, result[i].endTime) < 0 && 
+                        timeDiff(end, result[i].startTime) > 0) || 
+                        (timeDiff(start, result[i].endTime) > 0 && 
+                        timeDiff(end, result[i].startTime) < 0)) {
+                            //continue
+                        }
+                        else {
+                            arrayInBlock[i] = 0;
+                        }
+                    } else {
+                        arrayInBlock[i] = 0;
+                    }
+                }
 
-                if (tempAvailable.length == 0) {
-                    endAvailable = [...maxArray];
-                    endPeople = maxNumPeople;
-                } else {
-                    // TODO
+                // BY INCREMENTS OF 5 MINS FILL ARRAY OF AVAILABILITIES
+                var temp = start;
+                // console.log(new Date(temp + 1000000), end);
+                // To improve time we could increase this value, 5 is the most accurate as increasing it would lose precision
+                var interval = 5;
+                var allAvailable = [];
+                var allMaxPeople = [];
+                while (timeDiff(new Date(temp), end) < 0) {
+                    var next = new Date(temp).getTime() + interval * 60000;
+                    let people = parseInt(maxNumPeople);
+                    let available = [...maxArray];
+                    for (let i = 0; i < arrayInBlock.length; i++) {
+                        if (arrayInBlock[i] !== 0) {
+                            if ((timeDiff(temp, result[i].endTime) < 0 && 
+                            timeDiff(next, result[i].startTime) > 0) || 
+                            (timeDiff(temp, result[i].endTime) > 0 && 
+                            timeDiff(next, result[i].startTime) < 0)) {
+                                var numReservable = result[i].numReservable.split(";");
+                                for (let j = 0; j < numReservable.length; j++) {
+                                    available[j] = available[j] - numReservable[j];
+                                }
+                                people = people - result[i].numPeople;
+                            }
+                        }
+                    }
+                    allAvailable.push(available);
+                    allMaxPeople.push(people);
+                    temp = next;
+                }
+
+                // PICK SMALLEST VALUE FOR EACH ITEM
+                var endAvailable = [...maxArray];
+                var endPeople = maxNumPeople;
+
+                const numReservables = nameArray.length;
+                for (let i = 0; i < allAvailable.length; i++) {
+                    for (let j = 0; j < numReservables; j++) {
+                        if (allAvailable[i][j] < endAvailable[j]) {
+                            endAvailable[j] = allAvailable[i][j];
+                        }
+                    }
+                    if (allMaxPeople[i] < endPeople) {
+                        endPeople = allMaxPeople[i];
+                    }
                 }
 
                 setAvailableArray(endAvailable);

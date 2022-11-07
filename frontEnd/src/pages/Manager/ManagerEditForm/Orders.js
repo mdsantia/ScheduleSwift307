@@ -128,24 +128,75 @@ export default function Orders(props) {
                 setAvailableNumPeople(maxNumPeople);
                 updateMaxString(maxNumPeople, nameArray, maxArray);
             } else {
-                let people = parseInt(maxNumPeople);
-                let available = [...maxArray];
                 result = result.data.result;
+                
+                var arrayInBlock = [...result];
+                // BUILD LIST OF ALL CONCURRENT RESERVATIONS IN SLOT
                 for (let i = 0; i < result.length; i++) {
                     if (result[i].isReserved && (result[i].ID != reservationID && result[i].ID != state.ID)) {
-                        if (timeDiff(start, result[i].endTime) > 0 || 
-                        timeDiff(end, result[i].startTime) > 0) {
-                            var numReservable = result[i].numReservable.split(";");
-                            for (let j = 0; j < numReservable.length; j++) {
-                                available[j] = available[j] - numReservable[j];
-                            }
-                            people = people - result[i].numPeople;
+                        if ((timeDiff(start, result[i].endTime) < 0 && 
+                        timeDiff(end, result[i].startTime) > 0) || 
+                        (timeDiff(start, result[i].endTime) > 0 && 
+                        timeDiff(end, result[i].startTime) < 0)) {
+                            //continue
                         }
+                        else {
+                            arrayInBlock[i] = 0;
+                        }
+                    } else {
+                        arrayInBlock[i] = 0;
                     }
                 }
-                setAvailableArray(available);
-                setAvailableNumPeople(parseInt(people));
-                updateMaxString(people, nameArray, available);
+
+                // BY INCREMENTS OF 5 MINS FILL ARRAY OF AVAILABILITIES
+                var temp = start;
+                // console.log(new Date(temp + 1000000), end);
+                // To improve time we could increase this value, 5 is the most accurate as increasing it would lose precision
+                var interval = 5;
+                var allAvailable = [];
+                var allMaxPeople = [];
+                while (timeDiff(new Date(temp), end) < 0) {
+                    var next = new Date(temp).getTime() + interval * 60000;
+                    let people = parseInt(maxNumPeople);
+                    let available = [...maxArray];
+                    for (let i = 0; i < arrayInBlock.length; i++) {
+                        if (arrayInBlock[i] !== 0) {
+                            if ((timeDiff(temp, result[i].endTime) < 0 && 
+                            timeDiff(next, result[i].startTime) > 0) || 
+                            (timeDiff(temp, result[i].endTime) > 0 && 
+                            timeDiff(next, result[i].startTime) < 0)) {
+                                var numReservable = result[i].numReservable.split(";");
+                                for (let j = 0; j < numReservable.length; j++) {
+                                    available[j] = available[j] - numReservable[j];
+                                }
+                                people = people - result[i].numPeople;
+                            }
+                        }
+                    }
+                    allAvailable.push(available);
+                    allMaxPeople.push(people);
+                    temp = next;
+                }
+
+                // PICK SMALLEST VALUE FOR EACH ITEM
+                var endAvailable = [...maxArray];
+                var endPeople = maxNumPeople;
+
+                const numReservables = nameArray.length;
+                for (let i = 0; i < allAvailable.length; i++) {
+                    for (let j = 0; j < numReservables; j++) {
+                        if (allAvailable[i][j] < endAvailable[j]) {
+                            endAvailable[j] = allAvailable[i][j];
+                        }
+                    }
+                    if (allMaxPeople[i] < endPeople) {
+                        endPeople = allMaxPeople[i];
+                    }
+                }
+
+                setAvailableArray(endAvailable);
+                setAvailableNumPeople(parseInt(endPeople));
+                updateMaxString(endPeople, nameArray, endAvailable);
             }
         })
     }
@@ -576,7 +627,7 @@ export default function Orders(props) {
                         disabled={ (priceArray[0] && !closed[new Date(currentDate).getDay()] && (new Date(currentDate) > new Date())
                             && (timeDiff(new Date(openTime[new Date(currentDate).getDay()]), startTime) <= 0) &&
                             (timeDiff(new Date(closeTime[new Date(currentDate).getDay()]), endTime) >= 0) &&
-                            (timeDiff(new Date(new Date(currentDate)), endTime) !== 0) && (new Date(startTime).getMinutes() % 5 === 0)
+                            (timeDiff(new Date(new Date(currentDate)), endTime) !== 0) && (new Date(startTime).getMinutes() % 5 === 0) &&
                             (timeDiff(startTime, endTime) < 0) && (new Date(endTime).getMinutes() % 5 === 0)
                             ) ? false : true}
                         fullWidth

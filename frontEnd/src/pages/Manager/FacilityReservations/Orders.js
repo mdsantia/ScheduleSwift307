@@ -100,14 +100,14 @@ export default function Orders(props) {
                 <Table size="small">
                     <TableHead>
                         <TableRow>
-                            <TableCell>Reservation ID</TableCell>
+                            <TableCell>ID</TableCell>
                             <TableCell>Date</TableCell>
                             <TableCell>Business Name</TableCell>
-                            <TableCell>Reservable Item</TableCell>
+                            {/* <TableCell>Reservable Item</TableCell> */}
                             <TableCell>Reserved</TableCell>
                             <TableCell>Price</TableCell>
-                            <TableCell align="right">Edit</TableCell>
-                            <TableCell align="right">Delete</TableCell>
+                            <TableCell align="center">Edit</TableCell>
+                            <TableCell align="center">Delete</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -116,11 +116,11 @@ export default function Orders(props) {
                                 <TableCell>{reserve.ID}</TableCell>
                                 <TableCell>{reserve.reservationDate}</TableCell>
                                 <TableCell>{reserve.businessName}</TableCell>
-                                <TableCell>{reserve.reservableItem}</TableCell>
+                                {/* <TableCell>{reserve.reservableItem}</TableCell> */}
                                 <TableCell>{reserve.isReserved}</TableCell>
                                 <TableCell align="right">{`$${parseFloat(total(reserve.numReservable, reserve.price)).toFixed(2)}`}</TableCell>
-                                <TableCell><Button onClick={() => editReservation(reserve.ID)}>Edit</Button></TableCell>
-                                <TableCell><Button onClick={() => deleteReservation(reserve.ID)}>Delete</Button></TableCell>
+                                <TableCell align="right"><Button onClick={() => editReservation(reserve.ID)}>Edit</Button></TableCell>
+                                <TableCell align="right"><Button onClick={() => deleteReservation(reserve.ID)}>Delete</Button></TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
