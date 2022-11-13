@@ -169,6 +169,7 @@ function DashboardContent() {
                         <IconButton color="inherit">
                             <Badge color="secondary">
                                 <NotificationsIcon />
+                                {/* TODO: Implement Modal Component to show daily reservations and notifications */}
                             </Badge>
                         </IconButton>
                     </Toolbar>
