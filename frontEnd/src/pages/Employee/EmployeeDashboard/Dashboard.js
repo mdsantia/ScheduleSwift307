@@ -239,7 +239,7 @@ function DashboardContent() {
                                     businessName: state.businessName
                                 }
                             })
-                        }}>
+                        }}> 
                             <ListItemIcon>
                                 <AccountCircleIcon />
                             </ListItemIcon>
