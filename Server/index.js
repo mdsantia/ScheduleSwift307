@@ -721,6 +721,26 @@ app.post("/api/getReservation", (req, res) => {
     )
 })
 
+app.post("/api/getReservationsbyDate", (req, res) => {
+    const businessName = req.body.businessName;
+    let reservationDate = req.body.reservationDate;
+    let reservationSubstring = reservationDate.substring(0, 10);
+    db.query(
+        "SELECT * FROM reservations WHERE reservationDate = ? AND businessName = ?",
+        [reservationSubstring, businessName],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result : result })
+            }
+        }
+    )
+})
+
 app.post("/api/updateReservation", (req, res) => {
     const ID = req.body.ID;
     const businessName = req.body.businessName;
@@ -1402,4 +1422,7 @@ app.post("/api/employeeDeleteReservation", (req, res) => {
 
 app.listen(3001, () => {
     console.log("Running on Port 3001");
+    // while(1) {
+        // employ garbage collector on past reservations
+    // }
 })
