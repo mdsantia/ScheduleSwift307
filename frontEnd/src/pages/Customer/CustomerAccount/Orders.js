@@ -23,51 +23,6 @@ import axios from 'axios';
 import { InputLabel } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
-// Generate Order Data
-function createData(id, date, name, shipTo, paymentMethod, amount) {
-    return { id, date, name, shipTo, paymentMethod, amount };
-}
-
-const rows = [
-    createData(
-        0,
-        '16 Mar, 2019',
-        'Elvis Presley',
-        'Tupelo, MS',
-        'Yes',
-        312.44,
-    ),
-    createData(
-        1,
-        '16 Mar, 2019',
-        'Paul McCartney',
-        'London, UK',
-        'Yes',
-        866.99,
-    ),
-    createData(2, '16 Mar, 2019', 'Tom Scholz', 'Boston, MA', 'Yes', 100.81),
-    createData(
-        3,
-        '16 Mar, 2019',
-        'Michael Jackson',
-        'Gary, IN',
-        'Yes',
-        654.39,
-    ),
-    createData(
-        4,
-        '15 Mar, 2019',
-        'Bruce Springsteen',
-        'Long Branch, NJ',
-        'Yes',
-        212.79,
-    ),
-];
-
-function preventDefault(event) {
-    event.preventDefault();
-}
-
 
 export default function Orders(props) {
     const [usersData, setData] = useState('');
@@ -78,6 +33,7 @@ export default function Orders(props) {
     useEffect(() => {
         getAccountInfo();
     }, []);
+
     function getAccountInfo() {
         axios.post("http://localhost:3001/api/customerEdit", {
             username: props.username,
@@ -113,6 +69,13 @@ export default function Orders(props) {
             })
         })
     };
+
+    const handleSignOut = () => {
+        if(window.confirm("Are you sure you want to sign out of your account?")) {
+            navigate("/customerSignIn");
+        }
+    };
+
     return (
         <React.Fragment>
             <Box
@@ -198,6 +161,14 @@ export default function Orders(props) {
                         sx={{ mt: 3, mb: 2 }}
                     >
                         Edit
+                    </Button>
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2 }}
+                        onClick={handleSignOut}
+                    >
+                        Sign Out
                     </Button>
                 </Box>
             </Box>
