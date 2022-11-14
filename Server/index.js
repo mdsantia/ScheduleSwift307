@@ -28,15 +28,6 @@ function encrypt(text) {
     return encrypted;
 }
 
-// var transport = nodemailer.createTransport({
-//     host: "smtp.mailtrap.io",
-//     port: 2525,
-//     auth: {
-//       user: "91818b64366958",
-//       pass: "e7214f0a8b0461"
-//     }
-// });
-
 var transport = nodemailer.createTransport({
     service: "gmail",
     port: 465,
@@ -237,16 +228,23 @@ app.post("/api/sendConfirmEmail", (req, res) => {
     });
 })
 
-app.post("/api/customerConfirmAccount", (req, res) => {
+app.post("/api/confirmAccount", (req, res) => {
     const confirmCode = req.body.confirmCode;
     const username = req.body.username;
     const endTime = req.body.endTime;
+    const businessName = req.body.businessName;
     const currentTime = new Date();
     if ((new Date(currentTime).getTime()) > (new Date(endTime).getTime())) {
         res.send({ message: "Confirmation code has expired"});
     } else {
+        var query;
+        if (businessName === undefined) {
+            query = "UPDATE userData SET active = 1 WHERE confirmCode = ? AND username = ?";
+        } else {
+            query = "UPDATE managerData SET active = 1 WHERE confirmCode = ? AND username = ?";
+        }
         db.query(
-            "UPDATE userData SET active = 1 WHERE confirmCode = ? AND username = ?",
+            query,
             [confirmCode, username],
             (err, result) => {
                 if (err) {
@@ -314,30 +312,6 @@ app.post("/api/employeeRegister", (req, res) => {
         console.log(err);
         res.send({ err: err });
     })
-})
-
-app.post("/api/managerConfirmAccount", (req, res) => {
-    const confirmCode = req.body.confirmCode;
-    const username = req.body.username;
-    const endTime = req.body.endTime;
-    const currentTime = new Date();
-    if ((new Date(currentTime).getTime()) > (new Date(endTime).getTime())) {
-        res.send({ message: "Confirmation code has expired"});
-    } else {
-        db.query(
-            "UPDATE managerData SET active = 1 WHERE confirmCode = ? AND username = ?",
-            [confirmCode, username],
-            (err, result) => {
-                if (err) {
-                    console.log("Unable to activate account.");
-                    console.log(err);
-                } else {
-                    res.send({result});
-                    console.log("Successfully Activated Account.");
-                }
-            }
-        )
-    }
 })
 
 app.post("/api/managerRegister", (req, res) => {

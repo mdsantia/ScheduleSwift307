@@ -170,6 +170,8 @@ function DashboardContent() {
                             <Badge color="secondary">
                                 <NotificationsIcon />
                                 {/* TODO: Implement Modal Component to show daily reservations and notifications */}
+                                {/* Need to setup a modal component with text fields mapped to reservations */}
+                                {/* Reservations only on the day it currently is */}
                             </Badge>
                         </IconButton>
                     </Toolbar>
