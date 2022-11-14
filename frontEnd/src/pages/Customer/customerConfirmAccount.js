@@ -119,7 +119,7 @@ const CustomerConfirmAccount = () => {
         if (inputConfirmCode !== uniqueConfirmCode) {
             setConfirmStatus("Incorrect Confirmation Code.");
         } else {
-            Axios.post("http://localhost:3001/api/customerConfirmAccount", {
+            Axios.post("http://localhost:3001/api/confirmAccount", {
                 confirmCode: uniqueConfirmCode,
                 username: state.username,
                 endTime: endTime,
