@@ -121,10 +121,11 @@ const ManagerConfirmAccount = () => {
         if (inputConfirmCode !== uniqueConfirmCode) {
             setConfirmStatus("Incorrect Confirmation Code.");
         } else {
-            Axios.post("http://localhost:3001/api/managerConfirmAccount", {
+            Axios.post("http://localhost:3001/api/confirmAccount", {
                 confirmCode: uniqueConfirmCode,
                 username: state.username,
                 endTime: endTime,
+                businessName: state.businessName,
             }).then((result) => {
                 if (result.data.message) {
                     setConfirmStatus("The confirmation code has expired.");
