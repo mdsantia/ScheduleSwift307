@@ -617,8 +617,15 @@ app.post("/api/customerEdit", (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     const encryptedPassword = encrypt(password);
+    const businessName = req.body.businessName;
+    var query;
+    if (businessName === undefined) {
+        query = "SELECT * FROM userData WHERE username = ? AND password = ?";
+    } else {
+        query = "SELECT * FROM managerData WHERE username = ? AND password = ?";
+    }
     db.query(
-        "SELECT * FROM userData WHERE username = ? AND password = ?",
+        query,
         [username, encryptedPassword],
         (err, result) => {
             if (err) {
@@ -640,8 +647,16 @@ app.post("/api/updateCustomerInfo", (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     const encryptedPassword = encrypt(password);
+    const businessName = req.body.businessName;
+    var query;
+    if (businessName === undefined) {
+        query = "UPDATE userData SET username = ?, emailAddress = ?, password = ? WHERE username = ? AND password = ?";
+
+    } else {
+        query = "UPDATE managerData SET username = ?, emailAddress = ?, password = ? WHERE username = ? AND password = ?";
+    }
     db.query(
-        "UPDATE userData SET username = ?, emailAddress = ?, password = ? WHERE username = ? AND password = ?",
+        query,
         [username, email, encryptedPassword, oldUsername, oldPassword],
         (err, result) => {
             console.log(result);
