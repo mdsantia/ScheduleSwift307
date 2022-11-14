@@ -83,7 +83,7 @@ const theme = createTheme({
 export default function SignIn() {
     const navigate = useNavigate();
     const customerSubmit = () => {
-        navigate("./customerRegister", {
+        navigate("./customerSignIn", {
             state: {
                 userType: "customer"
             }
@@ -99,7 +99,7 @@ export default function SignIn() {
     };
 
     const managerSubmit = () => {
-        navigate("./managerRegister", {
+        navigate("./managerSignIn", {
             state: {
                 userType: "manager"
             }
@@ -121,11 +121,11 @@ export default function SignIn() {
                         }}
                     >
                         <img src={Logo} alt="Logo"/>
-                    {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                        <Avatar sx={{bgcolor: 'primary.main' }}>
                         <CottageIcon />
-                    </Avatar> */}
+                        </Avatar>
                         <Typography component="h1" variant="h5">
-                            Welcome to Schedule Swift
+                            Welcome to ScheduleSwift
                         </Typography>
                         <Box component="form" noValidate sx={{ mt: 1 }}>
                             <Button
