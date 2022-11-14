@@ -80,16 +80,11 @@ const ManagerConfirmAccount = () => {
         setConfirmStatus('');
         const newConfirmCode = makeUniqueID(8);
         const newEndTime = new Date();
-        newEndTime.setMinutes((newEndTime.getMinutes() + 1));
+        newEndTime.setMinutes((newEndTime.getMinutes() + 10));
         uniqueConfirmCode = newConfirmCode;
         endTime = newEndTime;
         setUniqueConfirmCode(newConfirmCode);
         setEndTime(newEndTime);
-        // if (endTime.getMinutes() < 10) {
-        //     endTime.setHours(startTime.getHours() + 1);
-        // } else {
-        // endTime.setHours(startTime.getHours());
-        // }
         Axios.post("http://localhost:3001/api/sendConfirmEmail", {
             username: state.username,
             email: state.email,
