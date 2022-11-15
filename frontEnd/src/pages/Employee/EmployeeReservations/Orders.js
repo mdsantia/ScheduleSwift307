@@ -24,17 +24,31 @@ export default function Orders(props) {
         })
     }
 
-    function deleteReservation(resID) {
-        Axios.post("http://localhost:3001/api/managerDeleteReservation", {
-            reservationID: resID
-        }).then((result) => {
-            if (result.data.result.affectedRows === 0) {
-                setError("No Reservation with that ID exists")
-            } else {
-                setError("");
-                getReservations(props.businessName);
-            }
-        })
+    function deleteReservation(resID, isReserved) {
+
+        if (isReserved === "No") {
+            Axios.post("http://localhost:3001/api/employeeDeleteReservation", {
+                reservationID: resID
+            }).then((result) => {
+                if (result.data.result.affectedRows === 0) {
+                    setError("No Reservation with that ID exists")
+                } else {
+                    setError("");
+                    getReservations(props.businessName);
+                }
+            })
+        } else {
+            Axios.post("http://localhost:3001/api/managerDeleteReservation", {
+                reservationID: resID
+            }).then((result) => {
+                if (result.data.result.affectedRows === 0) {
+                    setError("No Reservation with that ID exists")
+                } else {
+                    setError("");
+                    getReservations(props.businessName);
+                }
+            })
+        }
     }
 
     useEffect(() => {
@@ -64,7 +78,7 @@ export default function Orders(props) {
                                 <TableCell>{reserve.reservableItem}</TableCell>
                                 <TableCell>{reserve.isReserved}</TableCell>
                                 <TableCell align="right">{`$${reserve.price}`}</TableCell>
-                                <TableCell><Button onClick={() => deleteReservation(reserve.ID)}>Delete</Button></TableCell>
+                                <TableCell><Button onClick={() => deleteReservation(reserve.ID, reserve.isReserved)}>Delete</Button></TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
