@@ -67,6 +67,12 @@ export default function Orders(props) {
         setMAXSTRING(string);
     }
 
+    function dayDiff(start, end) {
+        var arg1 = new Date(start);
+        var arg2 = new Date(end);
+        return Math.abs(arg1 - arg2);
+    }
+
     function timeDiff(start, end) {
         var arg1 = new Date(start);
         var arg2 = new Date(end);
@@ -122,24 +128,75 @@ export default function Orders(props) {
                 setAvailableNumPeople(maxNumPeople);
                 updateMaxString(maxNumPeople, nameArray, maxArray);
             } else {
-                let people = parseInt(maxNumPeople);
-                let available = [...maxArray];
                 result = result.data.result;
+                
+                var arrayInBlock = [...result];
+                // BUILD LIST OF ALL CONCURRENT RESERVATIONS IN SLOT
                 for (let i = 0; i < result.length; i++) {
                     if (result[i].isReserved && (result[i].ID != reservationID && result[i].ID != state.ID)) {
-                        if (timeDiff(start, result[i].endTime) > 0 || 
-                        timeDiff(end, result[i].startTime) > 0) {
-                            var numReservable = result[i].numReservable.split(";");
-                            for (let j = 0; j < numReservable.length; j++) {
-                                available[j] = available[j] - numReservable[j];
-                            }
-                            people = people - result[i].numPeople;
+                        if ((timeDiff(start, result[i].endTime) < 0 && 
+                        timeDiff(end, result[i].startTime) > 0) || 
+                        (timeDiff(start, result[i].endTime) > 0 && 
+                        timeDiff(end, result[i].startTime) < 0)) {
+                            //continue
                         }
+                        else {
+                            arrayInBlock[i] = 0;
+                        }
+                    } else {
+                        arrayInBlock[i] = 0;
                     }
                 }
-                setAvailableArray(available);
-                setAvailableNumPeople(parseInt(people));
-                updateMaxString(people, nameArray, available);
+
+                // BY INCREMENTS OF 5 MINS FILL ARRAY OF AVAILABILITIES
+                var temp = start;
+                // console.log(new Date(temp + 1000000), end);
+                // To improve time we could increase this value, 5 is the most accurate as increasing it would lose precision
+                var interval = 5;
+                var allAvailable = [];
+                var allMaxPeople = [];
+                while (timeDiff(new Date(temp), end) < 0) {
+                    var next = new Date(temp).getTime() + interval * 60000;
+                    let people = parseInt(maxNumPeople);
+                    let available = [...maxArray];
+                    for (let i = 0; i < arrayInBlock.length; i++) {
+                        if (arrayInBlock[i] !== 0) {
+                            if ((timeDiff(temp, result[i].endTime) < 0 && 
+                            timeDiff(next, result[i].startTime) > 0) || 
+                            (timeDiff(temp, result[i].endTime) > 0 && 
+                            timeDiff(next, result[i].startTime) < 0)) {
+                                var numReservable = result[i].numReservable.split(";");
+                                for (let j = 0; j < numReservable.length; j++) {
+                                    available[j] = available[j] - numReservable[j];
+                                }
+                                people = people - result[i].numPeople;
+                            }
+                        }
+                    }
+                    allAvailable.push(available);
+                    allMaxPeople.push(people);
+                    temp = next;
+                }
+
+                // PICK SMALLEST VALUE FOR EACH ITEM
+                var endAvailable = [...maxArray];
+                var endPeople = maxNumPeople;
+
+                const numReservables = nameArray.length;
+                for (let i = 0; i < allAvailable.length; i++) {
+                    for (let j = 0; j < numReservables; j++) {
+                        if (allAvailable[i][j] < endAvailable[j]) {
+                            endAvailable[j] = allAvailable[i][j];
+                        }
+                    }
+                    if (allMaxPeople[i] < endPeople) {
+                        endPeople = allMaxPeople[i];
+                    }
+                }
+
+                setAvailableArray(endAvailable);
+                setAvailableNumPeople(parseInt(endPeople));
+                updateMaxString(endPeople, nameArray, endAvailable);
             }
         })
     }
@@ -301,7 +358,7 @@ export default function Orders(props) {
                             let newArr = [...numArray];
                             newArr[parseInt(newValue.target.id) - 1] = newValue.target.value;
                             setNumArray(newArr);
-                            calculateTotal(newArr);
+                            calculateTotal(priceArray.length, priceArray, newArr);
                         }}
                     />
                     </Grid>
@@ -439,7 +496,7 @@ export default function Orders(props) {
                                         getConcurrent(newValue, startTime, endTime, maxNumPeople, maxArray, nameArray) }}
                                     renderInput={(params) => <TextField {...params}/>}
                                     shouldDisableDate={(date) => {
-                                        if (closed[new Date(date).getDay()]) {
+                                        if (closed[new Date(date).getDay()] || date < new Date()) {
                                             return true;
                                         }
                                         return false;
@@ -453,8 +510,8 @@ export default function Orders(props) {
                                     label="Start Time"
                                     value={startTime}
                                     fullWidth
-                                    onChange={(newValue) => { setStartTime(newValue);
-                                        getConcurrent(currentDate, newValue, endTime, maxNumPeople, maxArray, nameArray) }}
+                                    onChange={(newValue) => { if(newValue != null && newValue.isValid()) {setStartTime(newValue);
+                                        getConcurrent(currentDate, newValue, endTime, maxNumPeople, maxArray, nameArray); }}}
                                     renderInput={(params) => <TextField {...params} required/>}
                                     shouldDisableTime={(timeValue, clockType) => {
                                         const openHour = new Date((openTime[new Date(currentDate).getDay()])).getHours()
@@ -491,7 +548,7 @@ export default function Orders(props) {
                                         const openMinute = new Date((openTime[new Date(currentDate).getDay()])).getMinutes()
                                         const closeHour = new Date((closeTime[new Date(currentDate).getDay()])).getHours()
                                         const closeMinute = new Date((closeTime[new Date(currentDate).getDay()])).getMinutes()
-                                    if ((clockType === 'hours' && timeValue < openHour) || (clockType === 'hours' && timeValue === openHour && openMinute === 0) || 
+                                    if ((clockType === 'hours' && timeValue < openHour) || 
                                         (clockType === 'hours' && timeValue > closeHour)) {
                                             return true;
                                         }
@@ -567,7 +624,12 @@ export default function Orders(props) {
                     </Typography>
                     <Button
                         type="submit"
-                        disabled={ (priceArray[0]) ? false : true}
+                        disabled={ (priceArray[0] && !closed[new Date(currentDate).getDay()] && (new Date(currentDate) > new Date())
+                            && (timeDiff(new Date(openTime[new Date(currentDate).getDay()]), startTime) <= 0) &&
+                            (timeDiff(new Date(closeTime[new Date(currentDate).getDay()]), endTime) >= 0) &&
+                            (timeDiff(new Date(new Date(currentDate)), endTime) !== 0) && (new Date(startTime).getMinutes() % 5 === 0) &&
+                            (timeDiff(startTime, endTime) < 0) && (new Date(endTime).getMinutes() % 5 === 0)
+                            ) ? false : true}
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}

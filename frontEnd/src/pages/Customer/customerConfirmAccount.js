@@ -80,16 +80,11 @@ const CustomerConfirmAccount = () => {
         setConfirmStatus('');
         const newConfirmCode = makeUniqueID(8);
         const newEndTime = new Date();
-        newEndTime.setMinutes((newEndTime.getMinutes() + 1));
+        newEndTime.setMinutes((newEndTime.getMinutes() + 10));
         uniqueConfirmCode = newConfirmCode;
         endTime = newEndTime;
         setUniqueConfirmCode(newConfirmCode);
         setEndTime(newEndTime);
-        // if (endTime.getMinutes() < 10) {
-        //     endTime.setHours(startTime.getHours() + 1);
-        // } else {
-        // endTime.setHours(startTime.getHours());
-        // }
         Axios.post("http://localhost:3001/api/sendConfirmEmail", {
             username: state.username,
             email: state.email,
@@ -99,6 +94,19 @@ const CustomerConfirmAccount = () => {
          setEmailResentStatus("The confirmation email has been resent.");
     };
 
+    const handleEmailChange = () => {
+        navigate("/emailChangeForm", {
+            state: {
+                username: state.username,
+                password: state.password,
+                email: state.email,
+                firstName: state.firstName,
+                confirmCode: uniqueConfirmCode,
+                endTime: endTime
+            }
+        });
+    }
+
     const handleConfirmation = (event) => {
         event.preventDefault();
         setConfirmStatus('');
@@ -106,7 +114,7 @@ const CustomerConfirmAccount = () => {
         if (inputConfirmCode !== uniqueConfirmCode) {
             setConfirmStatus("Incorrect Confirmation Code.");
         } else {
-            Axios.post("http://localhost:3001/api/customerConfirmAccount", {
+            Axios.post("http://localhost:3001/api/confirmAccount", {
                 confirmCode: uniqueConfirmCode,
                 username: state.username,
                 endTime: endTime,
@@ -141,7 +149,7 @@ const CustomerConfirmAccount = () => {
                 >
                     <img src={Logo} alt='Logo'/>
                     <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}><LockOutlinedIcon /></Avatar>
-                    <Typography component="h1" variant="h5">Confirm Account</Typography>
+                    <Typography component="h1" variant="h5"><b>Confirm Account</b></Typography>
                     <Typography justifyContent="flex-end" component="h1" variant="body2">
                         A confirmation code has been sent to
                     </Typography>
@@ -188,6 +196,18 @@ const CustomerConfirmAccount = () => {
                     Resend Confirmation Email
                     </Button>
                     <Typography color="green" justifyContent="flex-end" component="h1" variant="body2">{emailResentStatus}</Typography>
+                    <Grid container>
+                        <Grid item xs>
+                            <Link onClick={handleEmailChange} variant="body2">
+                                Wrong Email Address? Change Email
+                            </Link>
+                        </Grid>
+                        <Grid item>
+                            <Link href="/" variant="body2">
+                                Back to Welcome Page
+                            </Link>
+                        </Grid>
+                    </Grid>
                     <Copyright sx={{ mt: 5 }} />
                 </Box>
             </Container>

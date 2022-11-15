@@ -11,6 +11,10 @@ import Axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Button, TextField, Grid, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { Dayjs } from 'dayjs';
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TableFooter } from '@mui/material';
 import { InputLabel } from '@mui/material';
 
@@ -21,7 +25,10 @@ function preventDefault(event) {
 export default function Orders(props) {
     const [reservations, setReservations] = useState([]);
     const [deleteRes, setDeleteRes] = useState('');
+    const [currentDate, setCurrentDate] = useState(null);
+    const [ID, setID] = useState(null);
     const [error, setError] = useState('');
+    const [reservationIDs, setReservationIDs] = useState('');
     const navigate = useNavigate();
     function getReservations(business) {
         Axios.post("http://localhost:3001/api/getBusinessReservations", {
@@ -30,6 +37,11 @@ export default function Orders(props) {
             const allReserves = result.data.result;
             console.log(allReserves);
             setReservations(allReserves);
+            let reservationIDs = [];
+            for (let i = 0; i < allReserves.length; i++) {
+                reservationIDs.push(parseInt(allReserves[i].ID));
+            }
+            setReservationIDs(reservationIDs);
         })
     }
     function editReservation (reserveID) {
@@ -90,6 +102,36 @@ export default function Orders(props) {
         })
     }
 
+    const filter = () => {
+        Axios.post("http://localhost:3001/api/getReservationsbyDate", {
+            businessName: props.businessName,
+            reservationDate: currentDate
+        }).then((result) => {
+            const allReserves = result.data.result;
+            console.log(allReserves);
+            setReservations(allReserves);
+            let reservationIDs = [];
+            for (let i = 0; i < allReserves.length; i++) {
+                reservationIDs.push(parseInt(allReserves[i].ID));
+            }
+            setReservationIDs(reservationIDs);
+        })
+    }
+
+    const searchID = () => {
+        if (reservationIDs.includes(parseInt(ID))) {
+        navigate("/managerEditForm", {
+            state: {
+                username: props.username,
+                password: props.password,
+                businessName: props.businessName,
+                ID: ID
+            }
+        })} else {
+            alert(`No reservation in this business has an ID: ${ID}`)
+        }
+    }
+
     useEffect(() => {
         getReservations(props.businessName)
     }, []);
@@ -97,17 +139,53 @@ export default function Orders(props) {
         return (
             <React.Fragment>
                 <Title>{props.businessName}'s Active Reservations</Title>
+                <Grid container spacing={5}>
+                <Grid paddingLeft={4} sx={{ mt: 4, mb: 2 }}>
+                <TextField type="number" label='EVENT ID' value={ID} 
+                onChange={(newVal) => {setID(parseInt(newVal.target.value))}}>
+                </TextField>
+                </Grid>
+                <Grid padding={1} sx={{ mt: 4, mb: 2 }}> <Button onClick={searchID} 
+                variant="contained">
+                    Search by ID</Button></Grid>
+                    <Grid paddingLeft={4} sx={{ mt: 4, mb: 2 }}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker
+                                    id="reservationDate"
+                                    label="Select Date"
+                                    value={currentDate}
+                                    onChange={(newValue) => { setCurrentDate(newValue)}}
+                                    renderInput={(params) => <TextField {...params}/>}
+                                    shouldDisableDate={(date) => {
+                                        if (date < new Date("11-09-2022").setDate(new Date("11-09-2022").getDate() - 1)) {
+                                            return true;
+                                        }
+                                        return false;
+                                    }}
+                                />
+                            </LocalizationProvider>
+                    </Grid>
+                    <Grid paddingLeft={4} sx={{ mt: 4, mb: 2 }}>
+                    <TextField label='ORGANIZER NAME'></TextField>
+                    </Grid>
+                    <Grid padding={1} sx={{ mt: 4, mb: 2 }}> <Button onClick={filter} 
+                    variant="contained">
+                        Filter</Button></Grid>
+                    <Grid padding={1} sx={{ mt: 4, mb: 2 }}> <Button onClick={getReservations} 
+                    variant="contained">
+                        Revert</Button></Grid>
+                    </Grid>
                 <Table size="small">
                     <TableHead>
                         <TableRow>
-                            <TableCell>Reservation ID</TableCell>
+                            <TableCell>ID</TableCell>
                             <TableCell>Date</TableCell>
                             <TableCell>Business Name</TableCell>
-                            <TableCell>Reservable Item</TableCell>
+                            {/* <TableCell>Reservable Item</TableCell> */}
                             <TableCell>Reserved</TableCell>
                             <TableCell>Price</TableCell>
-                            <TableCell align="right">Edit</TableCell>
-                            <TableCell align="right">Delete</TableCell>
+                            <TableCell align="center">Edit</TableCell>
+                            <TableCell align="center">Delete</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -116,11 +194,11 @@ export default function Orders(props) {
                                 <TableCell>{reserve.ID}</TableCell>
                                 <TableCell>{reserve.reservationDate}</TableCell>
                                 <TableCell>{reserve.businessName}</TableCell>
-                                <TableCell>{reserve.reservableItem}</TableCell>
+                                {/* <TableCell>{reserve.reservableItem}</TableCell> */}
                                 <TableCell>{reserve.isReserved}</TableCell>
                                 <TableCell align="right">{`$${parseFloat(total(reserve.numReservable, reserve.price)).toFixed(2)}`}</TableCell>
-                                <TableCell><Button onClick={() => editReservation(reserve.ID)}>Edit</Button></TableCell>
-                                <TableCell><Button onClick={() => deleteReservation(reserve.ID)}>Delete</Button></TableCell>
+                                <TableCell align="right"><Button onClick={() => editReservation(reserve.ID)}>Edit</Button></TableCell>
+                                <TableCell align="right"><Button onClick={() => deleteReservation(reserve.ID)}>Delete</Button></TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -159,7 +237,45 @@ export default function Orders(props) {
         );
     } else {
         return (
-            <p>No active Reservations at this business</p>
+            <React.Fragment>
+                <Grid container spacing={5}>
+                <Grid paddingLeft={4} sx={{ mt: 4, mb: 2 }}>
+                <TextField type="number" label='EVENT ID' value={ID} 
+                onChange={(newVal) => {setID(parseInt(newVal.target.value))}}>
+                </TextField>
+                </Grid>
+                <Grid padding={1} sx={{ mt: 4, mb: 2 }}> <Button onClick={searchID} 
+                variant="contained">
+                    Search by ID</Button></Grid>
+                    <Grid paddingLeft={4} sx={{ mt: 4, mb: 2 }}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker
+                                    id="reservationDate"
+                                    label="Select Date"
+                                    value={currentDate}
+                                    onChange={(newValue) => { setCurrentDate(newValue)}}
+                                    renderInput={(params) => <TextField {...params}/>}
+                                    shouldDisableDate={(date) => {
+                                        if (date < new Date().setDate(new Date().getDate() - 1)) {
+                                            return true;
+                                        }
+                                        return false;
+                                    }}
+                                />
+                            </LocalizationProvider>
+                    </Grid>
+                    <Grid paddingLeft={4} sx={{ mt: 4, mb: 2 }}>
+                    <TextField label='ORGANIZER NAME'></TextField>
+                    </Grid>
+                    <Grid padding={1} sx={{ mt: 4, mb: 2 }}> <Button onClick={filter} 
+                    variant="contained">
+                        Filter</Button></Grid>
+                    <Grid padding={1} sx={{ mt: 4, mb: 2 }}> <Button onClick={getReservations} 
+                    variant="contained">
+                        Revert</Button></Grid>
+                    </Grid>
+                    <p>No Active Reservations fit the description at this business</p>
+            </React.Fragment>
         )
     }
 }

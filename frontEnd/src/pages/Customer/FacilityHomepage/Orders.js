@@ -109,12 +109,12 @@ export default function Orders(props) {
                         fullWidth
                         // onChange={(newValue) => { let open = [...openTime]; open[day] = newValue; setOpenTime(open) }}
                         renderInput={(params) => <TextField {...params} required/>}
-                        shouldDisableTime={(timeValue, clockType) => {
-                        if (clockType === 'minutes' && timeValue % 5) {
-                            return true;
-                        }
-                        return false;
-                        }}
+                        // shouldDisableTime={(timeValue, clockType) => {
+                        // if (clockType === 'minutes' && timeValue % 5) {
+                        //     return true;
+                        // }
+                        // return false;
+                        // }}
                     />
                 </LocalizationProvider>
             )
@@ -125,12 +125,12 @@ export default function Orders(props) {
                         value={closeTime[day]}
                         fullWidth
                         renderInput={(params) => <TextField {...params} required/>}
-                        shouldDisableTime={(timeValue, clockType) => {
-                        if (clockType === 'minutes' && timeValue % 5) {
-                            return true;
-                        }
-                        return false;
-                        }}
+                        // shouldDisableTime={(timeValue, clockType) => {
+                        // if (clockType === 'minutes' && timeValue % 5) {
+                        //     return true;
+                        // }
+                        // return false;
+                        // }}
                     />
                 </LocalizationProvider>
             )

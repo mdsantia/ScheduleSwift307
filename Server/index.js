@@ -28,15 +28,6 @@ function encrypt(text) {
     return encrypted;
 }
 
-// var transport = nodemailer.createTransport({
-//     host: "smtp.mailtrap.io",
-//     port: 2525,
-//     auth: {
-//       user: "91818b64366958",
-//       pass: "e7214f0a8b0461"
-//     }
-// });
-
 var transport = nodemailer.createTransport({
     service: "gmail",
     port: 465,
@@ -169,6 +160,25 @@ app.post('/api/activeEvents', (req, res) => {
     )
 })
 
+app.post("/api/changeEmail", (req, res) => {
+    const username = req.body.username;
+    const email = req.body.email;
+    var sqlInsert;
+    if (req.body.businessName === undefined) {
+        sqlInsert = "UPDATE userData SET emailAddress = ? WHERE username = ?";
+    } else {
+        sqlInsert = "UPDATE managerData SET emailAddress = ? WHERE username = ?";
+    }
+    db.query(sqlInsert, [email, username], (err, result) => {
+        if (err) {
+            console.log("Unable to update email address");
+            console.log(err);
+        } else {
+            console.log("Successfully udpated email address");
+        }
+    });
+})
+
 app.post("/api/sendConfirmEmail", (req, res) => {
     const username = req.body.username;
     const firstName = req.body.firstName;
@@ -218,16 +228,23 @@ app.post("/api/sendConfirmEmail", (req, res) => {
     });
 })
 
-app.post("/api/customerConfirmAccount", (req, res) => {
+app.post("/api/confirmAccount", (req, res) => {
     const confirmCode = req.body.confirmCode;
     const username = req.body.username;
     const endTime = req.body.endTime;
+    const businessName = req.body.businessName;
     const currentTime = new Date();
     if ((new Date(currentTime).getTime()) > (new Date(endTime).getTime())) {
         res.send({ message: "Confirmation code has expired"});
     } else {
+        var query;
+        if (businessName === undefined) {
+            query = "UPDATE userData SET active = 1 WHERE confirmCode = ? AND username = ?";
+        } else {
+            query = "UPDATE managerData SET active = 1 WHERE confirmCode = ? AND username = ?";
+        }
         db.query(
-            "UPDATE userData SET active = 1 WHERE confirmCode = ? AND username = ?",
+            query,
             [confirmCode, username],
             (err, result) => {
                 if (err) {
@@ -295,30 +312,6 @@ app.post("/api/employeeRegister", (req, res) => {
         console.log(err);
         res.send({ err: err });
     })
-})
-
-app.post("/api/managerConfirmAccount", (req, res) => {
-    const confirmCode = req.body.confirmCode;
-    const username = req.body.username;
-    const endTime = req.body.endTime;
-    const currentTime = new Date();
-    if ((new Date(currentTime).getTime()) > (new Date(endTime).getTime())) {
-        res.send({ message: "Confirmation code has expired"});
-    } else {
-        db.query(
-            "UPDATE managerData SET active = 1 WHERE confirmCode = ? AND username = ?",
-            [confirmCode, username],
-            (err, result) => {
-                if (err) {
-                    console.log("Unable to activate account.");
-                    console.log(err);
-                } else {
-                    res.send({result});
-                    console.log("Successfully Activated Account.");
-                }
-            }
-        )
-    }
 })
 
 app.post("/api/managerRegister", (req, res) => {
@@ -624,8 +617,18 @@ app.post("/api/customerEdit", (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     const encryptedPassword = encrypt(password);
+    const businessName = req.body.businessName;
+    const isEmployee = req.body.isEmployee;
+    var query;
+    if (businessName === undefined) {
+        query = "SELECT * FROM userData WHERE username = ? AND password = ?";
+    } else if (isEmployee) {
+        query = "SELECT * FROM employeeData WHERE username = ? AND password = ?";
+    } else {
+        query = "SELECT * FROM managerData WHERE username = ? AND password = ?";
+    }
     db.query(
-        "SELECT * FROM userData WHERE username = ? AND password = ?",
+        query,
         [username, encryptedPassword],
         (err, result) => {
             if (err) {
@@ -647,8 +650,15 @@ app.post("/api/updateCustomerInfo", (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     const encryptedPassword = encrypt(password);
+    const businessName = req.body.businessName;
+    var query;
+    if (businessName === undefined) {
+        query = "UPDATE userData SET username = ?, emailAddress = ?, password = ? WHERE username = ? AND password = ?";
+    } else {
+        query = "UPDATE managerData SET username = ?, emailAddress = ?, password = ? WHERE username = ? AND password = ?";
+    }
     db.query(
-        "UPDATE userData SET username = ?, emailAddress = ?, password = ? WHERE username = ? AND password = ?",
+        query,
         [username, email, encryptedPassword, oldUsername, oldPassword],
         (err, result) => {
             console.log(result);
@@ -689,6 +699,26 @@ app.post("/api/getReservation", (req, res) => {
     db.query(
         "SELECT * FROM reservations WHERE ID = ?",
         [ID],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result : result })
+            }
+        }
+    )
+})
+
+app.post("/api/getReservationsbyDate", (req, res) => {
+    const businessName = req.body.businessName;
+    let reservationDate = req.body.reservationDate;
+    let reservationSubstring = reservationDate.substring(0, 10);
+    db.query(
+        "SELECT * FROM reservations WHERE reservationDate = ? AND businessName = ?",
+        [reservationSubstring, businessName],
         (err, result) => {
             if (err) {
                 console.log(err)
@@ -1379,8 +1409,32 @@ app.post("/api/employeeDeleteReservation", (req, res) => {
     )
 })
 
-
+app.post("/api/getDailyReservations", (req, res) => {
+    const businessName = req.body.businessName;
+    const year = new Date().getFullYear();
+    const month = new Date().getMonth() + 1;
+    const day  = new Date().getDate();
+    const formatted = `${year}-${month}-${day}`;
+    const isReserved = 'Yes';
+    db.query(
+        "SELECT * FROM reservations WHERE businessName = ? AND reservationDate = ? AND isReserved = ?",
+        [businessName, formatted, isReserved],
+        (err, result) => {
+            if (err) {
+                console.log(err);
+                res.send({err: err})
+            }
+            if (result) {
+                console.log(result);
+                res.send({result})
+            }
+        }
+    )
+})
 
 app.listen(3001, () => {
     console.log("Running on Port 3001");
+    // while(1) {
+        // employ garbage collector on past reservations
+    // }
 })
