@@ -1409,7 +1409,28 @@ app.post("/api/employeeDeleteReservation", (req, res) => {
     )
 })
 
-
+app.post("/api/getDailyReservations", (req, res) => {
+    const businessName = req.body.businessName;
+    const year = new Date().getFullYear();
+    const month = new Date().getMonth() + 1;
+    const day  = new Date().getDate();
+    const formatted = `${year}-${month}-${day}`;
+    const isReserved = 'Yes';
+    db.query(
+        "SELECT * FROM reservations WHERE businessName = ? AND reservationDate = ? AND isReserved = ?",
+        [businessName, formatted, isReserved],
+        (err, result) => {
+            if (err) {
+                console.log(err);
+                res.send({err: err})
+            }
+            if (result) {
+                console.log(result);
+                res.send({result})
+            }
+        }
+    )
+})
 
 app.listen(3001, () => {
     console.log("Running on Port 3001");
