@@ -194,6 +194,21 @@ export default function Orders(props) {
         setClosed(copy);
     }
 
+    function test () {
+        let count = 0;
+        for (let i = 0; i < 7; i++) {
+            if (closed[i]) {
+                count++;
+            }
+            if (((timeDiff(openTime[i]), closeTime[i]) > 0) && !closed[i])
+                return true;
+        }
+        if (count == 7) {
+            return true;
+        }
+        return false;
+    }
+
     function getFAQ(businessName) {
 
         Axios.post("http://localhost:3001/api/managerGetFAQ", {
@@ -267,7 +282,7 @@ export default function Orders(props) {
                     <Button
                             type="submit"
                             disabled={
-                                ((timeDiff(openTime[0]), closeTime[0]) > 0)
+                                (test())
                              ? false : true }
                             fullWidth
                             variant="contained"
