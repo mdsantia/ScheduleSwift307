@@ -745,6 +745,7 @@ app.post("/api/updateReservation", (req, res) => {
     const endTime = reservationSubstring + req.body.endTime.substring(10,);
     const numPeople = req.body.numPeople;
     const numReservable = req.body.numReservable;
+    const modifiedBy = req.body.modifiedBy;
     db.query(
         "UPDATE reservations SET numReservable = ?, startTime = ?, endTime = ?, \
             numPeople = ?, businessName = ?, reservationDate = ?, reservableItem = ?, price = ?, isReserved = ? WHERE ID = ?",
@@ -780,6 +781,12 @@ app.post("/api/updateReservation", (req, res) => {
                                 subTotal += allReservablePrices[i] * allNumReservable[i];
                             }
                         }
+                        var modificationMessage;
+                        if (modifiedBy !== undefined) {
+                            modificationMessage = "The following reservation has been modified/updated by " + modifiedBy + " at " + businessName + ".";
+                        } else {
+                            modificationMessage = "You have modified/updated the following reservation.";
+                        }
                         const mailOptions = {
                             from:
                             {
@@ -799,7 +806,7 @@ app.post("/api/updateReservation", (req, res) => {
                                     ".arrival-button { padding: 10px 60px; text-align: center; background-color: #DB1A27; color: white; font-weight: bold; text-decoration: none; }" +
                                 "</style>" +
                             "</head>" + 
-                            "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><h4><center>RESERVATION UPDATE CONFIRMATION</center></h4><p><center>The following reservation has been modified/updated.</center></p></td></tr>" +
+                            "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><h4><center>RESERVATION UPDATE CONFIRMATION</center></h4><p><center>" + modificationMessage + "</center></p></td></tr>" +
                                 "<tr><td width=\"400\" valign=\"top\">" +
                                 "<br /><br /><strong>" + businessName + "</strong>" +
                                 "<br />123 Address St" +
