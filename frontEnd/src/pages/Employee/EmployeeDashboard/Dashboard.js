@@ -308,7 +308,7 @@ function DashboardContent() {
                             <ListItemIcon>
                                 <BallotIcon />
                             </ListItemIcon>
-                            <ListItemText primary='Reservations' />
+                            <ListItemText primary="Facility's Reservations" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
                             navigate("/employeeReservations", {
@@ -478,7 +478,7 @@ function DashboardContent() {
                             <ListItemIcon>
                                 <BallotIcon />
                             </ListItemIcon>
-                            <ListItemText primary='Reservations' />
+                            <ListItemText primary="Facility's Reservations" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
                             navigate("/employeeReservations", {
