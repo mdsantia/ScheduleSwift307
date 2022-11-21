@@ -9,6 +9,7 @@ const mysql = require("mysql");
 const nodemailer = require("nodemailer");
 const { send } = require("process");
 const e = require("express");
+const cron = require('node-cron');
 
 const db = mysql.createPool({
     host: "localhost",
@@ -952,6 +953,41 @@ app.post("/api/createReservation", (req, res) => {
                             else {
                                 console.log("The reservation confirmation email was successfully sent.");
                             }
+                        });
+                        const mailOptions2 = {
+                            from:
+                            {
+                                name: 'no-reply@scheduleswift.com',
+                                address: 'scheduleswift@gmail.com'
+                            },
+                            to: result2[0].emailAddress,
+                            subject: "Reservation Reminder for " + result2[0].firstName + " at " + businessName,
+                            html: "hello"                    
+                        }
+                        transport.sendMail(mailOptions, (err, res) => {
+                            if (err) {
+                                console.log("Unable to send reservation confirmation email.");
+                                console.log(err);
+                            }
+                            else {
+                                console.log("The reservation confirmation email was successfully sent.");
+                            }
+                        });
+                        const minutes = new Date(startTime).getMinutes();
+                        const hours = new Date(startTime).getHours();
+                        const date = new Date(startTime).getDate();
+                        const month = new Date(startTime).getMonth();
+                        const dayOfWeek = new Date(startTime).getDay();
+                        cron.schedule("0" + (minutes + 1) + hours + date + month + dayOfWeek + "", function () {
+                            transport.sendMail(mailOptions2, (err, res) => {
+                                if (err) {
+                                    console.log("Unable to send reminder email for Reservation #" + result.insertId + ".");
+                                    console.log(err);
+                                }
+                                else {
+                                    console.log("Reminder email for Reservation #" + result.insertId + " successfully sent.");
+                                }
+                            });
                         });
                     }
                 })
