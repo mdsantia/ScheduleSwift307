@@ -336,7 +336,7 @@ function DashboardContent() {
                             <ListItemIcon>
                                 <AccountCircleIcon />
                             </ListItemIcon>
-                            <ListItemText primary="My Account" />
+                            <ListItemText primary="Account Info" />
                         </ListItemButton>
 
                         <Divider sx={{ my: 1 }} />
@@ -506,7 +506,7 @@ function DashboardContent() {
                             <ListItemIcon>
                                 <AccountCircleIcon />
                             </ListItemIcon>
-                            <ListItemText primary="My Account" />
+                            <ListItemText primary="Account Info" />
                         </ListItemButton>
 
                         <Divider sx={{ my: 1 }} />
