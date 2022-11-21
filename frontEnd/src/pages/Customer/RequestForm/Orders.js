@@ -558,7 +558,7 @@ export default function Orders(props) {
                 startTime: startTime,
                 endTime: endTime,
                 reservedBy: state.username,
-                numPeople: data.get('numPeople'),
+                numPeople: numPeople,
                 numReservable: numReserved,
                 
             }).then((result) => {
@@ -576,8 +576,7 @@ export default function Orders(props) {
                 startTime: startTime,
                 endTime: endTime,
                 reservedBy: state.username,
-                numPeople: data.get('numPeople'),
-
+                numPeople: numPeople,
                 numReservable: numReserved
             }).then((result) => {
                 alert(`Your reservation has been updated!\nAn confirmation email has been sent to you containing your Reservation ID and updated reservation details.`);
