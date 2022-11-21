@@ -35,7 +35,7 @@ export const mainListItems = (
             <ListItemIcon>
                 <AccountCircleIcon />
             </ListItemIcon>
-            <ListItemText primary="My Account" />
+            <ListItemText primary="Account Info" />
         </ListItemButton>
     </React.Fragment>
 );
