@@ -897,61 +897,78 @@ app.post("/api/createReservation", (req, res) => {
                                 subTotal += allReservablePrices[i] * allNumReservable[i];
                             }
                         }
-                        const mailOptions = {
-                            from:
-                            {
-                                name: 'no-reply@scheduleswift.com',
-                                address: 'scheduleswift@gmail.com'
-                            },
-                            to: result2[0].emailAddress,
-                            subject: "Reservation Confirmation for " + result2[0].firstName + " at " + businessName,
-                            html: "<html>" +
-                            "<head>" +
-                                "<style>" +
-                                    "BODY			{ text-align: center; }" +
-                                    "TD				{ font-family:arial;color:black;font-size:11pt;padding:4px;text-align:left; }" +
-                                    ".Pref			{ font-size:10pt; }" +
-                                    ".note			{ font-size:0.7em; }" +
-                                    ".money			{ text-align: right; }" +
-                                    ".arrival-button { padding: 10px 60px; text-align: center; background-color: #DB1A27; color: white; font-weight: bold; text-decoration: none; }" +
-                                "</style>" +
-                            "</head>" + 
-                            "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><h4><center>RESERVATION CONFIRMATION</center></h4></td></tr>" +
-                                "<tr><td width=\"400\" valign=\"top\">" +
-                                "<br /><br /><strong>" + businessName + "</strong>" +
-                                "<br />123 Address St" +
-                                "<br />(XXX) XXX-XXXX" +
-                                "<br />email@example.com</td></tr><tr style=\"text-align:right;vertical-align:top\">" +
-                                "<td colspan=\"2\">Reservation ID: <strong>#" + result.insertId + "</strong></td></tr>" +
-                                "<tr><td>Customer Username:</td><td>" + result2[0].username + "</td></tr>" +
-                                "<tr><td>Customer Name:</td><td>" + result2[0].firstName + " " + result2[0].lastName + "</td></tr>" +
-                                "<tr><td>Customer Email:</td><td>" + result2[0].emailAddress + "</td></tr>" +
-                                "<tr><td colspan=\"2\"><p>Payment Method: Credit Card<br /></p>" +
-                                "<strong>RESERVATION DETAILS</strong>" +
-                                "<br />Date of Reservation: <strong>" + reservationSubstring + "</strong>" +
-                                "<br />Time of Reservation: <strong>" + new Date(startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(endTime).toLocaleTimeString() + "</td></tr>" +
-                                "<tr><td colspan=\"2\"></td></tr>" +
-                                "<tr /></table><br /><table style=\"border-top:solid 3px black;\" cellspacing=\"0\" cellpadding=\"3\" width=\"600\">" +
-                                allReservableItemsString +
-                                "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
-                                "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
-                                "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
-                                "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
-                                "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
-                                "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
-                                "<p>Thank you for reserving with ScheduleSwift!</p>" +
-                                "</td></tr></table>" +
-                            "</body>" +
-                        "</html>"                     
-                        }
-                        transport.sendMail(mailOptions, (err, res) => {
-                            if (err) {
-                                console.log("Unable to send reservation confirmation email.");
-                                console.log(err);
+                        let policiesString = "";
+                        db.query("SELECT * FROM reservationNotes WHERE businessName = ?",
+                        [businessName],
+                        (err3, result3) => {
+                            if (err3) {
+                                console.log(err3)
+                                console.log("Unable to get policies!")
                             }
-                            else {
-                                console.log("The reservation confirmation email was successfully sent.");
+                            if (result3) {
+                                policiesString += "<strong>RESERVATION POLICIES AGREED</strong>";
+                                for (let i = 0; i < result3.length; i++) {
+                                    policiesString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + i + ". " + result3[i].note + "</td></tr>";
+                                }
                             }
+                            const mailOptions = {
+                                from:
+                                {
+                                    name: 'no-reply@scheduleswift.com',
+                                    address: 'scheduleswift@gmail.com'
+                                },
+                                to: result2[0].emailAddress,
+                                subject: "Reservation Confirmation for " + result2[0].firstName + " at " + businessName,
+                                html: "<html>" +
+                                "<head>" +
+                                    "<style>" +
+                                        "BODY			{ text-align: center; }" +
+                                        "TD				{ font-family:arial;color:black;font-size:11pt;padding:4px;text-align:left; }" +
+                                        ".Pref			{ font-size:10pt; }" +
+                                        ".note			{ font-size:0.7em; }" +
+                                        ".money			{ text-align: right; }" +
+                                        ".arrival-button { padding: 10px 60px; text-align: center; background-color: #DB1A27; color: white; font-weight: bold; text-decoration: none; }" +
+                                    "</style>" +
+                                "</head>" + 
+                                "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><h4><center>RESERVATION CONFIRMATION</center></h4></td></tr>" +
+                                    "<tr><td width=\"400\" valign=\"top\">" +
+                                    "<br /><br /><strong>" + businessName + "</strong>" +
+                                    "<br />123 Address St" +
+                                    "<br />(XXX) XXX-XXXX" +
+                                    "<br />email@example.com</td></tr><tr style=\"text-align:right;vertical-align:top\">" +
+                                    "<td colspan=\"2\">Reservation ID: <strong>#" + result.insertId + "</strong></td></tr>" +
+                                    "<tr><td>Customer Username:</td><td>" + result2[0].username + "</td></tr>" +
+                                    "<tr><td>Customer Name:</td><td>" + result2[0].firstName + " " + result2[0].lastName + "</td></tr>" +
+                                    "<tr><td>Customer Email:</td><td>" + result2[0].emailAddress + "</td></tr>" +
+                                    "<tr><td colspan=\"2\"><p>Payment Method: Credit Card<br /></p>" +
+                                    // IF POLICIES
+                                    policiesString +
+                                    "<strong>RESERVATION DETAILS</strong>" +
+                                    "<br />Date of Reservation: <strong>" + reservationSubstring + "</strong>" +
+                                    "<br />Time of Reservation: <strong>" + new Date(startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(endTime).toLocaleTimeString() + "</td></tr>" +
+                                    "<tr><td colspan=\"2\"></td></tr>" +
+                                    "<tr /></table><br /><table style=\"border-top:solid 3px black;\" cellspacing=\"0\" cellpadding=\"3\" width=\"600\">" +
+                                    allReservableItemsString +
+                                    "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
+                                    "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
+                                    "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
+                                    "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
+                                    "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
+                                    "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
+                                    "<p>Thank you for reserving with ScheduleSwift!</p>" +
+                                    "</td></tr></table>" +
+                                "</body>" +
+                            "</html>"                     
+                            }
+                            transport.sendMail(mailOptions, (err, res) => {
+                                if (err) {
+                                    console.log("Unable to send reservation confirmation email.");
+                                    console.log(err);
+                                }
+                                else {
+                                    console.log("The reservation confirmation email was successfully sent.");
+                                }
+                            });
                         });
                     }
                 })

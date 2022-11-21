@@ -82,7 +82,7 @@ export default function Orders(props) {
 
     function updateNotesBox() {
         if (notesBox.length == 0 && notes.length > 0) {
-            notesBox.push(<Title>Reservation Notes</Title>);
+            notesBox.push(<Title>Reservation Policies and Notes</Title>);
             notesBox.push(
             <Table size="small">
                 <TableBody>
@@ -769,6 +769,9 @@ export default function Orders(props) {
                     {updateNotesBox()}
                     {notesBox[0]}
                     {notesBox[1]}
+                    <Grid container><Checkbox required/><p style={{color:"#98622E"}} component="h5" variant="h8">
+                        *I Agree with all the policies set by the facility for their reservations.
+                    </p></Grid>
                     <Button
                         type="submit"
                         disabled={ (priceArray[0] && !closed[new Date(currentDate).getDay()] && (new Date(currentDate) > new Date())
