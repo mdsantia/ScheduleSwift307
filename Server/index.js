@@ -617,8 +617,18 @@ app.post("/api/customerEdit", (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     const encryptedPassword = encrypt(password);
+    const businessName = req.body.businessName;
+    const isEmployee = req.body.isEmployee;
+    var query;
+    if (businessName === undefined) {
+        query = "SELECT * FROM userData WHERE username = ? AND password = ?";
+    } else if (isEmployee) {
+        query = "SELECT * FROM employeeData WHERE username = ? AND password = ?";
+    } else {
+        query = "SELECT * FROM managerData WHERE username = ? AND password = ?";
+    }
     db.query(
-        "SELECT * FROM userData WHERE username = ? AND password = ?",
+        query,
         [username, encryptedPassword],
         (err, result) => {
             if (err) {
@@ -640,8 +650,15 @@ app.post("/api/updateCustomerInfo", (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     const encryptedPassword = encrypt(password);
+    const businessName = req.body.businessName;
+    var query;
+    if (businessName === undefined) {
+        query = "UPDATE userData SET username = ?, emailAddress = ?, password = ? WHERE username = ? AND password = ?";
+    } else {
+        query = "UPDATE managerData SET username = ?, emailAddress = ?, password = ? WHERE username = ? AND password = ?";
+    }
     db.query(
-        "UPDATE userData SET username = ?, emailAddress = ?, password = ? WHERE username = ? AND password = ?",
+        query,
         [username, email, encryptedPassword, oldUsername, oldPassword],
         (err, result) => {
             console.log(result);
@@ -728,6 +745,7 @@ app.post("/api/updateReservation", (req, res) => {
     const endTime = reservationSubstring + req.body.endTime.substring(10,);
     const numPeople = req.body.numPeople;
     const numReservable = req.body.numReservable;
+    const modifiedBy = req.body.modifiedBy;
     db.query(
         "UPDATE reservations SET numReservable = ?, startTime = ?, endTime = ?, \
             numPeople = ?, businessName = ?, reservationDate = ?, reservableItem = ?, price = ?, isReserved = ? WHERE ID = ?",
@@ -763,6 +781,12 @@ app.post("/api/updateReservation", (req, res) => {
                                 subTotal += allReservablePrices[i] * allNumReservable[i];
                             }
                         }
+                        var modificationMessage;
+                        if (modifiedBy !== undefined) {
+                            modificationMessage = "The following reservation has been modified/updated by " + modifiedBy + " at " + businessName + ".";
+                        } else {
+                            modificationMessage = "You have modified/updated the following reservation.";
+                        }
                         const mailOptions = {
                             from:
                             {
@@ -782,7 +806,7 @@ app.post("/api/updateReservation", (req, res) => {
                                     ".arrival-button { padding: 10px 60px; text-align: center; background-color: #DB1A27; color: white; font-weight: bold; text-decoration: none; }" +
                                 "</style>" +
                             "</head>" + 
-                            "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><h4><center>RESERVATION UPDATE CONFIRMATION</center></h4><p><center>The following reservation has been modified/updated.</center></p></td></tr>" +
+                            "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><h4><center>RESERVATION UPDATE CONFIRMATION</center></h4><p><center>" + modificationMessage + "</center></p></td></tr>" +
                                 "<tr><td width=\"400\" valign=\"top\">" +
                                 "<br /><br /><strong>" + businessName + "</strong>" +
                                 "<br />123 Address St" +
@@ -1411,7 +1435,28 @@ app.post("/api/employeeDeleteReservation", (req, res) => {
     )
 })
 
-
+app.post("/api/getDailyReservations", (req, res) => {
+    const businessName = req.body.businessName;
+    const year = new Date().getFullYear();
+    const month = new Date().getMonth() + 1;
+    const day  = new Date().getDate();
+    const formatted = `${year}-${month}-${day}`;
+    const isReserved = 'Yes';
+    db.query(
+        "SELECT * FROM reservations WHERE businessName = ? AND reservationDate = ? AND isReserved = ?",
+        [businessName, formatted, isReserved],
+        (err, result) => {
+            if (err) {
+                console.log(err);
+                res.send({err: err})
+            }
+            if (result) {
+                console.log(result);
+                res.send({result})
+            }
+        }
+    )
+})
 
 app.listen(3001, () => {
     console.log("Running on Port 3001");

@@ -47,6 +47,7 @@ export default function Orders(props) {
                 setNewEmail(userData.result[0].emailAddress)
             })
     }
+
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -95,6 +96,7 @@ export default function Orders(props) {
                 <Box component="form" validate="true" onSubmit={handleSubmit} sx={{ mt: 3 }}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
+                            <InputLabel>First Name</InputLabel>
                             <TextField
                                 name="firstName"
                                 fullWidth
@@ -106,6 +108,7 @@ export default function Orders(props) {
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
+                            <InputLabel>Last Name</InputLabel>
                             <TextField
                                 required
                                 fullWidth
@@ -119,7 +122,6 @@ export default function Orders(props) {
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <InputLabel>Username</InputLabel>
                             <TextField
                                 required
                                 fullWidth

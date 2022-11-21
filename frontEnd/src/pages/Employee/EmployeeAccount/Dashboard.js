@@ -245,7 +245,6 @@ function DashboardContent() {
                             </ListItemIcon>
                             <ListItemText primary="Account Info" />
                         </ListItemButton>
-
                         <Divider sx={{ my: 1 }} />
                     </List>
                 </Drawer>
