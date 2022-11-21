@@ -157,7 +157,7 @@ export default function Orders(props) {
                                     onChange={(newValue) => { setCurrentDate(newValue)}}
                                     renderInput={(params) => <TextField {...params}/>}
                                     shouldDisableDate={(date) => {
-                                        if (date < new Date("11-09-2022").setDate(new Date("11-09-2022").getDate() - 1)) {
+                                        if (date < new Date().setDate(new Date().getDate() - 1)) {
                                             return true;
                                         }
                                         return false;
@@ -180,12 +180,12 @@ export default function Orders(props) {
                         <TableRow>
                             <TableCell>ID</TableCell>
                             <TableCell>Date</TableCell>
-                            <TableCell>Business Name</TableCell>
+                            {/* <TableCell>Business Name</TableCell> */}
                             {/* <TableCell>Reservable Item</TableCell> */}
                             <TableCell>Reserved</TableCell>
                             <TableCell>Price</TableCell>
-                            <TableCell align="center">Edit</TableCell>
-                            <TableCell align="center">Delete</TableCell>
+                            {/* <TableCell align="center">Edit</TableCell> */}
+                            {/* <TableCell align="center">Delete</TableCell> */}
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -193,11 +193,11 @@ export default function Orders(props) {
                             <TableRow key={reserve.ID}>
                                 <TableCell>{reserve.ID}</TableCell>
                                 <TableCell>{reserve.reservationDate}</TableCell>
-                                <TableCell>{reserve.businessName}</TableCell>
+                                {/* <TableCell>{reserve.businessName}</TableCell> */}
                                 {/* <TableCell>{reserve.reservableItem}</TableCell> */}
                                 <TableCell>{reserve.isReserved}</TableCell>
                                 <TableCell align="right">{`$${parseFloat(total(reserve.numReservable, reserve.price)).toFixed(2)}`}</TableCell>
-                                <TableCell align="right"><Button onClick={() => editReservation(reserve.ID)}>Edit</Button></TableCell>
+                                <TableCell align="right"><Button onClick={() => editReservation(reserve.ID)}>View/Edit</Button></TableCell>
                                 <TableCell align="right"><Button onClick={() => deleteReservation(reserve.ID)}>Delete</Button></TableCell>
                             </TableRow>
                         ))}

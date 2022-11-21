@@ -70,14 +70,14 @@ export default function Orders(props) {
                 if (i % 2 === 0) {
                     if (val[i] === 'null') {
                         closed.push(1);
-                        open.push(formattedDate);
+                        open.push(new Date(formattedDate+"T00:00"));
                     } else {
                         closed.push(0);
                         open.push(val[i]);
                     }
                 } else {
                     if (val[i] === 'null') {
-                        close.push(formattedDate);
+                        close.push(new Date(formattedDate+"T00:00"));
                     } else {
                         close.push(val[i]);
                     }
@@ -194,6 +194,21 @@ export default function Orders(props) {
         setClosed(copy);
     }
 
+    function test () {
+        let count = 0;
+        for (let i = 0; i < 7; i++) {
+            if (closed[i]) {
+                count++;
+            }
+            if (((timeDiff(openTime[i], closeTime[i]) < 0)) && !closed[i])
+                return true;
+        }
+        if (count == 7) {
+            return true;
+        }
+        return false;
+    }
+
     function getFAQ(businessName) {
 
         Axios.post("http://localhost:3001/api/managerGetFAQ", {
@@ -201,7 +216,6 @@ export default function Orders(props) {
         }).then((result) => {
             const faqs = result.data.result;
             setFAQ(faqs);
-            console.log("test");
         })
     }
 
@@ -259,7 +273,7 @@ export default function Orders(props) {
                                     {col(weekday.int)}
                                     <TableCell align="center">{box[weekday.int][0]}</TableCell>
                                     <TableCell align="center">{box[weekday.int][1]}</TableCell>
-                                    <TableCell align="center"><Button id={weekday.int} onClick={close}>Closed/OPEN</Button></TableCell>
+                                    <TableCell align="center"><Button id={weekday.int} onClick={close}>{closed[weekday.int] ? "OPEN":"CLOSE"}</Button></TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -267,7 +281,7 @@ export default function Orders(props) {
                     <Button
                             type="submit"
                             disabled={
-                                ((timeDiff(openTime[0]), closeTime[0]) > 0)
+                                (test())
                              ? false : true }
                             fullWidth
                             variant="contained"

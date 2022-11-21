@@ -769,7 +769,7 @@ export default function Orders(props) {
                     {updateNotesBox()}
                     {notesBox[0]}
                     {notesBox[1]}
-                    <Grid container><Checkbox required/><p style={{color:"#98622E"}} component="h5" variant="h8">
+                    <Grid container><Checkbox required checked={true} disabled/><p style={{color:"#98622E"}} component="h5" variant="h8">
                         *I Agree with all the policies set by the facility for their reservations.
                     </p></Grid>
                     <Button

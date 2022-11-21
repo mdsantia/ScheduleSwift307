@@ -215,10 +215,10 @@ function DashboardContent() {
                             <ListItemIcon>
                                 <BallotIcon />
                             </ListItemIcon>
-                            <ListItemText primary='Reservations' />
+                            <ListItemText primary="Facility's Reservations" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
-                            navigate("/employeeReservations", {
+                            navigate("/employeeCalendar", {
                                 state: {
                                     username: state.username,
                                     password: state.password,
@@ -229,7 +229,7 @@ function DashboardContent() {
                             <ListItemIcon>
                                 <BallotIcon />
                             </ListItemIcon>
-                            <ListItemText primary='Create Reservations' />
+                            <ListItemText primary='Calendar View' />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
                             navigate("/employeeAccount", {
@@ -243,9 +243,8 @@ function DashboardContent() {
                             <ListItemIcon>
                                 <AccountCircleIcon />
                             </ListItemIcon>
-                            <ListItemText primary="My Account" />
+                            <ListItemText primary="Account Info" />
                         </ListItemButton>
-
                         <Divider sx={{ my: 1 }} />
                     </List>
                 </Drawer>

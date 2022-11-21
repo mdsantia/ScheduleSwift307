@@ -52,6 +52,7 @@ export default function Orders(props) {
     const [closeTime, setCloseTime] = useState(Dayjs | null);
     const [closed, setClosed] = useState('');
     const [MAXSTRING, setMAXSTRING] = useState(null);
+    const [reservedBy, setReservedBy] = useState(null);
     
     useEffect(() => {
         insertValues();
@@ -304,7 +305,8 @@ export default function Orders(props) {
                 setCurrentDate(date);
                 getConcurrent(date,
                     result.data.result[0].startTime, result.data.result[0].endTime, 
-                    maxPeople, maxs, ReservedItems)
+                    maxPeople, maxs, ReservedItems);
+                setReservedBy(result.data.result[0].reservedBy);
             })
         } else {
             getConcurrent(null, null, null, null, maxPeople, maxs, ReservedItems)
@@ -414,13 +416,13 @@ export default function Orders(props) {
                 price: prices,
                 startTime: startTime,
                 endTime: endTime,
-                reservedBy: state.username,
-                numPeople: data.get('numPeople'),
+                reservedBy: reservedBy,
+                numPeople: numPeople,
                 numReservable: numReserved,
                 
             }).then((result) => {
                 setReservationID(result.data.id);
-                alert(`Your reservation has been saved!\nAn confirmation email has been sent to you containing your Reservation ID and reservation details.`);
+                alert(`The reservation has been saved!\nAn confirmation email has been sent to the customer containing their Reservation ID and reservation details.`);
             })
         } else{
             // UPDATE RESERVATION INSTEAD
@@ -432,12 +434,12 @@ export default function Orders(props) {
                 price: prices,
                 startTime: startTime,
                 endTime: endTime,
-                reservedBy: state.username,
-                numPeople: data.get('numPeople'),
-
-                numReservable: numReserved
+                reservedBy: reservedBy,
+                numPeople: numPeople,
+                numReservable: numReserved,
+                modifiedBy: "a manager or an employee"
             }).then((result) => {
-                alert(`Your reservation has been updated!\nAn confirmation email has been sent to you containing your Reservation ID and updated reservation details.`);
+                alert(`The reservation has been updated!\nAn confirmation email has been sent to the customer containing their Reservation ID and updated reservation details.`);
             })
         }
     }

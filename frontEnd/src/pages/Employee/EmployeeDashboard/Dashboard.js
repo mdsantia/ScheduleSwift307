@@ -174,22 +174,9 @@ function DashboardContent() {
 
     }
     function parseTime(time) {
-        const realTime = time.substring(11,16);
-        var hours = time.substring(11,13);
-        const minutes = time.substring(13,16);
-        var ampm = '';
-        var hoursInt = parseInt(hours);
-        console.log(`hours : ${hoursInt}`)
-        if (hoursInt < 12) {
-            ampm = "AM"; 
-        } else {
-            ampm = "PM";
-            hoursInt = hoursInt - 12;
-            console.log(`Subtracted: ${hoursInt}`)
-            hours = hoursInt.toString();
-            console.log(`hours : ${hoursInt}`)
-        }
-        return hours + minutes + " " + ampm;
+        const string = new Date(time).toLocaleTimeString();
+        const realTime = string.substring(0,4) + " " + string.substring(8,10);
+        return realTime;
     }
 
 
@@ -308,10 +295,10 @@ function DashboardContent() {
                             <ListItemIcon>
                                 <BallotIcon />
                             </ListItemIcon>
-                            <ListItemText primary='Reservations' />
+                            <ListItemText primary="Facility's Reservations" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
-                            navigate("/employeeReservations", {
+                            navigate("/employeeCalendar", {
                                 state: {
                                     username: state.username,
                                     password: state.password,
@@ -322,7 +309,7 @@ function DashboardContent() {
                             <ListItemIcon>
                                 <BallotIcon />
                             </ListItemIcon>
-                            <ListItemText primary='Create Reservations' />
+                            <ListItemText primary='Calendar View' />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
                             navigate("/employeeAccount", {
@@ -336,7 +323,7 @@ function DashboardContent() {
                             <ListItemIcon>
                                 <AccountCircleIcon />
                             </ListItemIcon>
-                            <ListItemText primary="My Account" />
+                            <ListItemText primary="Account Info" />
                         </ListItemButton>
 
                         <Divider sx={{ my: 1 }} />
@@ -478,10 +465,10 @@ function DashboardContent() {
                             <ListItemIcon>
                                 <BallotIcon />
                             </ListItemIcon>
-                            <ListItemText primary='Reservations' />
+                            <ListItemText primary="Facility's Reservations" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
-                            navigate("/employeeReservations", {
+                            navigate("/employeeCalendar", {
                                 state: {
                                     username: state.username,
                                     password: state.password,
@@ -492,7 +479,7 @@ function DashboardContent() {
                             <ListItemIcon>
                                 <BallotIcon />
                             </ListItemIcon>
-                            <ListItemText primary='Create Reservations' />
+                            <ListItemText primary='Calendar View' />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
                             navigate("/employeeAccount", {
@@ -506,7 +493,7 @@ function DashboardContent() {
                             <ListItemIcon>
                                 <AccountCircleIcon />
                             </ListItemIcon>
-                            <ListItemText primary="My Account" />
+                            <ListItemText primary="Account Info" />
                         </ListItemButton>
 
                         <Divider sx={{ my: 1 }} />

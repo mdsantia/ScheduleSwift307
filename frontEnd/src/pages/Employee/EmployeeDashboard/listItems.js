@@ -23,19 +23,19 @@ export const mainListItems = (
             <ListItemIcon>
                 <BallotIcon />
             </ListItemIcon>
-            <ListItemText primary="Reservations" />
+            <ListItemText primary="Facility's Reservations" />
         </ListItemButton>
         <ListItemButton>
             <ListItemIcon>
                 <BentoIcon />
             </ListItemIcon>
-            <ListItemText primary="Create Reservations" />
+            <ListItemText primary="Calendar View" />
         </ListItemButton>
         <ListItemButton>
             <ListItemIcon>
                 <AccountCircleIcon />
             </ListItemIcon>
-            <ListItemText primary="My Account" />
+            <ListItemText primary="Account Info" />
         </ListItemButton>
     </React.Fragment>
 );

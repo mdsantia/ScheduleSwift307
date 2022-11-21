@@ -44,18 +44,10 @@ export default function Orders(props) {
         }).then((result) => {
             var events = new Array();
             for (let i = 0; i < result.data.result.length; i++) {
-                let start = new Date(result.data.result[i].startTime);
-                let startSet = new Date(result.data.result[i].reservationDate+"T00:00");
-                startSet.setHours(start.getHours());
-                startSet.setMinutes(start.getMinutes());
-                let end = new Date(result.data.result[i].endTime);
-                let endSet = new Date(result.data.result[i].reservationDate+"T00:00");
-                endSet.setHours(end.getHours());
-                endSet.setMinutes(end.getMinutes());
                 var event = {
                     title: "Reservation #" + result.data.result[i].ID,
-                    start: startSet,
-                    end: endSet,
+                    start: new Date(result.data.result[i].startTime),
+                    end: new Date(result.data.result[i].endTime),
                     desc: "Reservation Made By " + result.data.result[i].reservedBy,
                 }
                 events.push(event);
@@ -70,7 +62,7 @@ export default function Orders(props) {
     }, []);
 
     const handleSelectEvent = (event) => {
-        navigate("/managerEditForm", {
+        navigate("/employeeEditForm", {
             state: {
                 username: (event.desc).substring(20),
                 businessName: state.businessName,
