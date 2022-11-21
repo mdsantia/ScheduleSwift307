@@ -943,7 +943,7 @@ app.post("/api/createReservation", (req, res) => {
                                     "<tr><td>Customer Email:</td><td>" + result2[0].emailAddress + "</td></tr>" +
                                     "<tr><td colspan=\"2\"><p>Payment Method: Credit Card<br /></p>" +
                                     // IF POLICIES
-                                    policiesString +
+                                    "<p>" + policiesString + "</p>" +
                                     "<strong>RESERVATION DETAILS</strong>" +
                                     "<br />Date of Reservation: <strong>" + reservationSubstring + "</strong>" +
                                     "<br />Time of Reservation: <strong>" + new Date(startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(endTime).toLocaleTimeString() + "</td></tr>" +
@@ -971,7 +971,7 @@ app.post("/api/createReservation", (req, res) => {
                                 }
                             });
                         });
-                        const mailOptions2 = {
+                        const mailOptionsReminder = {
                             from:
                             {
                                 name: 'no-reply@scheduleswift.com',
@@ -979,7 +979,46 @@ app.post("/api/createReservation", (req, res) => {
                             },
                             to: result2[0].emailAddress,
                             subject: "Reservation Reminder for " + result2[0].firstName + " at " + businessName,
-                            html: "hello"                    
+                            html: "<html>" +
+                            "<head>" +
+                                "<style>" +
+                                    "BODY			{ text-align: center; }" +
+                                    "TD				{ font-family:arial;color:black;font-size:11pt;padding:4px;text-align:left; }" +
+                                    ".Pref			{ font-size:10pt; }" +
+                                    ".note			{ font-size:0.7em; }" +
+                                    ".money			{ text-align: right; }" +
+                                    ".arrival-button { padding: 10px 60px; text-align: center; background-color: #DB1A27; color: white; font-weight: bold; text-decoration: none; }" +
+                                "</style>" +
+                            "</head>" + 
+                            "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><h4><center>Your Reservation is Coming Up!</center></h4><p><center>This is a reminder that the following reservation begins in 24 hours.</center></p></td></tr>" +
+                                "<tr><td width=\"400\" valign=\"top\">" +
+                                "<br /><br /><strong>" + businessName + "</strong>" +
+                                "<br />123 Address St" +
+                                "<br />(XXX) XXX-XXXX" +
+                                "<br />email@example.com</td></tr><tr style=\"text-align:right;vertical-align:top\">" +
+                                "<td colspan=\"2\">Reservation ID: <strong>#" + result.insertId + "</strong></td></tr>" +
+                                "<tr><td>Customer Username:</td><td>" + result2[0].username + "</td></tr>" +
+                                "<tr><td>Customer Name:</td><td>" + result2[0].firstName + " " + result2[0].lastName + "</td></tr>" +
+                                "<tr><td>Customer Email:</td><td>" + result2[0].emailAddress + "</td></tr>" +
+                                "<tr><td colspan=\"2\"><p>Payment Method: Credit Card<br /></p>" +
+                                // IF POLICIES
+                                "<p>" + policiesString + "</p>" +
+                                "<strong>RESERVATION DETAILS</strong>" +
+                                "<br />Date of Reservation: <strong>" + reservationSubstring + "</strong>" +
+                                "<br />Time of Reservation: <strong>" + new Date(startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(endTime).toLocaleTimeString() + "</td></tr>" +
+                                "<tr><td colspan=\"2\"></td></tr>" +
+                                "<tr /></table><br /><table style=\"border-top:solid 3px black;\" cellspacing=\"0\" cellpadding=\"3\" width=\"600\">" +
+                                allReservableItemsString +
+                                "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
+                                "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
+                                "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
+                                "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
+                                "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
+                                "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
+                                "<p>Thank you for reserving with ScheduleSwift!</p>" +
+                                "</td></tr></table>" +
+                            "</body>" +
+                        "</html>"                                 
                         }
                         var reminderTime = new Date(startTime);
                         reminderTime.setHours(reminderTime.getHours() - 24);
@@ -990,7 +1029,7 @@ app.post("/api/createReservation", (req, res) => {
                         const dayOfWeek = reminderTime.getDay();
                         console.log("Reminder Time: " + dayOfWeek + " " + month + " " + date + " " + hours + " " + minutes);
                         cron.schedule("0 " + minutes + " " + hours + " " + date + " " + month + " " + dayOfWeek + "", function () {
-                            transport.sendMail(mailOptions2, (err, res) => {
+                            transport.sendMail(mailOptionsReminder, (err, res) => {
                                 if (err) {
                                     console.log("Unable to send reminder email for Reservation #" + result.insertId + ".");
                                     console.log(err);
