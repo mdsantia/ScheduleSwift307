@@ -29,7 +29,7 @@ export const mainListItems = (
             <ListItemIcon>
                 <BentoIcon />
             </ListItemIcon>
-            <ListItemText primary="Create Reservations" />
+            <ListItemText primary="Calendar View" />
         </ListItemButton>
         <ListItemButton>
             <ListItemIcon>
