@@ -200,9 +200,6 @@ export default function Orders(props) {
             if (closed[i]) {
                 count++;
             }
-            if (i === 0) {
-                console.log(openTime[i], closeTime[i]);
-            }
             if (((timeDiff(openTime[i], closeTime[i]) < 0)) && !closed[i])
                 return true;
         }

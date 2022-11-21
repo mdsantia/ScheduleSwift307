@@ -1507,7 +1507,36 @@ app.post("/api/getDailyReservations", (req, res) => {
 
 app.listen(3001, () => {
     console.log("Running on Port 3001");
-    // while(1) {
-        // employ garbage collector on past reservations
-    // }
+    // GARBAGE COLLECTOR
+    // It runs every 5th minute */5 * * * *
+    // every day 0 0 * * *
+    cron.schedule("0 0 * * *", function () {
+        db.query(
+            "SELECT * FROM reservations",
+            (err, result) => {
+                if (err) {
+                    console.log(err);
+                    console.log("There was an error with the garbage collector running a query")
+                }
+                if (result.length > 0) {
+                    for (let i = 0; i < result.length; i++) {
+                        if (new Date(result[i].reservationDate) < new Date().setDate(new Date() - 1)) {
+                            console.log(result[i]);
+                            // SHOULD WE DELETE OR TRANSFER
+                            // db.query(DELETE FROM reservations WHERE ID = ?),
+                            //[result[i].ID],
+                            // (err1, result1) => {
+                            //     if (err1) {
+                            //         console.log("ERROR REMOVING GARBAGE FROM DATABASE");
+                            //     }
+                            //     if (result1) {
+                            //         console.log("SUCCESS REMOVAL OF " + result[i].ID);
+                            //     }
+                            // }
+                        }
+                    }
+                }
+            }
+        )
+    });
 })
