@@ -981,21 +981,15 @@ app.post("/api/createReservation", (req, res) => {
                             subject: "Reservation Reminder for " + result2[0].firstName + " at " + businessName,
                             html: "hello"                    
                         }
-                        transport.sendMail(mailOptions, (err, res) => {
-                            if (err) {
-                                console.log("Unable to send reservation confirmation email.");
-                                console.log(err);
-                            }
-                            else {
-                                console.log("The reservation confirmation email was successfully sent.");
-                            }
-                        });
-                        const minutes = new Date(startTime).getMinutes();
-                        const hours = new Date(startTime).getHours();
-                        const date = new Date(startTime).getDate();
-                        const month = new Date(startTime).getMonth();
-                        const dayOfWeek = new Date(startTime).getDay();
-                        cron.schedule("0" + (minutes + 1) + hours + date + month + dayOfWeek + "", function () {
+                        var reminderTime = new Date(startTime);
+                        reminderTime.setHours(reminderTime.getHours() - 24);
+                        const minutes = reminderTime.getMinutes();
+                        const hours = reminderTime.getHours();
+                        const date = reminderTime.getDate();
+                        const month = reminderTime.getMonth() + 1;
+                        const dayOfWeek = reminderTime.getDay();
+                        console.log("Reminder Time: " + dayOfWeek + " " + month + " " + date + " " + hours + " " + minutes);
+                        cron.schedule("0 " + minutes + " " + hours + " " + date + " " + month + " " + dayOfWeek + "", function () {
                             transport.sendMail(mailOptions2, (err, res) => {
                                 if (err) {
                                     console.log("Unable to send reminder email for Reservation #" + result.insertId + ".");
