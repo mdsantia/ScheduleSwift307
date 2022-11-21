@@ -1269,6 +1269,25 @@ app.post("/api/addReservationNote", (req, res) => {
     )
 })
 
+app.post("/api/editReservationNote", (req, res) => {
+    const note = req.body.note;
+    const id = req.body.id;
+    console.log(id);
+    db.query(
+        "UPDATE reservationNotes SET note = ? WHERE ID = ?",
+        [note, id],
+        (err, result) => { 
+        console.log(result);
+            if (err) {
+                console.log(err);
+                res.send({ err: err })
+            }
+            if (result) {
+                res.send({ result })
+            }}
+    )
+})
+
 app.post("/api/reservationGetNotes", (req, res) => {
     const businessName = req.body.businessName;
 

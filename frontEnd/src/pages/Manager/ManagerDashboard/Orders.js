@@ -259,7 +259,7 @@ export default function Orders(props) {
                                     {col(weekday.int)}
                                     <TableCell align="center">{box[weekday.int][0]}</TableCell>
                                     <TableCell align="center">{box[weekday.int][1]}</TableCell>
-                                    <TableCell align="center"><Button id={weekday.int} onClick={close}>Closed/OPEN</Button></TableCell>
+                                    <TableCell align="center"><Button id={weekday.int} onClick={close}>{closed[weekday.int] ? "OPEN":"CLOSE"}</Button></TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

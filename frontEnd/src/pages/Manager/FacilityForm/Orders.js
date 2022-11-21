@@ -34,6 +34,8 @@ function preventDefault(event) {
 
 export default function Orders(props) {
     const box = [];
+    const [isChecked, setIsChecked] = useState(false);
+    const [editPolicy, setEditPolicy] = useState([]);
     const [numReservableItems, setNumReservableItems] = useState([]);
     const [nameArray, setNameArray] = useState([]);
     const [minArray, setMinArray] = useState([]);
@@ -69,6 +71,9 @@ export default function Orders(props) {
     }
 
     const addNote = (event) => {
+        let editList = [...editPolicy];
+        editList.push(false);
+        setEditPolicy(editList);
         event.preventDefault();
         Axios.post("http://localhost:3001/api/addReservationNote", {
             businessName: props.businessName,
@@ -83,17 +88,36 @@ export default function Orders(props) {
         })
     }
 
+    function editNote(index) {
+        let editList = [...editPolicy];
+        if (editList[index]) {
+            Axios.post("http://localhost:3001/api/editReservationNote", {
+                note: notes[index],
+                id: notes[index].ID
+            }).then((result) => {
+                if (result.data.err) {
+                    alert("Error! Something has gone wrong!")
+                } else {
+                    getNotes(props.businessName);
+                }
+            })
+        }
+        editList[index] = !editList[index];
+        setEditPolicy(editList);
+    }
+
     function clearNote(noteID) {
-        alert(noteID)
-        Axios.post("http://localhost:3001/api/reservationDeleteNote", {
-            noteID: parseInt(noteID)
-        }).then((result) => {
-            if (result.data.result.affectedRows === 0) {
-                alert("no!")
-            } else {
-                getNotes(props.businessName);
-            }
-        })
+        if(window.confirm("Are you sure you want to clear this policy/note?")) {
+            Axios.post("http://localhost:3001/api/reservationDeleteNote", {
+                noteID: parseInt(noteID)
+            }).then((result) => {
+                if (result.data.result.affectedRows === 0) {
+                    alert("no!")
+                } else {
+                    getNotes(props.businessName);
+                }
+            })
+        }
     }
 
     function makeDetails() {
@@ -518,7 +542,13 @@ export default function Orders(props) {
                         Add/Remove Payment Requirements
                     </Button>
 
-                    <Title>Notes</Title>
+                    <Title>Notes and Policies</Title>
+                    <Typography style={{color:"#98622E"}} component="h5" variant="h8">
+                    * All the notes and policies added will also be included in confirmation email sent to the customer.
+                    </Typography>
+                    <Typography style={{color:"#98622E"}} component="h5" variant="h8">
+                    * Customers must agree to these policies to make a reservation at your facility.
+                    </Typography>
                 <Table size="small">
                     {/* <TableHead>
                         <TableRow>
@@ -528,7 +558,15 @@ export default function Orders(props) {
                     <TableBody>
                         {notes.map((note, index) => (
                             <TableRow>
-                                <TableCell><strong>{note.note}</strong></TableCell>
+                                <TableCell>{index + 1}</TableCell>
+                                <TableCell>{editPolicy[index] ? 
+                                <TextField fullWidth value={note.note} onChange={(val) => {let temp = [...notes];
+                                    temp[index].note = val.target.value;
+                                    setNotes(temp)
+                                    }}>
+                                    </TextField>:<strong>{note.note}</strong>}
+                                </TableCell>
+                                <TableCell align="right"><Button onClick={() => editNote(index)}>{editPolicy[index] ? "Update":"Edit"}</Button></TableCell>
                                 <TableCell align="right"><Button onClick={() => clearNote(note.ID)}>Clear</Button></TableCell>
                             </TableRow>
                         ))}
@@ -536,24 +574,26 @@ export default function Orders(props) {
                 </Table>
                 <br></br>
                 <br></br>
-                <Divider> Add Additional Notes for the customer </Divider>
-                <TextField
-                    margin="normal"
-                    fullWidth
-                    // id={}
-                    label="Note"
-                    name="Note"
-                    value={note}
-                    autoComplete="note"
-                    onChange={(e) => setNote(e.target.value)}
-                />
+                <Divider> Add Additional Notes and Policies for the Customer </Divider>
+                <Grid fullWidth>
+                    <TextField
+                        margin="normal"
+                        fullWidth
+                        // id={}
+                        label="Note/Policy"
+                        name="Note"
+                        value={note}
+                        autoComplete="note"
+                        onChange={(e) => setNote(e.target.value)}
+                    />
+                </Grid>
                 <Button
                     onClick={addNote}
                     fullWidth
                     variant="contained"
                     sx={{ mt: 3, mb: 2 }}
                 >
-                    Add Notes
+                    Add Notes/Policies
                 </Button>
 
                     <Button
