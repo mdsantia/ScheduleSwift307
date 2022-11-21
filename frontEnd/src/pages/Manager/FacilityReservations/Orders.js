@@ -157,7 +157,7 @@ export default function Orders(props) {
                                     onChange={(newValue) => { setCurrentDate(newValue)}}
                                     renderInput={(params) => <TextField {...params}/>}
                                     shouldDisableDate={(date) => {
-                                        if (date < new Date("11-09-2022").setDate(new Date("11-09-2022").getDate() - 1)) {
+                                        if (date < new Date().setDate(new Date().getDate() - 1)) {
                                             return true;
                                         }
                                         return false;

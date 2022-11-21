@@ -174,22 +174,9 @@ function DashboardContent() {
 
     }
     function parseTime(time) {
-        const realTime = time.substring(11,16);
-        var hours = time.substring(11,13);
-        const minutes = time.substring(13,16);
-        var ampm = '';
-        var hoursInt = parseInt(hours);
-        console.log(`hours : ${hoursInt}`)
-        if (hoursInt < 12) {
-            ampm = "AM"; 
-        } else {
-            ampm = "PM";
-            hoursInt = hoursInt - 12;
-            console.log(`Subtracted: ${hoursInt}`)
-            hours = hoursInt.toString();
-            console.log(`hours : ${hoursInt}`)
-        }
-        return hours + minutes + " " + ampm;
+        const string = new Date(time).toLocaleTimeString();
+        const realTime = string.substring(0,4) + " " + string.substring(8,10);
+        return realTime;
     }
 
 

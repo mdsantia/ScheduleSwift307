@@ -44,10 +44,18 @@ export default function Orders(props) {
         }).then((result) => {
             var events = new Array();
             for (let i = 0; i < result.data.result.length; i++) {
+                let start = new Date(result.data.result[i].startTime);
+                let startSet = new Date(result.data.result[i].reservationDate+"T00:00");
+                startSet.setHours(start.getHours());
+                startSet.setMinutes(start.getMinutes());
+                let end = new Date(result.data.result[i].endTime);
+                let endSet = new Date(result.data.result[i].reservationDate+"T00:00");
+                endSet.setHours(end.getHours());
+                endSet.setMinutes(end.getMinutes());
                 var event = {
                     title: "Reservation #" + result.data.result[i].ID,
-                    start: new Date(result.data.result[i].startTime),
-                    end: new Date(result.data.result[i].endTime),
+                    start: startSet,
+                    end: endSet,
                     desc: "Reservation Made By " + result.data.result[i].reservedBy,
                 }
                 events.push(event);

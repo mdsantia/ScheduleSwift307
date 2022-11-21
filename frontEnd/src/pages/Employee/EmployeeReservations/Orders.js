@@ -89,8 +89,8 @@ export default function Orders(props) {
                             <TableCell>Reservable Item</TableCell>
                             <TableCell>Reserved</TableCell>
                             <TableCell align="right">Price</TableCell>
-                            <TableCell align="right">Edit</TableCell>
-                            <TableCell align="right">Delete</TableCell>
+                            {/* <TableCell align="right">Edit</TableCell> */}
+                            {/* <TableCell align="right">Delete</TableCell> */}
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -102,7 +102,7 @@ export default function Orders(props) {
                                 <TableCell>{reserve.reservableItem}</TableCell>
                                 <TableCell>{reserve.isReserved}</TableCell>
                                 <TableCell align="right">{`$${reserve.price}`}</TableCell>
-                                <TableCell align="right"><Button onClick={() => editReservation(reserve.ID)}>Edit</Button></TableCell>
+                                <TableCell align="right"><Button onClick={() => editReservation(reserve.ID)}>View/Edit</Button></TableCell>
                                 <TableCell align="right"><Button onClick={() => deleteReservation(reserve.ID, reserve.isReserved)}>Delete</Button></TableCell>
                             </TableRow>
                         ))}

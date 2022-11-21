@@ -498,7 +498,7 @@ export default function Orders(props) {
                                         getConcurrent(newValue, startTime, endTime, maxNumPeople, maxArray, nameArray) }}
                                     renderInput={(params) => <TextField {...params}/>}
                                     shouldDisableDate={(date) => {
-                                        if (closed[new Date(date).getDay()] || date < new Date()) {
+                                        if (closed[new Date(date).getDay()] || date < new Date().setDate(new Date().getDate() - 1)) {
                                             return true;
                                         }
                                         return false;
@@ -626,7 +626,7 @@ export default function Orders(props) {
                     </Typography>
                     <Button
                         type="submit"
-                        disabled={ (priceArray[0] && !closed[new Date(currentDate).getDay()] && (new Date(currentDate) > new Date())
+                        disabled={ (priceArray[0] && !closed[new Date(currentDate).getDay()] && (new Date(currentDate) > new Date().setDate(new Date().getDate() - 1))
                             && (timeDiff(new Date(openTime[new Date(currentDate).getDay()]), startTime) <= 0) &&
                             (timeDiff(new Date(closeTime[new Date(currentDate).getDay()]), endTime) >= 0) &&
                             (timeDiff(new Date(new Date(currentDate)), endTime) !== 0) && (new Date(startTime).getMinutes() % 5 === 0) &&

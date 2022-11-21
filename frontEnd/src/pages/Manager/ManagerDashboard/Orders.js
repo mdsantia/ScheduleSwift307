@@ -70,14 +70,14 @@ export default function Orders(props) {
                 if (i % 2 === 0) {
                     if (val[i] === 'null') {
                         closed.push(1);
-                        open.push(formattedDate);
+                        open.push(new Date(formattedDate+"T00:00"));
                     } else {
                         closed.push(0);
                         open.push(val[i]);
                     }
                 } else {
                     if (val[i] === 'null') {
-                        close.push(formattedDate);
+                        close.push(new Date(formattedDate+"T00:00"));
                     } else {
                         close.push(val[i]);
                     }
@@ -200,7 +200,10 @@ export default function Orders(props) {
             if (closed[i]) {
                 count++;
             }
-            if (((timeDiff(openTime[i]), closeTime[i]) > 0) && !closed[i])
+            if (i === 0) {
+                console.log(openTime[i], closeTime[i]);
+            }
+            if (((timeDiff(openTime[i], closeTime[i]) < 0)) && !closed[i])
                 return true;
         }
         if (count == 7) {
@@ -216,7 +219,6 @@ export default function Orders(props) {
         }).then((result) => {
             const faqs = result.data.result;
             setFAQ(faqs);
-            console.log("test");
         })
     }
 

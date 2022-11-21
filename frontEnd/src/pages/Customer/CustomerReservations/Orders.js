@@ -88,8 +88,8 @@ export default function Orders(props) {
                             <TableCell>Business Name</TableCell>
                             <TableCell>Payment Method</TableCell>
                             <TableCell>Price</TableCell>
-                            <TableCell align="right">Edit</TableCell>
-                            <TableCell align="right">Delete</TableCell>
+                            {/* <TableCell align="right">Edit</TableCell> */}
+                            {/* <TableCell align="right">Delete</TableCell> */}
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -101,7 +101,7 @@ export default function Orders(props) {
                                 <TableCell>{reserve.isReserved}</TableCell>
                                 <TableCell>{`$${parseFloat(total(reserve.numReservable, reserve.price)).toFixed(2)}`}</TableCell>
                                 <TableCell align="right"><Button onClick={() => editReservation(reserve.ID, reserve.businessName)}>
-                                    Edit</Button></TableCell>
+                                    View/Edit</Button></TableCell>
                                 <TableCell align="right"><Button onClick={() => deleteReservation(reserve.ID)}>
                                     Delete</Button></TableCell>
                             </TableRow>
