@@ -48,6 +48,20 @@ export default function Orders(props) {
         })
     }
 
+    function getInOut() {
+        Axios.post("http://localhost:3001/api/findOpenShift", {
+            username: props.username
+        }).then((result) => {
+            const openShift = result.data.result;
+
+            if (openShift.length == 0) {
+                setInOut("Clock In")
+            } else {
+                setInOut("Clock Out")
+            }
+        })
+    }
+
     function addShift() {
 
         if (inOut == "Clock In") {
@@ -93,7 +107,7 @@ export default function Orders(props) {
     useEffect(() => {
         getNotes(props.businessName);
         getShifts(props.username);
-        setInOut("Clock In");
+        getInOut();
     }, []);
     if (notes.length > 0) {
         return (

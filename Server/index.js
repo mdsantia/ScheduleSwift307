@@ -1643,7 +1643,7 @@ app.post("/api/closeShift", (req, res) => {
 
     const time = new Date().getTime();
 
-    const totalMinutes = Math.ceil((time - oldTime) / 60000);
+    const totalMinutes = Math.floor((time - oldTime) / 60000);
 
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
@@ -1681,6 +1681,62 @@ app.post("/api/closeShift", (req, res) => {
         }
     )
 
+})
+
+app.post("/api/managerGetContact", (req, res) => {
+
+    const businessName = req.body.businessName;
+
+    db.query(
+        "SELECT * FROM managerContacts WHERE businessName = ?",
+        [businessName],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            }
+            if (result) {
+                console.log(result)
+                res.send({ result: result })
+            }
+        }
+    )
+})
+
+app.post("/api/addManagerContact", (req, res) => {
+    const businessName = req.body.businessName;
+    const contactType = req.body.contactType;
+    const actualContact = req.body.actualContact;
+    db.query(
+        "INSERT INTO managerContacts (businessName, contactType, actualContact) VALUES (?,?,?)",
+        [businessName, contactType, actualContact],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result })
+            }
+        }
+    )
+})
+
+app.post("/api/managerDeleteContact", (req, res) => {
+    const contactID = req.body.contactID;
+    db.query(
+        "DELETE FROM managerContacts WHERE ID = ?",
+        [contactID],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log(result)
+                res.send({ result: result })
+            }
+        }
+    )
 })
 
 app.listen(3001, () => {

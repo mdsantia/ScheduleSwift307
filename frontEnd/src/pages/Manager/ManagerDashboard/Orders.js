@@ -50,6 +50,10 @@ export default function Orders(props) {
     const [question, setQuestion] = useState('');
     const [answer, setAnswer] = useState('');
 
+    const [contact, setContact] = useState([]);
+    const [contactType, setContactType] = useState('');
+    const [actualContact, setActualContact] = useState('');
+
     function getBusinessHours() {
         Axios.post("http://localhost:3001/api/getFacilitysData", {
             businessName: props.businessName
@@ -248,6 +252,44 @@ export default function Orders(props) {
         })
     }
 
+    function getContact(businessName) {
+        Axios.post("http://localhost:3001/api/managerGetContact", {
+            businessName: props.businessName
+        }).then((result) => {
+            const contacts = result.data.result;
+            setContact(contacts);
+        })
+    }
+
+    const addContact = (event) => {
+
+        event.preventDefault();
+        Axios.post("http://localhost:3001/api/addManagerContact", {
+            businessName: props.businessName,
+            contactType: contactType,
+            actualContact: actualContact
+        }).then((result) => {
+            if (result.data.err) {
+                alert("Error! Something has gone wrong!")
+            } else {
+                setContactType('');
+                setActualContact('');
+                getContact(props.businessName);
+            }
+        })
+    }
+
+    function clearContact(contactID) {
+        Axios.post("http://localhost:3001/api/managerDeleteContact", {
+            contactID: contactID
+        }).then((result) => {
+            if (result.data.result.affectedRows === 0) {
+            } else {
+                getContact(props.businessName);
+            }
+        })
+    }
+
     useEffect(() => {
         getBusinessHours();
         getFAQ(props.businessName);
@@ -349,6 +391,66 @@ export default function Orders(props) {
                         Add FAQ
                     </Button>
                 </Box>
+                <br></br>
+                <br></br>
+                <Title>Contact Information</Title>
+                <Table size="small">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell size="small">Contact Type:</TableCell>
+                            <TableCell>Contact:</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {contact.map((contact, index) => (
+                            <TableRow>
+                                <TableCell>{contact.contactType}</TableCell>
+                                <TableCell><strong>{contact.actualContact}</strong></TableCell>
+                                <TableCell align="right"><Button onClick={() => clearContact(contact.ID)}>Clear</Button></TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                <br></br>
+                <br></br>
+                <Divider> Add Additional Contacts </Divider>
+                <Box component="form" onSubmit={addContact} noValidate sx={{ mt: 1 }}>
+                    <TextField
+                        margin="normal"
+                        fullWidth
+                        required
+                        id="question"
+                        label="Contact Type (i.e., Phone Number, email, etc)"
+                        name="contactType"
+                        value={contactType}
+                        autoComplete="Contact Type"
+                        onChange={(e) => setContactType(e.target.value)}
+                    />
+                    <TextField
+                        margin="normal"
+                        fullWidth
+                        required
+                        name="contact"
+                        label="Contact"
+                        type="answer"
+                        id="answer"
+                        value={actualContact}
+                        autoComplete="contact"
+                        InputProps={{
+                            maxLength: 500,
+                        }}
+                        onChange={(e) => setActualContact(e.target.value)}
+                    />
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2 }}
+                    >
+                        Add Contact
+                    </Button>
+                </Box>
+
             </React.Fragment >
         );
     } else {
