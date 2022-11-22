@@ -9,6 +9,7 @@ const mysql = require("mysql");
 const nodemailer = require("nodemailer");
 const { send } = require("process");
 const e = require("express");
+const cron = require('node-cron');
 
 const db = mysql.createPool({
     host: "localhost",
@@ -1588,6 +1589,8 @@ app.post("/api/createShifts", (req, res) => {
 
     const username = req.body.username;
 
+    let finalMinute;
+
     const year = new Date().getFullYear();
     const month = new Date().getMonth() + 1;
     const day  = new Date().getDate();
@@ -1597,9 +1600,9 @@ app.post("/api/createShifts", (req, res) => {
     let minute = new Date().getMinutes();
 
     if (minute < 10) {
-        const finalMinute = `0${minute}`;
+        finalMinute = `0${minute}`;
     } else {
-        const finalMinute = minute;
+        finalMinute = minute;
     }
     let ampm = 'AM';
     
@@ -1608,7 +1611,7 @@ app.post("/api/createShifts", (req, res) => {
         ampm = "PM"
     }
 
-    const time = `${hour}:${minute} ${ampm}`;
+    const time = `${hour}:${finalMinute} ${ampm}`;
     const time2 = `none`;
     const completed = 'no';
     const time3 = new Date().getTime();
@@ -1636,10 +1639,11 @@ app.post("/api/closeShift", (req, res) => {
     const ID = req.body.ID;
     const oldTime = req.body.oldTime;
     const completed = "Yes";
+    let finalMinute;
 
     const time = new Date().getTime();
 
-    const totalMinutes = Math.floor((time - oldTime) / 60000);
+    const totalMinutes = Math.ceil((time - oldTime) / 60000);
 
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
@@ -1648,9 +1652,9 @@ app.post("/api/closeShift", (req, res) => {
     let minute = new Date().getMinutes();
 
     if (minute < 10) {
-        const finalMinute = `0${minute}`;
+        finalMinute = `0${minute}`;
     } else {
-        const finalMinute = minute;
+        finalMinute = minute;
     }
     let ampm = 'AM';
     
@@ -1659,7 +1663,7 @@ app.post("/api/closeShift", (req, res) => {
         ampm = "PM"
     }
 
-    const time2 = `${hour}:${minute} ${ampm}`;
+    const time2 = `${hour}:${finalMinute} ${ampm}`;
 
     const totalTime = `${hours}hrs ${minutes}mins`;
 

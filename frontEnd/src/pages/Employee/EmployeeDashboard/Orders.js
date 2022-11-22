@@ -134,7 +134,7 @@ export default function Orders(props) {
 
                 <Title>Work Clock</Title>
                 <Button onClick={(addShift)}>
-                        Clock In
+                    {inOut}
                 </Button>
                 <Table size="small">
                     <TableHead>
@@ -168,7 +168,7 @@ export default function Orders(props) {
                 <Title>Work Clock</Title>
                 <br></br>
                 <Button onClick={(addShift)}>
-                        {inOut}
+                    {inOut}
                 </Button>
 
                 <Table size="small">
@@ -181,7 +181,7 @@ export default function Orders(props) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                    {shift.reverse().map((shift, index) => (
+                    {shift.map((shift, index) => (
                             <TableRow>
                                 <TableCell>{shift.date}</TableCell>
                                 <TableCell>{shift.timeClockedIn}</TableCell>
