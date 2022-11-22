@@ -22,6 +22,7 @@ import EventIcon from '@mui/icons-material/Event';
 import Title from './Title';
 import {TableCell, Table, TableBody, TableRow} from '@mui/material';
 import { Button, TextField, Grid, Typography, Divider } from '@mui/material';
+import Modal from '@mui/material/Modal';
 
 function preventDefault(event) {
     event.preventDefault();
@@ -31,6 +32,7 @@ export default function Orders(props) {
     const box = [];
     const notesBox = [];
     const paymentBox = [];
+    const receiptTypo = [];
     const { state } = useLocation();
     const [startTime, setStartTime] = useState(null);
     const [endTime, setEndTime] = useState(null);
@@ -56,6 +58,24 @@ export default function Orders(props) {
     const [notes, setNotes] = useState([]);
     const [paymentRequire, setPaymentRequire] = useState("none");
     const [paymentValue, setPaymentValue] = useState(0);
+    const[open, setOpen] = React.useState(false);
+    const handleOpen = (event) => {
+        setOpen(true);
+        event.preventDefault();
+        console.log("In open"); 
+    }
+    const handleClose = () => setOpen(false);
+    const style={
+        position: 'absolute',
+        top: "50%",
+        left: "50%",
+        transform: 'translate(-50%,-50%)',
+        width: 800,
+        bgcolor: 'background.paper',
+        border: '2px solid #000',
+        boxShadow: 24,
+        p: 4,
+    };
     
     useEffect(() => {
         insertValues();
@@ -509,6 +529,60 @@ export default function Orders(props) {
             );
             }
     }
+    function makeReceipt() {
+        console.log("In Make receipt");
+        if (closed[new Date(currentDate).getDay()]) {
+            alert(`${businessName} is closed on ${new Date(currentDate).getDate()}.`);
+            return;
+        }
+        let tot = 0;
+        for (let i = 0; i < numReservableItems; i++) {
+            tot = tot + numArray[i];
+        }
+        if (tot === 0) {
+            alert('Need to reserve at least one item');
+            return;
+        }
+        let ReservedItems = "";
+        for (let element = 0; element < numReservableItems; element++) {
+            if (ReservedItems === "") {
+                ReservedItems = ReservedItems.concat(nameArray[element]);
+            } else {
+                ReservedItems = ReservedItems.concat(";", nameArray[element]);
+            }
+        }
+        let prices = "";
+        for (let element = 0; element < numReservableItems; element++) {
+            if (prices === "") {
+                prices = prices.concat(priceArray[element]);
+            } else {
+                prices = prices.concat(";", priceArray[element]);
+            }
+        }
+        let numReserved = "";
+        for (let element = 0; element < numReservableItems; element++) {
+            if (numReserved === "") {
+                numReserved = numReserved.concat(numArray[element]);
+            } else {
+                numReserved = numReserved.concat(";", numArray[element]);
+            }
+        }
+        const reservedItemsSplit = ReservedItems.split(";");
+        console.log("Split array:" + reservedItemsSplit.length)
+        const numberReservedSplit = numReserved.split(";");
+        const pricesSplit = prices.split(";");
+        for (let i = 0; i < reservedItemsSplit.length; i++) {
+            receiptTypo.push(
+                <div>
+                <Typography id='modal-modal-description'><pre>{reservedItemsSplit[i]}: </pre></Typography>
+                <Typography id='modal-modal-description'><pre>     Quantity Reserved: {numberReservedSplit[i]}</pre></Typography>
+                <Typography id='modal-modal-description'><pre>     Price: ${pricesSplit[i]}/unit</pre></Typography>
+                </div>
+            )
+        }
+
+
+    }
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -524,7 +598,6 @@ export default function Orders(props) {
             alert('Need to reserve at least one item');
             return;
         }
-        const data = new FormData(event.currentTarget);
         let ReservedItems = "";
         for (let element = 0; element < numReservableItems; element++) {
             if (ReservedItems === "") {
@@ -550,6 +623,7 @@ export default function Orders(props) {
             }
         }
         if (!reservationID) {
+            console.log(ReservedItems);
             Axios.post("http://localhost:3001/api/createReservation", {
                 businessName: businessName,
                 reservationDate: currentDate,
@@ -564,6 +638,7 @@ export default function Orders(props) {
             }).then((result) => {
                 setReservationID(result.data.id);
                 alert(`Your reservation has been saved!\nAn confirmation email has been sent to you containing your Reservation ID and reservation details.`);
+                setOpen(false);
             })
         } else{
             // UPDATE RESERVATION INSTEAD
@@ -580,6 +655,7 @@ export default function Orders(props) {
                 numReservable: numReserved
             }).then((result) => {
                 alert(`Your reservation has been updated!\nAn confirmation email has been sent to you containing your Reservation ID and updated reservation details.`);
+                setOpen(false);
             })
         }
     }
@@ -613,7 +689,7 @@ export default function Orders(props) {
                 <Typography component="p" variant="p">
                     Reservation ID: {reservationID}
                 </Typography>
-                <Box component="form" validate="true" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+                <Box component="form" id='my-form' validate="true" sx={{ mt: 3 }}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
                             <TextField
@@ -773,7 +849,8 @@ export default function Orders(props) {
                         *I Agree with all the policies set by the facility for their reservations.
                     </p></Grid>
                     <Button
-                        type="submit"
+                        form='my-form'
+                        type='submit'
                         disabled={ (priceArray[0] && !closed[new Date(currentDate).getDay()] && (new Date(currentDate) > new Date())
                             && (timeDiff(new Date(openTime[new Date(currentDate).getDay()]), startTime) <= 0) &&
                             (timeDiff(new Date(closeTime[new Date(currentDate).getDay()]), endTime) >= 0) &&
@@ -783,9 +860,57 @@ export default function Orders(props) {
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
+                        onClick={handleOpen}
                     >
                         Save
                     </Button>
+                    <Modal
+                        open={open}
+                        onClose={handleClose}
+                        disableEscapeKeyDown
+                        aria-labelledby='modal-modal-title'
+                        aria-describedby='modal-modal-description'
+                    >
+                    <Box sx={style}>
+                        {makeReceipt()}
+                        <Typography id="modal-modal-title" align="center">Itemized Receipt</Typography>
+                        <Grid item xs={12} sm={6}>
+                                {receiptTypo[0]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {receiptTypo[1]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {receiptTypo[2]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {receiptTypo[3]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {receiptTypo[4]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {receiptTypo[5]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {receiptTypo[6]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {receiptTypo[7]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {receiptTypo[8]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                {receiptTypo[9]}
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <Typography id="modal-modal-description"><pre>Total: ${total}</pre></Typography>
+                            </Grid>
+                        <Button align="center" onClick={handleClose}>Cancel</Button>
+                        <Button align="center" form='my-form' onClick={handleSubmit}>Submit</Button>
+                    </Box>
+                    </Modal>
                 </Box>
             </Box>
         </React.Fragment>
