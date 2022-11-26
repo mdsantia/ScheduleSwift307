@@ -1554,6 +1554,201 @@ app.post("/api/getDailyReservations", (req, res) => {
     )
 })
 
+app.post("/api/getShifts", (req, res) => {
+
+    const username = req.body.username;
+
+    db.query(
+        "SELECT * FROM shifts WHERE username = ?",
+        [username],
+        (err, result) => {
+            if (err) {
+                console.log(err);
+                res.send({err: err})
+            }
+            if (result) {
+                console.log(result);
+                res.send({result})
+            }
+        }
+    )
+
+})
+
+app.post("/api/findOpenShift", (req, res) => {
+
+    const username = req.body.username;
+    const completed = 'no';
+
+    db.query(
+        "SELECT * FROM shifts WHERE username = ? AND completed = ?",
+        [username, completed],
+        (err, result) => {
+            if (err) {
+                res.send({err})
+            }
+            if (result) {
+                console.log(result);
+                res.send({result})
+            }
+        }
+    )
+})
+
+app.post("/api/createShifts", (req, res) => {
+
+    const username = req.body.username;
+
+    let finalMinute;
+
+    const year = new Date().getFullYear();
+    const month = new Date().getMonth() + 1;
+    const day  = new Date().getDate();
+    const formatted = `${year}-${month}-${day}`;
+
+    let hour = new Date().getHours();
+    let minute = new Date().getMinutes();
+
+    if (minute < 10) {
+        finalMinute = `0${minute}`;
+    } else {
+        finalMinute = minute;
+    }
+    let ampm = 'AM';
+    
+    if (parseInt(hour) > 12) {
+        hour = hour - 12
+        ampm = "PM"
+    }
+
+    const time = `${hour}:${finalMinute} ${ampm}`;
+    const time2 = `none`;
+    const completed = 'no';
+    const time3 = new Date().getTime();
+    console.log(time3);
+
+    db.query(
+        "INSERT INTO shifts (date, username, timeClockedIn, timeClockedOut, timeOfShift, completed, time) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [formatted, username, time, time2, time2, completed, time3],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result })
+            }
+        }
+    )
+
+
+})
+
+app.post("/api/closeShift", (req, res) => {
+
+    const ID = req.body.ID;
+    const oldTime = req.body.oldTime;
+    const completed = "Yes";
+    let finalMinute;
+
+    const time = new Date().getTime();
+
+    const totalMinutes = Math.floor((time - oldTime) / 60000);
+
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    let hour = new Date().getHours();
+    let minute = new Date().getMinutes();
+
+    if (minute < 10) {
+        finalMinute = `0${minute}`;
+    } else {
+        finalMinute = minute;
+    }
+    let ampm = 'AM';
+    
+    if (parseInt(hour) > 12) {
+        hour = hour - 12
+        ampm = "PM"
+    }
+
+    const time2 = `${hour}:${finalMinute} ${ampm}`;
+
+    const totalTime = `${hours}hrs ${minutes}mins`;
+
+    db.query(
+        "UPDATE shifts SET timeClockedOut = ?, timeOfShift = ?, completed = ? WHERE ID = ?",
+        [time2, totalTime, completed, ID],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result })
+            }
+        }
+    )
+
+})
+
+app.post("/api/managerGetContact", (req, res) => {
+
+    const businessName = req.body.businessName;
+
+    db.query(
+        "SELECT * FROM managerContacts WHERE businessName = ?",
+        [businessName],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            }
+            if (result) {
+                console.log(result)
+                res.send({ result: result })
+            }
+        }
+    )
+})
+
+app.post("/api/addManagerContact", (req, res) => {
+    const businessName = req.body.businessName;
+    const contactType = req.body.contactType;
+    const actualContact = req.body.actualContact;
+    db.query(
+        "INSERT INTO managerContacts (businessName, contactType, actualContact) VALUES (?,?,?)",
+        [businessName, contactType, actualContact],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result })
+            }
+        }
+    )
+})
+
+app.post("/api/managerDeleteContact", (req, res) => {
+    const contactID = req.body.contactID;
+    db.query(
+        "DELETE FROM managerContacts WHERE ID = ?",
+        [contactID],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log(result)
+                res.send({ result: result })
+            }
+        }
+    )
+})
+
 var scheduledEmails = new Array();
 
 app.listen(3001, () => {
