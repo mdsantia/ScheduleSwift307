@@ -39,7 +39,6 @@ import EmailChangeForm from './pages/Customer/emailChangeForm';
 import EmployeeAccount from './pages/Employee/EmployeeAccount/Dashboard';
 import EmployeeEditForm from './pages/Employee/EmployeeEditForm/Dashboard';
 import EmployeeCalendar from './pages/Employee/EmployeeCalendar/Dashboard';
-// import CustomerCalendar from './pages/Customer/CustomerCalendar/Dashboard';
 
 function App() {
   return (
@@ -84,7 +83,6 @@ function App() {
           <Route path="/employeeAccount" element={<EmployeeAccount />} />
           <Route path="/employeeEditForm" element={<EmployeeEditForm />} />
           <Route path="/employeeCalendar" element={<EmployeeCalendar />} />
-          {/* <Route path="/customerCalendar" element={<CustomerCalendar />} /> */}
         </Routes>
       </Router>
     </div>

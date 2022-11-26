@@ -30,7 +30,7 @@ export const mainListItems = (
             <ListItemIcon>
                 <BentoIcon />
             </ListItemIcon>
-            <ListItemText primary="Make Reservations" />
+            <ListItemText primary="Business Events" />
         </ListItemButton>
         <ListItemButton component={Link} to="/customerAccount" >
             <ListItemIcon>
