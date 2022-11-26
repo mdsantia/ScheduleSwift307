@@ -26,6 +26,7 @@ export default function Orders(props) {
     const [reservations, setReservations] = useState([]);
     const [deleteRes, setDeleteRes] = useState('');
     const [currentDate, setCurrentDate] = useState(null);
+    const [searchUsername, setSearchUsername] = useState(null);
     const [ID, setID] = useState(null);
     const [error, setError] = useState('');
     const [reservationIDs, setReservationIDs] = useState('');
@@ -55,16 +56,19 @@ export default function Orders(props) {
         })
     }
     function deleteReservation(resID) {
-        Axios.post("http://localhost:3001/api/managerDeleteReservation", {
-            reservationID: resID
-        }).then((result) => {
-            if (result.data.result.affectedRows === 0) {
-                setError("No Reservation with that ID exists")
-            } else {
-                setError("");
-                getReservations(props.businessName);
-            }
-        })
+        if(window.confirm("ID: " + resID + "\nAre you sure you want to cancel this reservation?")) {
+            Axios.post("http://localhost:3001/api/managerDeleteReservation", {
+                reservationID: resID
+            }).then((result) => {
+                if (result.data.result.affectedRows === 0) {
+                    setError("No Reservation with that ID exists")
+                } else {
+                    setError("");
+                    getReservations(props.businessName);
+                    alert("The reservation has been cancelled!\nA confirmation email has been sent to the organizer containing the details of the cancelled reservation.");
+                }
+            })
+        }
     }
 
     function total(numReservable, price) {
@@ -103,19 +107,49 @@ export default function Orders(props) {
     }
 
     const filter = () => {
-        Axios.post("http://localhost:3001/api/getReservationsbyDate", {
-            businessName: props.businessName,
-            reservationDate: currentDate
-        }).then((result) => {
-            const allReserves = result.data.result;
-            console.log(allReserves);
-            setReservations(allReserves);
-            let reservationIDs = [];
-            for (let i = 0; i < allReserves.length; i++) {
-                reservationIDs.push(parseInt(allReserves[i].ID));
-            }
-            setReservationIDs(reservationIDs);
-        })
+        if (currentDate && searchUsername) {
+            Axios.post("http://localhost:3001/api/getReservationsbyDateUser", {
+                businessName: props.businessName,
+                reservationDate: currentDate,
+                username: searchUsername
+            }).then((result) => {
+                const allReserves = result.data.result;
+                setReservations(allReserves);
+                let reservationIDs = [];
+                for (let i = 0; i < allReserves.length; i++) {
+                    reservationIDs.push(parseInt(allReserves[i].ID));
+                }
+                setReservationIDs(reservationIDs);
+            })
+        } else if (currentDate) {
+            Axios.post("http://localhost:3001/api/getReservationsbyDate", {
+                businessName: props.businessName,
+                reservationDate: currentDate
+            }).then((result) => {
+                const allReserves = result.data.result;
+                setReservations(allReserves);
+                let reservationIDs = [];
+                for (let i = 0; i < allReserves.length; i++) {
+                    reservationIDs.push(parseInt(allReserves[i].ID));
+                }
+                setReservationIDs(reservationIDs);
+            })
+        } else if (searchUsername) {
+            Axios.post("http://localhost:3001/api/getReservationsbyUsername", {
+                businessName: props.businessName,
+                username: searchUsername
+            }).then((result) => {
+                const allReserves = result.data.result;
+                setReservations(allReserves);
+                let reservationIDs = [];
+                for (let i = 0; i < allReserves.length; i++) {
+                    reservationIDs.push(parseInt(allReserves[i].ID));
+                }
+                setReservationIDs(reservationIDs);
+            })
+        } else {
+            getReservations();
+        }
     }
 
     const searchID = () => {
@@ -141,7 +175,7 @@ export default function Orders(props) {
                 <Title>{props.businessName}'s Active Reservations</Title>
                 <Grid container spacing={5}>
                 <Grid paddingLeft={4} sx={{ mt: 4, mb: 2 }}>
-                <TextField type="number" label='EVENT ID' value={ID} 
+                <TextField type="number" label='RESERVATION ID' value={ID} 
                 onChange={(newVal) => {setID(parseInt(newVal.target.value))}}>
                 </TextField>
                 </Grid>
@@ -152,7 +186,7 @@ export default function Orders(props) {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <DatePicker
                                     id="reservationDate"
-                                    label="Select Date"
+                                    label="SELECT DATE"
                                     value={currentDate}
                                     onChange={(newValue) => { setCurrentDate(newValue)}}
                                     renderInput={(params) => <TextField {...params}/>}
@@ -166,7 +200,7 @@ export default function Orders(props) {
                             </LocalizationProvider>
                     </Grid>
                     <Grid paddingLeft={4} sx={{ mt: 4, mb: 2 }}>
-                    <TextField label='ORGANIZER NAME'></TextField>
+                    <TextField label='ORGANIZER USERNAME' value={searchUsername} onChange={(newValue) => { setSearchUsername(newValue.target.value)}}></TextField>
                     </Grid>
                     <Grid padding={1} sx={{ mt: 4, mb: 2 }}> <Button onClick={filter} 
                     variant="contained">
@@ -178,7 +212,7 @@ export default function Orders(props) {
                 <Table size="small">
                     <TableHead>
                         <TableRow>
-                            <TableCell>ID</TableCell>
+                            <TableCell>Reservation ID</TableCell>
                             <TableCell>Date</TableCell>
                             {/* <TableCell>Business Name</TableCell> */}
                             {/* <TableCell>Reservable Item</TableCell> */}
@@ -191,14 +225,14 @@ export default function Orders(props) {
                     <TableBody>
                         {reservations.map((reserve, index) => (
                             <TableRow key={reserve.ID}>
-                                <TableCell>{reserve.ID}</TableCell>
+                                <TableCell>#{reserve.ID}</TableCell>
                                 <TableCell>{reserve.reservationDate}</TableCell>
                                 {/* <TableCell>{reserve.businessName}</TableCell> */}
                                 {/* <TableCell>{reserve.reservableItem}</TableCell> */}
                                 <TableCell>{reserve.isReserved}</TableCell>
                                 <TableCell align="right">{`$${parseFloat(total(reserve.numReservable, reserve.price)).toFixed(2)}`}</TableCell>
-                                <TableCell align="right"><Button onClick={() => editReservation(reserve.ID)}>View/Edit</Button></TableCell>
-                                <TableCell align="right"><Button onClick={() => deleteReservation(reserve.ID)}>Delete</Button></TableCell>
+                                <TableCell align="right"><Button onClick={() => editReservation(reserve.ID)}>VIEW/EDIT</Button></TableCell>
+                                <TableCell align="right"><Button onClick={() => deleteReservation(reserve.ID)}>CANCEL</Button></TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -240,7 +274,7 @@ export default function Orders(props) {
             <React.Fragment>
                 <Grid container spacing={5}>
                 <Grid paddingLeft={4} sx={{ mt: 4, mb: 2 }}>
-                <TextField type="number" label='EVENT ID' value={ID} 
+                <TextField type="number" label='RESERVATION ID' value={ID} 
                 onChange={(newVal) => {setID(parseInt(newVal.target.value))}}>
                 </TextField>
                 </Grid>
@@ -251,7 +285,7 @@ export default function Orders(props) {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <DatePicker
                                     id="reservationDate"
-                                    label="Select Date"
+                                    label="SELECT DATE"
                                     value={currentDate}
                                     onChange={(newValue) => { setCurrentDate(newValue)}}
                                     renderInput={(params) => <TextField {...params}/>}
@@ -265,7 +299,7 @@ export default function Orders(props) {
                             </LocalizationProvider>
                     </Grid>
                     <Grid paddingLeft={4} sx={{ mt: 4, mb: 2 }}>
-                    <TextField label='ORGANIZER NAME'></TextField>
+                    <TextField label='ORGANIZER USERNAME' value={searchUsername} onChange={(newValue) => { setSearchUsername(newValue.target.value)}}></TextField>
                     </Grid>
                     <Grid padding={1} sx={{ mt: 4, mb: 2 }}> <Button onClick={filter} 
                     variant="contained">

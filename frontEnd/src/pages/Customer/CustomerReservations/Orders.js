@@ -39,18 +39,19 @@ export default function Orders(props) {
     }
 
     function deleteReservation(resID) {
-        Axios.post("http://localhost:3001/api/managerDeleteReservation", {
-            reservationID: resID
-        }).then((result) => {
-            if (result.data.result.affectedRows === 0) {
-                setError("No Reservation with that ID exists")
-            } else {
-                setError("");
-                getReservations();
-                alert("Your reservation has been cancelled!\nA confirmation email has been sent to you containing the\
-                 details of your cancelled reservation.");
-            }
-        })
+        if(window.confirm("ID: " + resID + "\nAre you sure you want to cancel this reservation?")) {
+            Axios.post("http://localhost:3001/api/managerDeleteReservation", {
+                reservationID: resID
+            }).then((result) => {
+                if (result.data.result.affectedRows === 0) {
+                    setError("No Reservation with that ID exists")
+                } else {
+                    setError("");
+                    getReservations();
+                    alert("Your reservation has been cancelled!\nA confirmation email has been sent to you containing the details of your cancelled reservation.");
+                }
+            })
+        }
     }
 
     function total(numReservable, price) {
@@ -83,10 +84,10 @@ export default function Orders(props) {
                 <Table size="small">
                     <TableHead>
                         <TableRow>
+                            <TableCell>Reservation ID</TableCell>
                             <TableCell>Date</TableCell>
                             <TableCell>Time</TableCell>
                             <TableCell>Business Name</TableCell>
-                            <TableCell>Payment Method</TableCell>
                             <TableCell>Price</TableCell>
                             {/* <TableCell align="right">Edit</TableCell> */}
                             {/* <TableCell align="right">Delete</TableCell> */}
@@ -95,22 +96,22 @@ export default function Orders(props) {
                     <TableBody>
                         {reservations.map((reserve) => (
                             <TableRow key={reserve.ID}>
+                                <TableCell>#{reserve.ID}</TableCell>
                                 <TableCell>{reserve.reservationDate}</TableCell>
                                 <TableCell>{(new Date(reserve.startTime)).toLocaleTimeString()}</TableCell>
                                 <TableCell>{reserve.businessName}</TableCell>
-                                <TableCell>{reserve.isReserved}</TableCell>
                                 <TableCell>{`$${parseFloat(total(reserve.numReservable, reserve.price)).toFixed(2)}`}</TableCell>
                                 <TableCell align="right"><Button onClick={() => editReservation(reserve.ID, reserve.businessName)}>
-                                    View/Edit</Button></TableCell>
+                                    VIEW/EDIT</Button></TableCell>
                                 <TableCell align="right"><Button onClick={() => deleteReservation(reserve.ID)}>
-                                    Delete</Button></TableCell>
+                                    CANCEL</Button></TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
-                <Link color="primary" href="#" sx={{ mt: 3 }}>
+                {/* <Link color="primary" href="#" sx={{ mt: 3 }}>
                     See more reservations
-                </Link>
+                </Link> */}
             </React.Fragment>
         );
     } else {

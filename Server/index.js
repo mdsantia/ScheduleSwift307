@@ -733,6 +733,46 @@ app.post("/api/getReservationsbyDate", (req, res) => {
     )
 })
 
+app.post("/api/getReservationsbyDateUser", (req, res) => {
+    const businessName = req.body.businessName;
+    let reservationDate = req.body.reservationDate;
+    let reservationSubstring = reservationDate.substring(0, 10);
+    const username = req.body.username;
+    db.query(
+        "SELECT * FROM reservations WHERE businessName = ? AND reservationDate = ? AND reservedBy LIKE ?",
+        [businessName, reservationSubstring, `%${username}%`],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result : result })
+            }
+        }
+    )
+})
+
+app.post("/api/getReservationsbyUsername", (req, res) => {
+    const businessName = req.body.businessName;
+    const username = req.body.username;
+    db.query(
+        "SELECT * FROM reservations WHERE businessName = ? AND reservedBy LIKE ?",
+        [businessName, `%${username}%`],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result : result })
+            }
+        }
+    )
+})
+
 app.post("/api/updateReservation", (req, res) => {
     const ID = req.body.ID;
     const businessName = req.body.businessName;
@@ -782,68 +822,169 @@ app.post("/api/updateReservation", (req, res) => {
                                 subTotal += allReservablePrices[i] * allNumReservable[i];
                             }
                         }
-                        var modificationMessage;
-                        if (modifiedBy !== undefined) {
-                            modificationMessage = "The following reservation has been modified/updated by " + modifiedBy + " at " + businessName + ".";
-                        } else {
-                            modificationMessage = "You have modified/updated the following reservation.";
-                        }
-                        const mailOptions = {
-                            from:
-                            {
-                                name: 'no-reply@scheduleswift.com',
-                                address: 'scheduleswift@gmail.com'
-                            },
-                            to: result2[0].emailAddress,
-                            subject: "Reservation Update Confirmation for " + result2[0].firstName + " at " + businessName,
-                            html: "<html>" +
-                            "<head>" +
-                                "<style>" +
-                                    "BODY			{ text-align: center; }" +
-                                    "TD				{ font-family:arial;color:black;font-size:11pt;padding:4px;text-align:left; }" +
-                                    ".Pref			{ font-size:10pt; }" +
-                                    ".note			{ font-size:0.7em; }" +
-                                    ".money			{ text-align: right; }" +
-                                    ".arrival-button { padding: 10px 60px; text-align: center; background-color: #DB1A27; color: white; font-weight: bold; text-decoration: none; }" +
-                                "</style>" +
-                            "</head>" + 
-                            "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><h4><center>RESERVATION UPDATE CONFIRMATION</center></h4><p><center>" + modificationMessage + "</center></p></td></tr>" +
-                                "<tr><td width=\"400\" valign=\"top\">" +
-                                "<br /><br /><strong>" + businessName + "</strong>" +
-                                "<br />123 Address St" +
-                                "<br />(XXX) XXX-XXXX" +
-                                "<br />email@example.com</td></tr><tr style=\"text-align:right;vertical-align:top\">" +
-                                "<td colspan=\"2\">Reservation ID: <strong>#" + ID + "</strong></td></tr>" +
-                                "<tr><td>Customer Username:</td><td>" + result2[0].username + "</td></tr>" +
-                                "<tr><td>Customer Name:</td><td>" + result2[0].firstName + " " + result2[0].lastName + "</td></tr>" +
-                                "<tr><td>Customer Email:</td><td>" + result2[0].emailAddress + "</td></tr>" +
-                                "<tr><td colspan=\"2\"><p>Payment Method: Credit Card<br /></p>" +
-                                "<strong>RESERVATION DETAILS</strong>" +
-                                "<br />Date of Reservation: <strong>" + reservationSubstring + "</strong>" +
-                                "<br />Time of Reservation: <strong>" + new Date(startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(endTime).toLocaleTimeString() + "</td></tr>" +
-                                "<tr><td colspan=\"2\"></td></tr>" +
-                                "<tr /></table><br /><table style=\"border-top:solid 3px black;\" cellspacing=\"0\" cellpadding=\"3\" width=\"600\">" +
-                                allReservableItemsString +
-                                "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
-                                "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
-                                "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
-                                "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
-                                "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
-                                "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
-                                "<p>Thank you for reserving with ScheduleSwift!</p>" +
-                                "</td></tr></table>" +
-                            "</body>" +
-                        "</html>"                     
-                        }
-                        transport.sendMail(mailOptions, (err, res) => {
-                            if (err) {
-                                console.log("Unable to send updated confirmation email.");
-                                console.log(err);
+                        let policiesString = "";
+                        db.query("SELECT * FROM reservationNotes WHERE businessName = ?",
+                        [businessName],
+                        (err3, result3) => {
+                            if (err3) {
+                                console.log(err3)
+                                console.log("Unable to get policies!")
                             }
-                            else {
-                                console.log("The updated confirmation email was successfully sent.");
+                            if (result3.length) {
+                                policiesString += "<strong>RESERVATION POLICIES AGREED</strong>";
+                                for (let i = 0; i < result3.length; i++) {
+                                    policiesString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + i + ". " + result3[i].note + "</td></tr>";
+                                }
                             }
-                        });
+                            var modificationMessage;
+                            if (modifiedBy !== undefined) {
+                                modificationMessage = "The following reservation has been modified/updated by " + modifiedBy + " at " + businessName + ".";
+                            } else {
+                                modificationMessage = "You have modified/updated the following reservation.";
+                            }
+                            const mailOptions = {
+                                from:
+                                {
+                                    name: 'no-reply@scheduleswift.com',
+                                    address: 'scheduleswift@gmail.com'
+                                },
+                                to: result2[0].emailAddress,
+                                subject: "Reservation Update Confirmation for " + result2[0].firstName + " at " + businessName,
+                                html: "<html>" +
+                                "<head>" +
+                                    "<style>" +
+                                        "BODY			{ text-align: center; }" +
+                                        "TD				{ font-family:arial;color:black;font-size:11pt;padding:4px;text-align:left; }" +
+                                        ".Pref			{ font-size:10pt; }" +
+                                        ".note			{ font-size:0.7em; }" +
+                                        ".money			{ text-align: right; }" +
+                                        ".arrival-button { padding: 10px 60px; text-align: center; background-color: #DB1A27; color: white; font-weight: bold; text-decoration: none; }" +
+                                    "</style>" +
+                                "</head>" + 
+                                "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><h4><center>RESERVATION UPDATE CONFIRMATION</center></h4><p><center>" + modificationMessage + "</center></p></td></tr>" +
+                                    "<tr><td width=\"400\" valign=\"top\">" +
+                                    "<br /><br /><strong>" + businessName + "</strong>" +
+                                    "<br />123 Address St" +
+                                    "<br />(XXX) XXX-XXXX" +
+                                    "<br />email@example.com</td></tr><tr style=\"text-align:right;vertical-align:top\">" +
+                                    "<td colspan=\"2\">Reservation ID: <strong>#" + ID + "</strong></td></tr>" +
+                                    "<tr><td>Customer Username:</td><td>" + result2[0].username + "</td></tr>" +
+                                    "<tr><td>Customer Name:</td><td>" + result2[0].firstName + " " + result2[0].lastName + "</td></tr>" +
+                                    "<tr><td>Customer Email:</td><td>" + result2[0].emailAddress + "</td></tr>" +
+                                    // "<tr><td colspan=\"2\"><p>Payment Method: Credit Card<br /></p>" +
+                                    "<tr><td colspan=\"2\"><p><br /></p>" +
+                                    // IF POLICIES
+                                    "<p>" + policiesString + "</p>" +
+                                    "<strong>RESERVATION DETAILS</strong>" +
+                                    "<br />Date of Reservation: <strong>" + reservationSubstring + "</strong>" +
+                                    "<br />Time of Reservation: <strong>" + new Date(startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(endTime).toLocaleTimeString() + "</td></tr>" +
+                                    "<tr><td colspan=\"2\"></td></tr>" +
+                                    "<tr /></table><br /><table style=\"border-top:solid 3px black;\" cellspacing=\"0\" cellpadding=\"3\" width=\"600\">" +
+                                    allReservableItemsString +
+                                    "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
+                                    "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
+                                    "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
+                                    "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
+                                    "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
+                                    "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
+                                    "<p>Thank you for reserving with ScheduleSwift!</p>" +
+                                    "</td></tr></table>" +
+                                "</body>" +
+                            "</html>"                     
+                            }
+                            transport.sendMail(mailOptions, (err, res) => {
+                                if (err) {
+                                    console.log("Unable to send updated confirmation email.");
+                                    console.log(err);
+                                }
+                                else {
+                                    console.log("The updated confirmation email was successfully sent.");
+                                }
+                            });
+                            var indexOfUpdatedReservation;
+                            for (let i = 0; i < scheduledEmails.length; i++) {
+                                if (scheduledEmails[i].ID === ID) {
+                                    indexOfUpdatedReservation = i;
+                                    break;
+                                }
+                            }
+                            if (scheduledEmails[indexOfUpdatedReservation]) {
+                                console.log("ID of updated reservation: " + scheduledEmails[indexOfUpdatedReservation].ID);
+                                scheduledEmails[indexOfUpdatedReservation].cronSchedule.stop();
+                                const mailOptionsReminder = {
+                                    from:
+                                    {
+                                        name: 'no-reply@scheduleswift.com',
+                                        address: 'scheduleswift@gmail.com'
+                                    },
+                                    to: result2[0].emailAddress,
+                                    subject: "Reservation Reminder for " + result2[0].firstName + " at " + businessName,
+                                    html: "<html>" +
+                                    "<head>" +
+                                        "<style>" +
+                                            "BODY			{ text-align: center; }" +
+                                            "TD				{ font-family:arial;color:black;font-size:11pt;padding:4px;text-align:left; }" +
+                                            ".Pref			{ font-size:10pt; }" +
+                                            ".note			{ font-size:0.7em; }" +
+                                            ".money			{ text-align: right; }" +
+                                            ".arrival-button { padding: 10px 60px; text-align: center; background-color: #DB1A27; color: white; font-weight: bold; text-decoration: none; }" +
+                                        "</style>" +
+                                    "</head>" + 
+                                    "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><h4><center>Your Reservation is Coming Up!</center></h4><p><center>This is a reminder that the following reservation begins in 24 hours.</center></p></td></tr>" +
+                                        "<tr><td width=\"400\" valign=\"top\">" +
+                                        "<br /><br /><strong>" + businessName + "</strong>" +
+                                        "<br />123 Address St" +
+                                        "<br />(XXX) XXX-XXXX" +
+                                        "<br />email@example.com</td></tr><tr style=\"text-align:right;vertical-align:top\">" +
+                                        "<td colspan=\"2\">Reservation ID: <strong>#" + ID + "</strong></td></tr>" +
+                                        "<tr><td>Customer Username:</td><td>" + result2[0].username + "</td></tr>" +
+                                        "<tr><td>Customer Name:</td><td>" + result2[0].firstName + " " + result2[0].lastName + "</td></tr>" +
+                                        "<tr><td>Customer Email:</td><td>" + result2[0].emailAddress + "</td></tr>" +
+                                        // "<tr><td colspan=\"2\"><p>Payment Method: Credit Card<br /></p>" +
+                                        "<tr><td colspan=\"2\"><p><br /></p>" +
+                                        // IF POLICIES
+                                        "<p>" + policiesString + "</p>" +
+                                        "<strong>RESERVATION DETAILS</strong>" +
+                                        "<br />Date of Reservation: <strong>" + reservationSubstring + "</strong>" +
+                                        "<br />Time of Reservation: <strong>" + new Date(startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(endTime).toLocaleTimeString() + "</td></tr>" +
+                                        "<tr><td colspan=\"2\"></td></tr>" +
+                                        "<tr /></table><br /><table style=\"border-top:solid 3px black;\" cellspacing=\"0\" cellpadding=\"3\" width=\"600\">" +
+                                        allReservableItemsString +
+                                        "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
+                                        "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
+                                        "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
+                                        "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
+                                        "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
+                                        "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
+                                        "<p>Thank you for reserving with ScheduleSwift!</p>" +
+                                        "</td></tr></table>" +
+                                    "</body>" +
+                                "</html>"                                 
+                                }
+                                const dateVar = new Date(reservationSubstring + "T00:00");
+                                var reminderTime = new Date(startTime);
+                                reminderTime.setDate(dateVar.getDate() - 1);
+                                const minutes = reminderTime.getMinutes();
+                                const hours = reminderTime.getHours();
+                                const date = reminderTime.getDate();
+                                const month = reminderTime.getMonth() + 1;
+                                const dayOfWeek = reminderTime.getDay();
+                                scheduledEmails[indexOfUpdatedReservation].cronSchedule = {
+                                    cronSchedule: 
+                                    cron.schedule("0 " + minutes + " " + hours + " " + date + " " + month + " " + dayOfWeek + "", function () {
+                                        transport.sendMail(mailOptionsReminder, (err, res) => {
+                                            if (err) {
+                                                console.log("Unable to send reminder email for Reservation #" + ID + ".");
+                                                console.log(err);
+                                            }
+                                            else {
+                                                console.log("Reminder email for Reservation #" + ID + " successfully sent.");
+                                            }
+                                        })
+                                    }),
+                                }
+                            }
+                        })
                     }
                 })
             }
@@ -891,7 +1032,7 @@ app.post("/api/createReservation", (req, res) => {
                             allReservableItemsString += "<td style=\"text-align:right\">$" + (price * numReservable).toFixed(2) + "</td></tr>";
                             subTotal = price * numReservable;
                         } else {
-                            for (i = 0; i < allReservableItems.length; i++) {
+                            for (let i = 0; i < allReservableItems.length; i++) {
                                 allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + allNumReservable[i] + " x " + allReservableItems[i] + "</td>";
                                 allReservableItemsString += "<td width=\"20%\"> (" + allNumReservable[i] + " x $" + allReservablePrices[i] + ")" + "</td><td width=\"5%\">=</td>";
                                 allReservableItemsString += "<td style=\"text-align:right\">$" + (allReservablePrices[i] * allNumReservable[i]).toFixed(2) + "</td></tr>";
@@ -906,7 +1047,7 @@ app.post("/api/createReservation", (req, res) => {
                                 console.log(err3)
                                 console.log("Unable to get policies!")
                             }
-                            if (result3) {
+                            if (result3.length) {
                                 policiesString += "<strong>RESERVATION POLICIES AGREED</strong>";
                                 for (let i = 0; i < result3.length; i++) {
                                     policiesString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + i + ". " + result3[i].note + "</td></tr>";
@@ -941,7 +1082,8 @@ app.post("/api/createReservation", (req, res) => {
                                     "<tr><td>Customer Username:</td><td>" + result2[0].username + "</td></tr>" +
                                     "<tr><td>Customer Name:</td><td>" + result2[0].firstName + " " + result2[0].lastName + "</td></tr>" +
                                     "<tr><td>Customer Email:</td><td>" + result2[0].emailAddress + "</td></tr>" +
-                                    "<tr><td colspan=\"2\"><p>Payment Method: Credit Card<br /></p>" +
+                                    // "<tr><td colspan=\"2\"><p>Payment Method: Credit Card<br /></p>" +
+                                    "<tr><td colspan=\"2\"><p><br /></p>" +
                                     // IF POLICIES
                                     "<p>" + policiesString + "</p>" +
                                     "<strong>RESERVATION DETAILS</strong>" +
@@ -965,86 +1107,91 @@ app.post("/api/createReservation", (req, res) => {
                                 if (err) {
                                     console.log("Unable to send reservation confirmation email.");
                                     console.log(err);
-                                }
-                                else {
+                                } else {
                                     console.log("The reservation confirmation email was successfully sent.");
                                 }
                             });
-                        });
-                        const mailOptionsReminder = {
-                            from:
-                            {
-                                name: 'no-reply@scheduleswift.com',
-                                address: 'scheduleswift@gmail.com'
-                            },
-                            to: result2[0].emailAddress,
-                            subject: "Reservation Reminder for " + result2[0].firstName + " at " + businessName,
-                            html: "<html>" +
-                            "<head>" +
-                                "<style>" +
-                                    "BODY			{ text-align: center; }" +
-                                    "TD				{ font-family:arial;color:black;font-size:11pt;padding:4px;text-align:left; }" +
-                                    ".Pref			{ font-size:10pt; }" +
-                                    ".note			{ font-size:0.7em; }" +
-                                    ".money			{ text-align: right; }" +
-                                    ".arrival-button { padding: 10px 60px; text-align: center; background-color: #DB1A27; color: white; font-weight: bold; text-decoration: none; }" +
-                                "</style>" +
-                            "</head>" + 
-                            "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><h4><center>Your Reservation is Coming Up!</center></h4><p><center>This is a reminder that the following reservation begins in 24 hours.</center></p></td></tr>" +
-                                "<tr><td width=\"400\" valign=\"top\">" +
-                                "<br /><br /><strong>" + businessName + "</strong>" +
-                                "<br />123 Address St" +
-                                "<br />(XXX) XXX-XXXX" +
-                                "<br />email@example.com</td></tr><tr style=\"text-align:right;vertical-align:top\">" +
-                                "<td colspan=\"2\">Reservation ID: <strong>#" + result.insertId + "</strong></td></tr>" +
-                                "<tr><td>Customer Username:</td><td>" + result2[0].username + "</td></tr>" +
-                                "<tr><td>Customer Name:</td><td>" + result2[0].firstName + " " + result2[0].lastName + "</td></tr>" +
-                                "<tr><td>Customer Email:</td><td>" + result2[0].emailAddress + "</td></tr>" +
-                                "<tr><td colspan=\"2\"><p>Payment Method: Credit Card<br /></p>" +
-                                // IF POLICIES
-                                "<p>" + policiesString + "</p>" +
-                                "<strong>RESERVATION DETAILS</strong>" +
-                                "<br />Date of Reservation: <strong>" + reservationSubstring + "</strong>" +
-                                "<br />Time of Reservation: <strong>" + new Date(startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(endTime).toLocaleTimeString() + "</td></tr>" +
-                                "<tr><td colspan=\"2\"></td></tr>" +
-                                "<tr /></table><br /><table style=\"border-top:solid 3px black;\" cellspacing=\"0\" cellpadding=\"3\" width=\"600\">" +
-                                allReservableItemsString +
-                                "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
-                                "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
-                                "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
-                                "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
-                                "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
-                                "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
-                                "<p>Thank you for reserving with ScheduleSwift!</p>" +
-                                "</td></tr></table>" +
-                            "</body>" +
-                        "</html>"                                 
-                        }
-                        var reminderTime = new Date(startTime);
-                        reminderTime.setHours(reminderTime.getHours() - 24);
-                        const minutes = reminderTime.getMinutes();
-                        const hours = reminderTime.getHours();
-                        const date = reminderTime.getDate();
-                        const month = reminderTime.getMonth() + 1;
-                        const dayOfWeek = reminderTime.getDay();
-                        console.log("Reminder Time: " + dayOfWeek + " " + month + " " + date + " " + hours + " " + minutes);
-                        cron.schedule("0 " + minutes + " " + hours + " " + date + " " + month + " " + dayOfWeek + "", function () {
-                            transport.sendMail(mailOptionsReminder, (err, res) => {
-                                if (err) {
-                                    console.log("Unable to send reminder email for Reservation #" + result.insertId + ".");
-                                    console.log(err);
-                                }
-                                else {
-                                    console.log("Reminder email for Reservation #" + result.insertId + " successfully sent.");
-                                }
-                            });
+                            
+                            const mailOptionsReminder = {
+                                from:
+                                {
+                                    name: 'no-reply@scheduleswift.com',
+                                    address: 'scheduleswift@gmail.com'
+                                },
+                                to: result2[0].emailAddress,
+                                subject: "Reservation Reminder for " + result2[0].firstName + " at " + businessName,
+                                html: "<html>" +
+                                "<head>" +
+                                    "<style>" +
+                                        "BODY			{ text-align: center; }" +
+                                        "TD				{ font-family:arial;color:black;font-size:11pt;padding:4px;text-align:left; }" +
+                                        ".Pref			{ font-size:10pt; }" +
+                                        ".note			{ font-size:0.7em; }" +
+                                        ".money			{ text-align: right; }" +
+                                        ".arrival-button { padding: 10px 60px; text-align: center; background-color: #DB1A27; color: white; font-weight: bold; text-decoration: none; }" +
+                                    "</style>" +
+                                "</head>" + 
+                                "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><h4><center>Your Reservation is Coming Up!</center></h4><p><center>This is a reminder that the following reservation begins in 24 hours.</center></p></td></tr>" +
+                                    "<tr><td width=\"400\" valign=\"top\">" +
+                                    "<br /><br /><strong>" + businessName + "</strong>" +
+                                    "<br />123 Address St" +
+                                    "<br />(XXX) XXX-XXXX" +
+                                    "<br />email@example.com</td></tr><tr style=\"text-align:right;vertical-align:top\">" +
+                                    "<td colspan=\"2\">Reservation ID: <strong>#" + result.insertId + "</strong></td></tr>" +
+                                    "<tr><td>Customer Username:</td><td>" + result2[0].username + "</td></tr>" +
+                                    "<tr><td>Customer Name:</td><td>" + result2[0].firstName + " " + result2[0].lastName + "</td></tr>" +
+                                    "<tr><td>Customer Email:</td><td>" + result2[0].emailAddress + "</td></tr>" +
+                                    // "<tr><td colspan=\"2\"><p>Payment Method: Credit Card<br /></p>" +
+                                    "<tr><td colspan=\"2\"><p><br /></p>" +
+                                    // IF POLICIES
+                                    "<p>" + policiesString + "</p>" +
+                                    "<strong>RESERVATION DETAILS</strong>" +
+                                    "<br />Date of Reservation: <strong>" + reservationSubstring + "</strong>" +
+                                    "<br />Time of Reservation: <strong>" + new Date(startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(endTime).toLocaleTimeString() + "</td></tr>" +
+                                    "<tr><td colspan=\"2\"></td></tr>" +
+                                    "<tr /></table><br /><table style=\"border-top:solid 3px black;\" cellspacing=\"0\" cellpadding=\"3\" width=\"600\">" +
+                                    allReservableItemsString +
+                                    "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
+                                    "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
+                                    "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
+                                    "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
+                                    "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
+                                    "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
+                                    "<p>Thank you for reserving with ScheduleSwift!</p>" +
+                                    "</td></tr></table>" +
+                                "</body>" +
+                            "</html>"                                 
+                            }
+                            const dateVar = new Date(reservationSubstring + "T00:00");
+                            var reminderTime = new Date(startTime);
+                            reminderTime.setDate(dateVar.getDate() - 1);
+                            const minutes = reminderTime.getMinutes();
+                            const hours = reminderTime.getHours();
+                            const date = reminderTime.getDate();
+                            const month = reminderTime.getMonth() + 1;
+                            const dayOfWeek = reminderTime.getDay();
+                            var newScheduledEmail = {
+                                ID: result2[0].insertId,
+                                cronSchedule: 
+                                    cron.schedule("0 " + minutes + " " + hours + " " + date + " " + month + " " + dayOfWeek + "", function () {
+                                        transport.sendMail(mailOptionsReminder, (err, res) => {
+                                            if (err) {
+                                                console.log("Unable to send reminder email for Reservation #" + result.insertId + ".");
+                                                console.log(err);
+                                            }
+                                            else {
+                                                console.log("Reminder email for Reservation #" + result.insertId + " successfully sent.");
+                                            }
+                                        })
+                                    }),
+                            }
+                            scheduledEmails.push(newScheduledEmail);
                         });
                     }
-                })
+                });
             }
-        }
-    )
-})
+    });
+});
 
 app.post("/api/managerCreateReservation", (req, res) => {
     const businessName = req.body.businessName;
@@ -1110,6 +1257,17 @@ app.post("/api/getBusinessReservations", (req, res) => {
 
 app.post("/api/managerDeleteReservation", (req, res) => {
     const reservationID = req.body.reservationID;
+    var indexOfCancelledReservation;
+    for (let i = 0; i < scheduledEmails.length; i++) {
+        if (scheduledEmails[i].ID === reservationID) {
+            indexOfCancelledReservation = i;
+            break;
+        }
+    }
+    if (scheduledEmails[indexOfCancelledReservation]) {
+        scheduledEmails[indexOfCancelledReservation].cronSchedule.stop();
+        scheduledEmails.splice(indexOfCancelledReservation, 1);
+    }
     db.query(
         "SELECT * FROM reservations WHERE ID = ?",
         [reservationID], (err3, result3) => {
@@ -1153,61 +1311,80 @@ app.post("/api/managerDeleteReservation", (req, res) => {
                                                 subTotal += allReservablePrices[i] * allNumReservable[i];
                                             }
                                         }
-                                        const mailOptions = {
-                                            from:
-                                                {
-                                                    name: 'no-reply@scheduleswift.com',
-                                                    address: 'scheduleswift@gmail.com'
-                                                },
-                                            to: result2[0].emailAddress,
-                                            subject: "reservation Cancellation Confirmation for " + result2[0].firstName + " at " + result3[0].businessName,
-                                            html: "<html>" +
-                                            "<head>" +
-                                                "<style>" +
-                                                    "BODY			{ text-align: center; }" +
-                                                    "TD				{ font-family:arial;color:black;font-size:11pt;padding:4px;text-align:left; }" +
-                                                    ".Pref			{ font-size:10pt; }" +
-                                                    ".note			{ font-size:0.7em; }" +
-                                                    ".money			{ text-align: right; }" +
-                                                    ".arrival-button { padding: 10px 60px; text-align: center; background-color: #DB1A27; color: white; font-weight: bold; text-decoration: none; }" +
-                                                "</style>" +
-                                            "</head>" + 
-                                            "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><h4><center>RESERVATION CANCELLATION CONFIRMATION</center></h4><p><center>The following reservation has been cancelled.</center></p></td></tr>" +
-                                            "<tr><td width=\"400\" valign=\"top\">" +
-                                            "<br /><br /><strong>" + result3[0].businessName + "</strong>" +
-                                            "<br />123 Address St" +
-                                            "<br />(XXX) XXX-XXXX" +
-                                            "<br />email@example.com</td></tr><tr style=\"text-align:right;vertical-align:top\">" +
-                                            "<td colspan=\"2\">Reservation ID: <strong>#" + result3[0].ID + "</strong></td></tr>" +
-                                            "<tr><td>Customer Username:</td><td>" + result2[0].username + "</td></tr>" +
-                                            "<tr><td>Customer Name:</td><td>" + result2[0].firstName + " " + result2[0].lastName + "</td></tr>" +
-                                            "<tr><td>Customer Email:</td><td>" + result2[0].emailAddress + "</td></tr>" +
-                                            "<tr><td colspan=\"2\"><p>Payment Method: Credit Card<br /></p>" +
-                                            "<strong>RESERVATION DETAILS</strong>" +
-                                            "<br />Date of Reservation: <strong>" + result3[0].reservationDate.substring(0, 10) + "</strong>" +
-                                            "<br />Time of Reservation: <strong>" + new Date(result3[0].startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(result3[0].endTime).toLocaleTimeString() + "</td></tr>" +
-                                            "<tr><td colspan=\"2\"></td></tr>" +
-                                            "<tr /></table><br /><table style=\"border-top:solid 3px black;\" cellspacing=\"0\" cellpadding=\"3\" width=\"600\">" +
-                                            allReservableItemsString +
-                                            "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
-                                            "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
-                                            "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
-                                            "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
-                                            "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
-                                            "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
-                                            "<p>Thank you for reserving with ScheduleSwift!</p>" +
-                                            "</td></tr></table>" +
-                                            "</body>" +
-                                        "</html>"                     
-                                        }
-                                        transport.sendMail(mailOptions, (err, res) => {
-                                            if (err) {
-                                                console.log("Unable to send cancellation confirmation email.");
-                                                console.log(err);
-                                            } else {
-                                                console.log("The cancellation confirmation email was successfully sent.");
+                                        let policiesString = "";
+                                        db.query("SELECT * FROM reservationNotes WHERE businessName = ?",
+                                        [result3[0].businessName],
+                                        (err4, result4) => {
+                                            if (err4) {
+                                                console.log(err4)
+                                                console.log("Unable to get policies!")
                                             }
-                                        });
+                                            if (result4.length) {
+                                                policiesString += "<strong>RESERVATION POLICIES AGREED</strong>";
+                                                for (let i = 0; i < result4.length; i++) {
+                                                    policiesString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + i + ". " + result3[i].note + "</td></tr>";
+                                                }
+                                            }
+                                            const mailOptions = {
+                                                from:
+                                                    {
+                                                        name: 'no-reply@scheduleswift.com',
+                                                        address: 'scheduleswift@gmail.com'
+                                                    },
+                                                to: result2[0].emailAddress,
+                                                subject: "Reservation Cancellation Confirmation for " + result2[0].firstName + " at " + result3[0].businessName,
+                                                html: "<html>" +
+                                                "<head>" +
+                                                    "<style>" +
+                                                        "BODY			{ text-align: center; }" +
+                                                        "TD				{ font-family:arial;color:black;font-size:11pt;padding:4px;text-align:left; }" +
+                                                        ".Pref			{ font-size:10pt; }" +
+                                                        ".note			{ font-size:0.7em; }" +
+                                                        ".money			{ text-align: right; }" +
+                                                        ".arrival-button { padding: 10px 60px; text-align: center; background-color: #DB1A27; color: white; font-weight: bold; text-decoration: none; }" +
+                                                    "</style>" +
+                                                "</head>" + 
+                                                "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><h4><center>RESERVATION CANCELLATION CONFIRMATION</center></h4><p><center>The following reservation has been cancelled.</center></p> \
+                                                Please contact" + result3[0].businessName + "if you have any questions or concerns.</td></tr>" +
+                                                "<tr><td width=\"400\" valign=\"top\">" +
+                                                "<br /><br /><strong>" + result3[0].businessName + "</strong>" +
+                                                "<br />123 Address St" +
+                                                "<br />(XXX) XXX-XXXX" +
+                                                "<br />email@example.com</td></tr><tr style=\"text-align:right;vertical-align:top\">" +
+                                                "<td colspan=\"2\">Reservation ID: <strong>#" + result3[0].ID + "</strong></td></tr>" +
+                                                "<tr><td>Customer Username:</td><td>" + result2[0].username + "</td></tr>" +
+                                                "<tr><td>Customer Name:</td><td>" + result2[0].firstName + " " + result2[0].lastName + "</td></tr>" +
+                                                "<tr><td>Customer Email:</td><td>" + result2[0].emailAddress + "</td></tr>" +
+                                                // "<tr><td colspan=\"2\"><p>Payment Method: Credit Card<br /></p>" +
+                                                "<tr><td colspan=\"2\"><p><br /></p>" +
+                                                // IF POLICIES
+                                                "<p>" + policiesString + "</p>" +                                                
+                                                "<strong>RESERVATION DETAILS</strong>" +
+                                                "<br />Date of Reservation: <strong>" + result3[0].reservationDate.substring(0, 10) + "</strong>" +
+                                                "<br />Time of Reservation: <strong>" + new Date(result3[0].startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(result3[0].endTime).toLocaleTimeString() + "</td></tr>" +
+                                                "<tr><td colspan=\"2\"></td></tr>" +
+                                                "<tr /></table><br /><table style=\"border-top:solid 3px black;\" cellspacing=\"0\" cellpadding=\"3\" width=\"600\">" +
+                                                allReservableItemsString +
+                                                "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
+                                                "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
+                                                "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
+                                                "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
+                                                "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
+                                                "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
+                                                "<p>Thank you for reserving with ScheduleSwift!</p>" +
+                                                "</td></tr></table>" +
+                                                "</body>" +
+                                            "</html>"                     
+                                            }
+                                            transport.sendMail(mailOptions, (err, res) => {
+                                                if (err) {
+                                                    console.log("Unable to send cancellation confirmation email.");
+                                                    console.log(err);
+                                                } else {
+                                                    console.log("The cancellation confirmation email was successfully sent.");
+                                                }
+                                            });
+                                        })
                                     }
                                 }
                             )
@@ -1492,7 +1669,6 @@ app.post("/api/managerDeleteFAQ", (req, res) => {
     )
 })
 
-
 app.post("/api/employeeDeleteReservation", (req, res) => {
     const reservationID = req.body.reservationID;
     db.query(
@@ -1739,38 +1915,195 @@ app.post("/api/managerDeleteContact", (req, res) => {
     )
 })
 
+var scheduledEmails = new Array();
+
 app.listen(3001, () => {
     console.log("Running on Port 3001");
-    // GARBAGE COLLECTOR
-    // It runs every 5th minute */5 * * * *
-    // every day 0 0 * * *
-    cron.schedule("0 0 * * *", function () {
-        db.query(
-            "SELECT * FROM reservations",
-            (err, result) => {
-                if (err) {
-                    console.log(err);
-                    console.log("There was an error with the garbage collector running a query")
-                }
+
+    db.query(
+        "SELECT * FROM reservations",
+        (err, result) => {
+            if (err) {
+                console.log(err);
+                console.log("Unable to select reservations for scheduling emails");
+            } else {
                 if (result.length > 0) {
                     for (let i = 0; i < result.length; i++) {
-                        if (new Date(result[i].reservationDate) < new Date().setDate(new Date() - 1)) {
-                            console.log(result[i]);
-                            // SHOULD WE DELETE OR TRANSFER
-                            // db.query(DELETE FROM reservations WHERE ID = ?),
-                            //[result[i].ID],
-                            // (err1, result1) => {
-                            //     if (err1) {
-                            //         console.log("ERROR REMOVING GARBAGE FROM DATABASE");
-                            //     }
-                            //     if (result1) {
-                            //         console.log("SUCCESS REMOVAL OF " + result[i].ID);
-                            //     }
-                            // }
+                        db.query (
+                            "SELECT * FROM userData WHERE username = ?",
+                            [result[i].reservedBy], (err2, result2) => {
+                                if (err2) {
+                                    console.log(err2);
+                                    console.log("Unable to find user with that username for scheduling emails");
+                                } else {
+                                    let allReservableItems = result[i].reservableItem.split(";");
+                                    let allReservablePrices = result[i].price.split(";");
+                                    let allNumReservable = result[i].numReservable.split(";");
+                                    var allReservableItemsString = "";
+                                    var subTotal = 0;
+                                    if (allReservableItems.length === 0) {
+                                        allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + result[i].numReservable + " x " + result[i].reservableItem + "</td>";
+                                        allReservableItemsString += "<td width=\"20%\"> (" + result[i].numReservable + " x $" + result[i].price + ")" + "</td><td width=\"5%\">=</td>";
+                                        allReservableItemsString += "<td style=\"text-align:right\">$" + (result[i].price * result[i].numReservable).toFixed(2) + "</td></tr>";
+                                        subTotal = result[i].price * result[i].numReservable;
+                                    } else {
+                                        for (let j = 0; j < allReservableItems.length; j++) {
+                                            allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + allNumReservable[j] + " x " + allReservableItems[j] + "</td>";
+                                            allReservableItemsString += "<td width=\"20%\"> (" + allNumReservable[j] + " x $" + allReservablePrices[j] + ")" + "</td><td width=\"5%\">=</td>";
+                                            allReservableItemsString += "<td style=\"text-align:right\">$" + (allReservablePrices[j] * allNumReservable[j]).toFixed(2) + "</td></tr>";
+                                            subTotal += allReservablePrices[j] * allNumReservable[j];
+                                        }
+                                    }
+                                    let policiesString = "";
+                                    db.query("SELECT * FROM reservationNotes WHERE businessName = ?",
+                                    [result[i].businessName],
+                                    (err3, result3) => {
+                                        if (err3) {
+                                            console.log(err3)
+                                            console.log("Unable to get policies!")
+                                        }
+                                        if (result3.length) {
+                                            policiesString += "<strong>RESERVATION POLICIES AGREED</strong>";
+                                            for (let i = 0; i < result3.length; i++) {
+                                                policiesString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + i + ". " + result3[i].note + "</td></tr>";
+                                            }
+                                        }
+                                        const mailOptionsReminder = {
+                                            from:
+                                            {
+                                                name: 'no-reply@scheduleswift.com',
+                                                address: 'scheduleswift@gmail.com'
+                                            },
+                                            to: result2[0].emailAddress,
+                                            subject: "Reservation Reminder for " + result2[0].firstName + " at " + result[i].businessName,
+                                            html: "<html>" +
+                                            "<head>" +
+                                                "<style>" +
+                                                    "BODY			{ text-align: center; }" +
+                                                    "TD				{ font-family:arial;color:black;font-size:11pt;padding:4px;text-align:left; }" +
+                                                    ".Pref			{ font-size:10pt; }" +
+                                                    ".note			{ font-size:0.7em; }" +
+                                                    ".money			{ text-align: right; }" +
+                                                    ".arrival-button { padding: 10px 60px; text-align: center; background-color: #DB1A27; color: white; font-weight: bold; text-decoration: none; }" +
+                                                "</style>" +
+                                            "</head>" + 
+                                            "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><h4><center>Your Reservation is Coming Up!</center></h4><p><center>This is a reminder that the following reservation begins in 24 hours.</center></p></td></tr>" +
+                                                "<tr><td width=\"400\" valign=\"top\">" +
+                                                "<br /><br /><strong>" + result[i].businessName + "</strong>" +
+                                                "<br />123 Address St" +
+                                                "<br />(XXX) XXX-XXXX" +
+                                                "<br />email@example.com</td></tr><tr style=\"text-align:right;vertical-align:top\">" +
+                                                "<td colspan=\"2\">Reservation ID: <strong>#" + result[i].ID + "</strong></td></tr>" +
+                                                "<tr><td>Customer Username:</td><td>" + result2[0].username + "</td></tr>" +
+                                                "<tr><td>Customer Name:</td><td>" + result2[0].firstName + " " + result2[0].lastName + "</td></tr>" +
+                                                "<tr><td>Customer Email:</td><td>" + result2[0].emailAddress + "</td></tr>" +
+                                                // "<tr><td colspan=\"2\"><p>Payment Method: Credit Card<br /></p>" +
+                                                "<tr><td colspan=\"2\"><p><br /></p>" +
+                                                // IF POLICIES
+                                                "<p>" + policiesString + "</p>" +
+                                                "<strong>RESERVATION DETAILS</strong>" +
+                                                "<br />Date of Reservation: <strong>" + result[i].reservationDate + "</strong>" +
+                                                "<br />Time of Reservation: <strong>" + new Date(result[i].startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(result[i].endTime).toLocaleTimeString() + "</td></tr>" +
+                                                "<tr><td colspan=\"2\"></td></tr>" +
+                                                "<tr /></table><br /><table style=\"border-top:solid 3px black;\" cellspacing=\"0\" cellpadding=\"3\" width=\"600\">" +
+                                                allReservableItemsString +
+                                                "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
+                                                "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
+                                                "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
+                                                "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
+                                                "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
+                                                "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
+                                                "<p>Thank you for reserving with ScheduleSwift!</p>" +
+                                                "</td></tr></table>" +
+                                            "</body>" +
+                                        "</html>"                                 
+                                        }
+                                        const dateVar = new Date(result[i].reservationDate + "T00:00");
+                                        var reminderTime = new Date(result[i].startTime);
+                                        reminderTime.setDate(dateVar.getDate() - 1);
+                                        const minutes = reminderTime.getMinutes();
+                                        const hours = reminderTime.getHours();
+                                        const date = reminderTime.getDate();
+                                        const month = reminderTime.getMonth() + 1;
+                                        const dayOfWeek = reminderTime.getDay();
+                                        var newScheduledEmail = {
+                                            ID: result[i].ID,
+                                            cronSchedule: 
+                                                cron.schedule("0 " + minutes + " " + hours + " " + date + " " + month + " " + dayOfWeek + "", function () {
+                                                    transport.sendMail(mailOptionsReminder, (err, res) => {
+                                                        if (err) {
+                                                            console.log("Unable to send reminder email for Reservation #" + result[i].ID + ".");
+                                                            console.log(err);
+                                                        }
+                                                        else {
+                                                            console.log("Reminder email for Reservation #" + result[i].ID + " successfully sent.");
+                                                        }
+                                                    })
+                                                }),
+                                        }
+                                        scheduledEmails.push(newScheduledEmail);
+                                    })
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    );
+    // GARBAGE COLLECTOR
+    // For the first run if it crashes
+    GarbageCollector();
+    // It runs every day 0 0 * * *
+    cron.schedule("0 0 * * *", function () {
+        GarbageCollector();
+    });
+})
+
+function GarbageCollector() {
+    console.log("Running Garbage Collector");
+    db.query(
+        "SELECT * FROM reservations",
+        (err, result) => {
+            if (err) {
+                console.log(err);
+                console.log("There was an error with the garbage collector running a query")
+            }
+            if (result.length > 0) {
+                var deleted = 0;
+                for (let i = 0; i < result.length; i++) {
+                    // Deletes all reservations two days prior to the current UTC times to avoid deleting reservations that havenot happened in current time
+                    if (new Date(result[i].reservationDate) < new Date(new Date().setDate(new Date().getDate() - 2))) {
+                        db.query(
+                            "DELETE FROM reservations WHERE ID = ?",
+                            [result[i].ID], (err1, result1) => {
+                                if (err1) {
+                                    console.log("ERROR REMOVING GARBAGE FROM DATABASE");
+                                }
+                                else {
+                                    console.log("SUCCESS REMOVAL OF " + result[i].ID);
+                                    var indexOfCancelledReservation = -1;
+                                    var reservationID = result[i].ID;
+                                    for (let j = 0; j < scheduledEmails.length; j++) {
+                                        if (scheduledEmails[j].ID === reservationID) {
+                                            indexOfCancelledReservation = j;
+                                            break;
+                                        }
+                                    }
+                                    console.log("before removing email: " + scheduledEmails.length);
+                                    if (scheduledEmails[indexOfCancelledReservation] && indexOfCancelledReservation >= 0) {
+                                        // console.log("cancelled reservation ID: " + scheduledEmails[indexOfCancelledReservation].ID);
+                                        scheduledEmails[indexOfCancelledReservation].cronSchedule.stop();
+                                        scheduledEmails.splice(indexOfCancelledReservation, 1);
+                                    }
+                                    deleted++;
+                                    console.log("Num of deleted reservations by Garbage Collector: " + deleted);
+                                }
+                            })
                         }
                     }
                 }
             }
         )
-    });
-})
+        console.log("Running Garbage Collector");
+    }

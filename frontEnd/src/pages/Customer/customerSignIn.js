@@ -182,6 +182,22 @@ export default function CustomerSignIn() {
                         </Grid>
                     </Box>
                 </Box>
+                <Box
+                    sx={{
+                        marginTop: 5,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                    }}
+                >
+                    <Grid container>
+                        <Grid item xs>
+                            <Link href="/" variant="body2">
+                            Back to Welcome Page
+                            </Link>
+                        </Grid>
+                    </Grid>
+                </Box>
                 <Copyright sx={{ mt: 8, mb: 4 }} />
             </Container>
         </ThemeProvider>

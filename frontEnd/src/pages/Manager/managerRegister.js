@@ -249,9 +249,14 @@ const CustomerRegister = () => {
                             Sign Up
                         </Button>
                         <Grid container justifyContent="flex-end">
-                            <Grid item>
+                            <Grid item xs>
                                 <Link href="/managerSignIn" variant="body2">
                                     Already have an account? Sign in
+                                </Link>
+                            </Grid>
+                            <Grid item>
+                                <Link href="/" variant="body2">
+                                Back to Welcome Page
                                 </Link>
                             </Grid>
                         </Grid>

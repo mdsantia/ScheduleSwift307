@@ -227,7 +227,7 @@ function DashboardContent() {
                             <ListItemIcon>
                                 <BentoIcon />
                             </ListItemIcon>
-                            <ListItemText primary="Make Reservations" />
+                            <ListItemText primary="Business Events" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
                             navigate("/customerAccount", {
