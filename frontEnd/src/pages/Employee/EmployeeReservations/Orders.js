@@ -194,7 +194,7 @@ export default function Orders(props) {
                 <Table size="small">
                     <TableHead>
                         <TableRow>
-                            <TableCell>ID</TableCell>
+                            <TableCell>Reservation ID</TableCell>
                             <TableCell>Date</TableCell>
                             {/* <TableCell>Business Name</TableCell> */}
                             {/* <TableCell>Reservable Item</TableCell> */}
@@ -207,7 +207,7 @@ export default function Orders(props) {
                     <TableBody>
                         {reservations.map((reserve, index) => (
                             <TableRow key={reserve.ID}>
-                                <TableCell>{reserve.ID}</TableCell>
+                                <TableCell>#{reserve.ID}</TableCell>
                                 <TableCell>{reserve.reservationDate}</TableCell>
                                 {/* <TableCell>{reserve.businessName}</TableCell> */}
                                 {/* <TableCell>{reserve.reservableItem}</TableCell> */}

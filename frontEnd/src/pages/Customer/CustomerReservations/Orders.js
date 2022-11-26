@@ -84,10 +84,10 @@ export default function Orders(props) {
                 <Table size="small">
                     <TableHead>
                         <TableRow>
+                            <TableCell>Reservation ID</TableCell>
                             <TableCell>Date</TableCell>
                             <TableCell>Time</TableCell>
                             <TableCell>Business Name</TableCell>
-                            <TableCell>Payment Method</TableCell>
                             <TableCell>Price</TableCell>
                             {/* <TableCell align="right">Edit</TableCell> */}
                             {/* <TableCell align="right">Delete</TableCell> */}
@@ -96,10 +96,10 @@ export default function Orders(props) {
                     <TableBody>
                         {reservations.map((reserve) => (
                             <TableRow key={reserve.ID}>
+                                <TableCell>#{reserve.ID}</TableCell>
                                 <TableCell>{reserve.reservationDate}</TableCell>
                                 <TableCell>{(new Date(reserve.startTime)).toLocaleTimeString()}</TableCell>
                                 <TableCell>{reserve.businessName}</TableCell>
-                                <TableCell>{reserve.isReserved}</TableCell>
                                 <TableCell>{`$${parseFloat(total(reserve.numReservable, reserve.price)).toFixed(2)}`}</TableCell>
                                 <TableCell align="right"><Button onClick={() => editReservation(reserve.ID, reserve.businessName)}>
                                     VIEW/EDIT</Button></TableCell>
