@@ -1114,6 +1114,20 @@ app.post("/api/getBusinessReservations", (req, res) => {
 
 app.post("/api/managerDeleteReservation", (req, res) => {
     const reservationID = req.body.reservationID;
+    var indexOfCancelledReservation;
+    for (let i = 0; i < scheduledEmails.length; i++) {
+        if (scheduledEmails[i].ID === reservationID) {
+            indexOfCancelledReservation = i;
+            break;
+        }
+    }
+    console.log("before removing email: " + scheduledEmails.length);
+    if (scheduledEmails[indexOfCancelledReservation]) {
+        console.log("cancelled reservation ID: " + scheduledEmails[indexOfCancelledReservation].ID);
+        scheduledEmails[indexOfCancelledReservation].cronSchedule.stop();
+        scheduledEmails.splice(indexOfCancelledReservation, 1);
+    }
+    console.log("after removing email: " + scheduledEmails.length);
     db.query(
         "SELECT * FROM reservations WHERE ID = ?",
         [reservationID], (err3, result3) => {
@@ -1130,13 +1144,6 @@ app.post("/api/managerDeleteReservation", (req, res) => {
                             res.send({ err: err })
                         }
                         if (result) {
-                            const cancelledReservation = scheduledEmails.findIndex((obj) => obj.ID === reservationID);
-                            console.log("cancelled reservation ID: " + cancelledReservation.ID);
-                            console.log("before removing email: " + scheduledEmails.length);
-                            if (cancelledReservation !== -1) {
-                                arr.splice(cancelledReservation, 1);
-                            }
-                            console.log("after removing email: " + scheduledEmails.length);
                             console.log({ result })
                             res.send({ result })
                             db.query(
