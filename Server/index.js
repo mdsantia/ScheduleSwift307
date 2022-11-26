@@ -768,18 +768,18 @@ app.post("/api/updateReservation", (req, res) => {
                         let allReservablePrices = price.split(";");
                         let allNumReservable = numReservable.split(";");
                         var allReservableItemsString = "";
-                        var subTotal = 0;
+                        var total = 0;
                         if (allReservableItems.length === 0) {
                             allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + numReservable + " x " + reservable + "</td>";
                             allReservableItemsString += "<td width=\"20%\"> (" + numReservable + " x $" + price + ")" + "</td><td width=\"5%\">=</td>";
                             allReservableItemsString += "<td style=\"text-align:right\">$" + (price * numReservable).toFixed(2) + "</td></tr>";
-                            subTotal = price * numReservable;
+                            total = price * numReservable;
                         } else {
                             for (i = 0; i < allReservableItems.length; i++) {
                                 allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + allNumReservable[i] + " x " + allReservableItems[i] + "</td>";
                                 allReservableItemsString += "<td width=\"20%\"> (" + allNumReservable[i] + " x $" + allReservablePrices[i] + ")" + "</td><td width=\"5%\">=</td>";
                                 allReservableItemsString += "<td style=\"text-align:right\">$" + (allReservablePrices[i] * allNumReservable[i]).toFixed(2) + "</td></tr>";
-                                subTotal += allReservablePrices[i] * allNumReservable[i];
+                                total += allReservablePrices[i] * allNumReservable[i];
                             }
                         }
                         var modificationMessage;
@@ -826,9 +826,7 @@ app.post("/api/updateReservation", (req, res) => {
                                 allReservableItemsString +
                                 "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
                                 "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
-                                "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
-                                "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
-                                "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
+                                "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + total.toFixed(2) + "</strong></td></tr>" +
                                 "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
                                 "<p>Thank you for reserving with ScheduleSwift!</p>" +
                                 "</td></tr></table>" +
@@ -894,9 +892,7 @@ app.post("/api/updateReservation", (req, res) => {
                                     allReservableItemsString +
                                     "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
                                     "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
-                                    "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
-                                    "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
-                                    "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
+                                    "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + total.toFixed(2) + "</strong></td></tr>" +
                                     "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
                                     "<p>Thank you for reserving with ScheduleSwift!</p>" +
                                     "</td></tr></table>" +
@@ -966,18 +962,18 @@ app.post("/api/createReservation", (req, res) => {
                         let allReservablePrices = price.split(";");
                         let allNumReservable = numReservable.split(";");
                         var allReservableItemsString = "";
-                        var subTotal = 0;
+                        var total = 0;
                         if (allReservableItems.length === 0) {
                             allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + numReservable + " x " + reservable + "</td>";
                             allReservableItemsString += "<td width=\"20%\"> (" + numReservable + " x $" + price + ")" + "</td><td width=\"5%\">=</td>";
                             allReservableItemsString += "<td style=\"text-align:right\">$" + (price * numReservable).toFixed(2) + "</td></tr>";
-                            subTotal = price * numReservable;
+                            total = price * numReservable;
                         } else {
                             for (let i = 0; i < allReservableItems.length; i++) {
                                 allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + allNumReservable[i] + " x " + allReservableItems[i] + "</td>";
                                 allReservableItemsString += "<td width=\"20%\"> (" + allNumReservable[i] + " x $" + allReservablePrices[i] + ")" + "</td><td width=\"5%\">=</td>";
                                 allReservableItemsString += "<td style=\"text-align:right\">$" + (allReservablePrices[i] * allNumReservable[i]).toFixed(2) + "</td></tr>";
-                                subTotal += allReservablePrices[i] * allNumReservable[i];
+                                total += allReservablePrices[i] * allNumReservable[i];
                             }
                         }
                         let policiesString = "";
@@ -1034,9 +1030,7 @@ app.post("/api/createReservation", (req, res) => {
                                     allReservableItemsString +
                                     "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
                                     "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
-                                    "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
-                                    "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
-                                    "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
+                                    "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + total.toFixed(2) + "</strong></td></tr>" +
                                     "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
                                     "<p>Thank you for reserving with ScheduleSwift!</p>" +
                                     "</td></tr></table>" +
@@ -1092,9 +1086,7 @@ app.post("/api/createReservation", (req, res) => {
                                     allReservableItemsString +
                                     "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
                                     "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
-                                    "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
-                                    "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
-                                    "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
+                                    "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + total.toFixed(2) + "</strong></td></tr>" +
                                     "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
                                     "<p>Thank you for reserving with ScheduleSwift!</p>" +
                                     "</td></tr></table>" +
@@ -1236,18 +1228,18 @@ app.post("/api/managerDeleteReservation", (req, res) => {
                                         let allReservablePrices = result3[0].price.split(";");
                                         let allNumReservable = result3[0].numReservable.split(";");
                                         var allReservableItemsString = "";
-                                        var subTotal = 0;
+                                        var total = 0;
                                         if (allReservableItems.length === 0) {
                                             allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + result3[0].numReservable + " x " + result3[0].reservableItem + "</td>";
                                             allReservableItemsString += "<td width=\"20%\"> (" + result3[0].numReservable + " x $" + result3[0].price + ")" + "</td><td width=\"5%\">=</td>";
                                             allReservableItemsString += "<td style=\"text-align:right\">$" + (result3[0].price * result3[0].numReservable).toFixed(2) + "</td></tr>";
-                                            subTotal = result3[0].price * result3[0].numReservable;
+                                            total = result3[0].price * result3[0].numReservable;
                                         } else {
                                             for (i = 0; i < allReservableItems.length; i++) {
                                                 allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + allNumReservable[i] + " x " + allReservableItems[i] + "</td>";
                                                 allReservableItemsString += "<td width=\"20%\"> (" + allNumReservable[i] + " x $" + allReservablePrices[i] + ")" + "</td><td width=\"5%\">=</td>";
                                                 allReservableItemsString += "<td style=\"text-align:right\">$" + (allReservablePrices[i] * allNumReservable[i]).toFixed(2) + "</td></tr>";
-                                                subTotal += allReservablePrices[i] * allNumReservable[i];
+                                                total += allReservablePrices[i] * allNumReservable[i];
                                             }
                                         }
                                         const mailOptions = {
@@ -1288,9 +1280,7 @@ app.post("/api/managerDeleteReservation", (req, res) => {
                                             allReservableItemsString +
                                             "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
                                             "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
-                                            "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
-                                            "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
-                                            "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
+                                            "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + total.toFixed(2) + "</strong></td></tr>" +
                                             "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
                                             "<p>Thank you for reserving with ScheduleSwift!</p>" +
                                             "</td></tr></table>" +
@@ -1860,18 +1850,18 @@ app.listen(3001, () => {
                                     let allReservablePrices = result[i].price.split(";");
                                     let allNumReservable = result[i].numReservable.split(";");
                                     var allReservableItemsString = "";
-                                    var subTotal = 0;
+                                    var total = 0;
                                     if (allReservableItems.length === 0) {
                                         allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + result[i].numReservable + " x " + result[i].reservableItem + "</td>";
                                         allReservableItemsString += "<td width=\"20%\"> (" + result[i].numReservable + " x $" + result[i].price + ")" + "</td><td width=\"5%\">=</td>";
                                         allReservableItemsString += "<td style=\"text-align:right\">$" + (result[i].price * result[i].numReservable).toFixed(2) + "</td></tr>";
-                                        subTotal = result[i].price * result[i].numReservable;
+                                        total = result[i].price * result[i].numReservable;
                                     } else {
                                         for (let j = 0; j < allReservableItems.length; j++) {
                                             allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + allNumReservable[j] + " x " + allReservableItems[j] + "</td>";
                                             allReservableItemsString += "<td width=\"20%\"> (" + allNumReservable[j] + " x $" + allReservablePrices[j] + ")" + "</td><td width=\"5%\">=</td>";
                                             allReservableItemsString += "<td style=\"text-align:right\">$" + (allReservablePrices[j] * allNumReservable[j]).toFixed(2) + "</td></tr>";
-                                            subTotal += allReservablePrices[j] * allNumReservable[j];
+                                            total += allReservablePrices[j] * allNumReservable[j];
                                         }
                                     }
                                     const mailOptionsReminder = {
@@ -1914,9 +1904,7 @@ app.listen(3001, () => {
                                             allReservableItemsString +
                                             "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
                                             "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
-                                            "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
-                                            "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
-                                            "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
+                                            "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + total.toFixed(2) + "</strong></td></tr>" +
                                             "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
                                             "<p>Thank you for reserving with ScheduleSwift!</p>" +
                                             "</td></tr></table>" +
