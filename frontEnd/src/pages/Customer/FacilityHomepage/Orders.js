@@ -43,6 +43,8 @@ export default function Orders(props) {
     const [question, setQuestion] = useState('');
     const [answer, setAnswer] = useState('');
 
+    const [contact, setContact] = useState([]);
+
     function getBusinessHours() {
         Axios.post("http://localhost:3001/api/getFacilitysData", {
             businessName: state.businessName
@@ -153,13 +155,23 @@ export default function Orders(props) {
         }).then((result) => {
             const faqs = result.data.result;
             setFAQ(faqs);
-            console.log("test");
+        })
+    }
+
+    function getContact(businessName) {
+
+        Axios.post("http://localhost:3001/api/managerGetContact", {
+            businessName: state.businessName
+        }).then((result) => {
+            const contacts = result.data.result;
+            setContact(contacts);
         })
     }
 
     useEffect(() => {
         getBusinessHours();
         getFAQ(state.businessName);
+        getContact(state.businessName);
     }, []);
     if (rows.length > 0) {
 
@@ -210,6 +222,24 @@ export default function Orders(props) {
                             <TableRow>
                                 <TableCell><strong>{faq.question}</strong></TableCell>
                                 <TableCell>{faq.answer}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                <br></br>
+                <Title>Contact Information</Title>
+                <Table size="small">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell size="small">Contact Type:</TableCell>
+                            <TableCell>Contact:</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {contact.map((contact, index) => (
+                            <TableRow>
+                                <TableCell><strong>{contact.contactType}</strong></TableCell>
+                                <TableCell>{contact.actualContact}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
