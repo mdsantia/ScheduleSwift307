@@ -1877,36 +1877,57 @@ app.listen(3001, () => {
         }
     );
     // GARBAGE COLLECTOR
-    // It runs every 5th minute */5 * * * *
-    // every day 0 0 * * *
+    // For the first run if it crashes
+    GarbageCollector();
+    // It runs every day 0 0 * * *
     cron.schedule("0 0 * * *", function () {
-        db.query(
-            "SELECT * FROM reservations",
-            (err, result) => {
-                if (err) {
-                    console.log(err);
-                    console.log("There was an error with the garbage collector running a query")
-                }
-                if (result.length > 0) {
-                    for (let i = 0; i < result.length; i++) {
-                        if (new Date(result[i].reservationDate) < new Date().setDate(new Date() - 1)) {
-                            console.log(result[i]);
-                            // SHOULD WE DELETE OR TRANSFER
-                            // db.query(DELETE FROM reservations WHERE ID = ?),
-                            //[result[i].ID],
-                            // (err1, result1) => {
-                            //     if (err1) {
-                            //         console.log("ERROR REMOVING GARBAGE FROM DATABASE");
-                            //     }
-                            //     if (result1) {
-                            //         console.log("SUCCESS REMOVAL OF " + result[i].ID);
-                            //     }
-                            // }
-                        }
-                    }
-                }
-            }
-        )
+        GarbageCollector();
     });
 })
 
+function GarbageCollector() {
+    console.log("Running Garbage Collector");
+    db.query(
+        "SELECT * FROM reservations",
+        (err, result) => {
+            if (err) {
+                console.log(err);
+                console.log("There was an error with the garbage collector running a query")
+            }
+            if (result.length > 0) {
+                var deleted = 0;
+                for (let i = 0; i < result.length; i++) {
+                    // Deletes all reservations two days prior to the current UTC times to avoid deleting reservations that havenot happened in current time
+                    if (new Date(result[i].reservationDate) < new Date(new Date().setDate(new Date().getDate() - 2))) {
+                        db.query(
+                            "DELETE FROM reservations WHERE ID = ?",
+                            [result[i].ID], (err1, result1) => {
+                            if (err1) {
+                                console.log("ERROR REMOVING GARBAGE FROM DATABASE");
+                            }
+                            else {
+                                console.log("SUCCESS REMOVAL OF " + result[i].ID);
+                                var indexOfCancelledReservation = -1;
+                                var reservationID = result[i].ID;
+                                for (let j = 0; j < scheduledEmails.length; j++) {
+                                    if (scheduledEmails[j].ID === reservationID) {
+                                        indexOfCancelledReservation = j;
+                                        break;
+                                    }
+                                }
+                                console.log("before removing email: " + scheduledEmails.length);
+                                if (scheduledEmails[indexOfCancelledReservation] && indexOfCancelledReservation >= 0) {
+                                    // console.log("cancelled reservation ID: " + scheduledEmails[indexOfCancelledReservation].ID);
+                                    scheduledEmails[indexOfCancelledReservation].cronSchedule.stop();
+                                    scheduledEmails.splice(indexOfCancelledReservation, 1);
+                                }
+                                deleted++;
+                                console.log("Num of deleted reservations by Garbage Collector: " + deleted);
+                            }
+                        })
+                    }
+                }
+            }
+        }
+    )
+}
