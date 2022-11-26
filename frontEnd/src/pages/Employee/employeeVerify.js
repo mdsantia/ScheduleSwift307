@@ -135,6 +135,13 @@ export default function EmployeeVerify() {
                             Verify
                         </Button>
                     </Box>
+                    <Grid container justifyContent="flex-end">
+                            <Grid item xs>
+                                <Link href="/employeeSignIn" variant="body2">
+                                    Back to Sign in
+                                </Link>
+                            </Grid>
+                    </Grid>
                 </Box>
                 <Copyright sx={{ mt: 8, mb: 4 }} />
             </Container>
