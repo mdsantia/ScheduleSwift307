@@ -233,7 +233,7 @@ function DashboardContent() {
                             <ListItemIcon>
                                 <BallotIcon />
                             </ListItemIcon>
-                            <ListItemText primary='Create Reservations' />
+                            <ListItemText primary='Create Event' />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
                             navigate("/facilityReservations", {
