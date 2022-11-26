@@ -733,6 +733,46 @@ app.post("/api/getReservationsbyDate", (req, res) => {
     )
 })
 
+app.post("/api/getReservationsbyDateUser", (req, res) => {
+    const businessName = req.body.businessName;
+    let reservationDate = req.body.reservationDate;
+    let reservationSubstring = reservationDate.substring(0, 10);
+    const username = req.body.username;
+    db.query(
+        "SELECT * FROM reservations WHERE businessName = ? AND reservationDate = ? AND reservedBy LIKE ?",
+        [businessName, reservationSubstring, `%${username}%`],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result : result })
+            }
+        }
+    )
+})
+
+app.post("/api/getReservationsbyUsername", (req, res) => {
+    const businessName = req.body.businessName;
+    const username = req.body.username;
+    db.query(
+        "SELECT * FROM reservations WHERE businessName = ? AND reservedBy LIKE ?",
+        [businessName, `%${username}%`],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result : result })
+            }
+        }
+    )
+})
+
 app.post("/api/updateReservation", (req, res) => {
     const ID = req.body.ID;
     const businessName = req.body.businessName;
@@ -1981,32 +2021,33 @@ function GarbageCollector() {
                         db.query(
                             "DELETE FROM reservations WHERE ID = ?",
                             [result[i].ID], (err1, result1) => {
-                            if (err1) {
-                                console.log("ERROR REMOVING GARBAGE FROM DATABASE");
-                            }
-                            else {
-                                console.log("SUCCESS REMOVAL OF " + result[i].ID);
-                                var indexOfCancelledReservation = -1;
-                                var reservationID = result[i].ID;
-                                for (let j = 0; j < scheduledEmails.length; j++) {
-                                    if (scheduledEmails[j].ID === reservationID) {
-                                        indexOfCancelledReservation = j;
-                                        break;
+                                if (err1) {
+                                    console.log("ERROR REMOVING GARBAGE FROM DATABASE");
+                                }
+                                else {
+                                    console.log("SUCCESS REMOVAL OF " + result[i].ID);
+                                    var indexOfCancelledReservation = -1;
+                                    var reservationID = result[i].ID;
+                                    for (let j = 0; j < scheduledEmails.length; j++) {
+                                        if (scheduledEmails[j].ID === reservationID) {
+                                            indexOfCancelledReservation = j;
+                                            break;
+                                        }
                                     }
+                                    console.log("before removing email: " + scheduledEmails.length);
+                                    if (scheduledEmails[indexOfCancelledReservation] && indexOfCancelledReservation >= 0) {
+                                        // console.log("cancelled reservation ID: " + scheduledEmails[indexOfCancelledReservation].ID);
+                                        scheduledEmails[indexOfCancelledReservation].cronSchedule.stop();
+                                        scheduledEmails.splice(indexOfCancelledReservation, 1);
+                                    }
+                                    deleted++;
+                                    console.log("Num of deleted reservations by Garbage Collector: " + deleted);
                                 }
-                                console.log("before removing email: " + scheduledEmails.length);
-                                if (scheduledEmails[indexOfCancelledReservation] && indexOfCancelledReservation >= 0) {
-                                    // console.log("cancelled reservation ID: " + scheduledEmails[indexOfCancelledReservation].ID);
-                                    scheduledEmails[indexOfCancelledReservation].cronSchedule.stop();
-                                    scheduledEmails.splice(indexOfCancelledReservation, 1);
-                                }
-                                deleted++;
-                                console.log("Num of deleted reservations by Garbage Collector: " + deleted);
-                            }
-                        })
+                            })
+                        }
                     }
                 }
             }
-        }
-    )
-}
+        )
+        console.log("Running Garbage Collector");
+    }

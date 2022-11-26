@@ -113,6 +113,11 @@ export default function Orders(props) {
                     ))}
                 </TableBody>
             </Table>);
+            notesBox.push(
+                <Grid container><Checkbox required/><p style={{color:"#98622E"}} component="h5" variant="h8">
+                    *I Agree with all the policies set by the facility for their reservations.
+                </p></Grid>
+            );
         }
     }
 
@@ -531,10 +536,6 @@ export default function Orders(props) {
     }
     function makeReceipt() {
         console.log("In Make receipt");
-        if (closed[new Date(currentDate).getDay()]) {
-            alert(`${businessName} is closed on ${new Date(currentDate).getDate()}.`);
-            return;
-        }
         let tot = 0;
         for (let i = 0; i < numReservableItems; i++) {
             tot = tot + numArray[i];
@@ -586,10 +587,6 @@ export default function Orders(props) {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        if (closed[new Date(currentDate).getDay()]) {
-            alert(`${businessName} is closed on ${new Date(currentDate).getDate()}.`);
-            return;
-        }
         let tot = 0;
         for (let i = 0; i < numReservableItems; i++) {
             tot = tot + numArray[i];
@@ -845,9 +842,7 @@ export default function Orders(props) {
                     {updateNotesBox()}
                     {notesBox[0]}
                     {notesBox[1]}
-                    <Grid container><Checkbox required/><p style={{color:"#98622E"}} component="h5" variant="h8">
-                        *I Agree with all the policies set by the facility for their reservations.
-                    </p></Grid>
+                    {notesBox[2]}
                     <Button
                         form='my-form'
                         type='submit'

@@ -49,7 +49,8 @@ export default function Orders() {
                 if (response.length > 0) {
                     if (!numFacilities) {
                         let row = [...rows];
-                        for (let entryNum = 0; entryNum < 5; entryNum++) {
+                        // for (let entryNum = 0; entryNum < 5; entryNum++) {
+                        for (let entryNum = 0; entryNum < response.length; entryNum++) {
                             row.push(createData(response[entryNum]["ID"],
                             response[entryNum]["businessName"]));
                             setRows(row);
@@ -92,7 +93,8 @@ export default function Orders() {
                 alert(`There are no more associated active reservations to your account.`);
             } else {
                 let response = result.data.result
-                for (let entryNum = 0 + numFacilities; entryNum < 5 + numFacilities; entryNum++) {
+                // for (let entryNum = 0 + numFacilities; entryNum < 5 + numFacilities; entryNum++) {
+                for (let entryNum = 0; entryNum < numFacilities; entryNum++) {
                     rows.push(createData(response[entryNum]["ID"],
                         response[entryNum]["businessName"]));
                     setRows(rows);
@@ -137,9 +139,9 @@ export default function Orders() {
                         ))}
                     </TableBody>
                 </Table>
-                <Link color="primary" href="#" onClick={addRow} sx={{ mt: 3 }}>
+                {/* <Link color="primary" href="#" onClick={addRow} sx={{ mt: 3 }}>
                     See more facilities
-                </Link>
+                </Link> */}
             </React.Fragment>
         );
     } else {
