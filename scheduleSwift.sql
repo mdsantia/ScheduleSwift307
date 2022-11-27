@@ -16,6 +16,7 @@ CREATE TABLE `userData` (
   `lastName` varchar(200) NOT NULL,
   `username` varchar(200) NOT NULL,
   `emailAddress` varchar(200) NOT NULL,
+  `phoneNumber` varchar(200) NOT NULL,
   `password` varchar(200) NOT NULL,
   `creationDate` varchar(200) DEFAULT NULL,
   `confirmCode` varchar(200) NOT NULL,
