@@ -29,6 +29,7 @@ export default function Orders(props) {
     const [usersData, setData] = useState('');
     const [newUsername, setNewUsername] = useState('');
     const [newEmail, setNewEmail] = useState('');
+    const [newPhoneNumber, setNewPhoneNumber] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const navigate = useNavigate();
     useEffect(() => {
@@ -46,6 +47,7 @@ export default function Orders(props) {
                 setData(userData.result[0]);
                 setNewUsername(userData.result[0].username)
                 setNewEmail(userData.result[0].emailAddress)
+                setNewPhoneNumber(userData.result[0].phoneNumber)
             })
     }
 
@@ -59,6 +61,7 @@ export default function Orders(props) {
             lastName: data.get('lastName'),
             username: data.get('username'),
             email: data.get('email'),
+            phoneNumber: data.get('phoneNumber'),
             password: data.get('password'),
         }).then(() => {
 
@@ -66,6 +69,7 @@ export default function Orders(props) {
                 state: {
                     username: data.get('username'),
                     email: data.get('email'),
+                    phoneNumber: data.get('phoneNumber'),
                     password: data.get('password')
                 }
             })
@@ -143,6 +147,18 @@ export default function Orders(props) {
                                 value={newEmail}
                                 autoComplete="email"
                                 onChange={(e) => setNewEmail(e.target.value)}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                required
+                                fullWidth
+                                id="phoneNumber"
+                                label="Phone Number"
+                                name="phoneNumber"
+                                value={newPhoneNumber}
+                                autoComplete="tel"
+                                onChange={(e) => setNewPhoneNumber(e.target.value)}
                             />
                         </Grid>
                         <Grid item xs={12}>
