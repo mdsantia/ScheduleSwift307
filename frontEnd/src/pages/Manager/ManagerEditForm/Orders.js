@@ -54,6 +54,7 @@ export default function Orders(props) {
     const [closed, setClosed] = useState('');
     const [MAXSTRING, setMAXSTRING] = useState(null);
     const [reservedBy, setReservedBy] = useState(null);
+    const [displayContactInfo, setDisplayContactInfo] = useState(false);
     
     useEffect(() => {
         insertValues();
@@ -471,8 +472,18 @@ export default function Orders(props) {
                 <Typography style={{color:"#98402E"}} component="h5" variant="h10">
                     {MAXSTRING}
                 </Typography>
+                <Typography component="p" variant="p" fontWeight="bold">
+                    Reservation ID: #{reservationID}
+                </Typography>
                 <Typography component="p" variant="p">
-                    Reservation ID: {reservationID}
+                    Reserved By: <Link variant="p" fontStyle="italic" onClick={() => setDisplayContactInfo(prev => !prev)}>{reservedBy}</Link>
+                    {displayContactInfo && 
+                        <Box>
+                        <Typography>Jenny Ha</Typography>
+                        <Typography>jjennyha18@gmail.com</Typography>
+                        <Typography>(574) 354-7966</Typography>
+                        </Box>
+                    }
                 </Typography>
                 <Box component="form" validate="true" onSubmit={handleSubmit} sx={{ mt: 3 }}>
                     <Grid container spacing={2}>
