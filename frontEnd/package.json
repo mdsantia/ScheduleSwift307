@@ -35,8 +35,8 @@
     "yup": "^0.32.11"
   },
   "scripts": {
-    "_comment": "Here you can change the port number of the webiste",
-    "start": "PORT=3000 react-scripts start",
+    "_comment": "Here you can change the port number of the webiste with 'PORT=3000 react-scripts start' in start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
