@@ -40,6 +40,23 @@ var transport = nodemailer.createTransport({
     },
 });
 
+app.post('/api/getContactInfo', (req, res) => {
+    const username = req.body.username;
+    db.query(
+        "SELECT * FROM userData WHERE username = ?",
+        [username], (err, result) => {
+            if (err) {
+                res.send({ err: err });
+            } else if (result.length == 0) {
+                console.log("Unable to find customer with that username");
+                res.send({ message: "Unable to find customer with that username" });
+            } else {
+                res.send({ result: result });
+            }
+        }
+    )
+})
+
 app.post('/api/allFacilityData', (req, res) => {
     console.log(`Searching by all the facilities\n`);
     db.query(
@@ -266,11 +283,12 @@ app.post("/api/customerRegister", (req, res) => {
     const lastName = req.body.lastName;
     const username = req.body.username;
     const emailAddress = req.body.email;
+    const phoneNumber = req.body.phoneNumber;
     const encryptedPassword = encrypt(req.body.password);
     const registerDate = req.body.creationDate;
     const confirmCode = req.body.confirmCode;
-    const sqlInsert = "INSERT INTO userData (firstName, lastName, username, emailAddress, password, creationDate, confirmCode) VALUES (?,?,?,?,?,?,?)"
-    db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword, registerDate, confirmCode], (err, result) => {
+    const sqlInsert = "INSERT INTO userData (firstName, lastName, username, emailAddress, phoneNumber, password, creationDate, confirmCode) VALUES (?,?,?,?,?,?,?,?)"
+    db.query(sqlInsert, [firstName, lastName, username, emailAddress, phoneNumber, encryptedPassword, registerDate, confirmCode], (err, result) => {
         if (err) {
             console.log(err.message);
             res.send({ err: err });
@@ -650,6 +668,7 @@ app.post("/api/updateCustomerInfo", (req, res) => {
     const lastName = req.body.lastname;
     const username = req.body.username;
     const email = req.body.email;
+    const phoneNumber = req.body.phoneNumber;
     const password = req.body.password;
     const encryptedPassword = encrypt(password);
     const businessName = req.body.businessName;

@@ -57,10 +57,36 @@ export default function Orders(props) {
     const [notes, setNotes] = useState([]);
     const [paymentRequire, setPaymentRequire] = useState("none");
     const [paymentValue, setPaymentValue] = useState(0);
+    const [reservedBy, setReservedBy] = useState(null);
+    const [displayContactInfo, setDisplayContactInfo] = useState(false);
+    const [customerName, setCustomerName] = useState(null);
+    const [customerEmail, setCustomerEmail] = useState(null);
+    const [customerPhoneNumber, setCustomerPhoneNumber] = useState(null);
     
     useEffect(() => {
         insertValues();
     }, [])
+
+    function getContactInfo(reservedBy) {
+        Axios.post("http://" + getIP() + ":3001/api/getContactInfo", {
+            username: reservedBy,
+        }).then((result) => {
+            if (result.data.err) {
+                console.log(result.data.err);
+            } else if (result.data.message) {
+                console.log(result.data.message);
+            } else {
+                console.log(result.data.result);
+                setCustomerName(result.data.result[0].firstName + " " + result.data.result[0].lastName);
+                setCustomerEmail(result.data.result[0].emailAddress);
+                setCustomerPhoneNumber("(" + result.data.result[0].phoneNumber.substring(0, 3) + ") " + result.data.result[0].phoneNumber.substring(3, 6) + "-" + result.data.result[0].phoneNumber.substring(6));
+            }
+            console.log(customerName);
+            console.log(customerEmail);
+            console.log(customerPhoneNumber);
+        })
+    }
+
 
     function updatePayment() {
         let str = "";
@@ -449,6 +475,8 @@ export default function Orders(props) {
                 getConcurrent(date,
                     result.data.result[0].startTime, result.data.result[0].endTime, 
                     maxPeople, maxs, ReservedItems)
+                setReservedBy(result.data.result[0].reservedBy);
+                getContactInfo(result.data.result[0].reservedBy);
             })
         } else {
             getConcurrent(null, null, null, null, maxPeople, maxs, ReservedItems)
@@ -611,8 +639,18 @@ export default function Orders(props) {
                 <Typography style={{color:"#98402E"}} component="h5" variant="h10">
                     {MAXSTRING}
                 </Typography>
+                <Typography component="p" variant="p" fontWeight="bold">
+                    Reservation ID: #{reservationID}
+                </Typography>
                 <Typography component="p" variant="p">
-                    Reservation ID: {reservationID}
+                    Reserved By: <Link variant="p" fontStyle="italic" onClick={() => setDisplayContactInfo(prev => !prev)}>{reservedBy}</Link>
+                    {displayContactInfo && 
+                        <Box>
+                        <Typography>{customerName}</Typography>
+                        <Typography>{customerEmail}</Typography>
+                        <Typography>{customerPhoneNumber}</Typography>
+                        </Box>
+                    }
                 </Typography>
                 <Box component="form" validate="true" onSubmit={handleSubmit} sx={{ mt: 3 }}>
                     <Grid container spacing={2}>
