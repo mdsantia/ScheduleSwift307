@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { getIP } from '../../..';
+import styled from "styled-components";
 import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -15,6 +16,9 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { useEffect, useState } from 'react';
 import { Button, TextField, Grid, Typography, Divider } from '@mui/material';
 import { Dayjs } from 'dayjs';
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import Modal from '@mui/material/Modal';
+import { getDate } from 'date-fns';
 
 function preventDefault(event) {
     event.preventDefault();
@@ -35,11 +39,42 @@ function timeDiff(start, end) {
     return arg1.getTime() - arg2.getTime();
 }
 
+const style={
+    position: 'absolute',
+    top: "50%",
+    left: "50%",
+    transform: 'translate(-50%,-50%)',
+    width: 800,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};
+
+const But = styled.button`
+background-color: #694a2e;
+color: white;
+font-size: 20px;
+padding: 10px 60px;
+border-radius: 5px;
+margin: 10px 0px;
+cursor: pointer;
+`;
+
 export default function Orders(props) {
     const year = new Date().getFullYear();
     const month = new Date().getMonth() + 1;
     const day = new Date().getDate();
     const formattedDate = `${year}-${month}-${day}`;
+
+    const [open, setOpen] = React.useState(false);
+    const [openExcTime, setOpenExcTime] = useState(Dayjs | null);
+    const [closeExcTime, setCloseExcTime] = useState(Dayjs | null);
+    const [exceptionDate, setExceptionDate] = useState(new Date(formattedDate));
+    const [dates, setDates] = useState([]);
+    const [table, setTable] = useState([]);
+    const [timeArray, setTimeArray] = useState([<Grid item xs={12} sm={4} fullWidth align="center"><strong>CLOSED</strong></Grid>,
+    <Grid item xs={12} sm={4} fullWidth align="center"><strong>CLOSED</strong></Grid>]);
 
     const box = [];
     const [rows, setRows] = useState([]);
@@ -102,6 +137,13 @@ export default function Orders(props) {
         createDay(6, 'Saturday')]);
     }
     
+    const handleOpen = (event) => {
+        setOpen(true);
+        event.preventDefault();
+    }
+
+    const handleClose = () => setOpen(false);
+
     const handleSubmit = (event) => {
         event.preventDefault();
         alert(`${props.businessName}'s Business Hours have been saved!`);
@@ -253,6 +295,82 @@ export default function Orders(props) {
         })
     }
 
+    const addDate = (event) => {
+        event.preventDefault();
+        Axios.post("http://" + getIP() + ":3001/api/addExceptionDate", {
+            businessName: props.businessName,
+            date: exceptionDate,
+            startTime: openExcTime?openExcTime:"closed",
+            endTime: closeExcTime?closeExcTime:"closed"
+        }).then((result) => {
+            if (result.data.err) {
+                alert("Error! Something has gone wrong!")
+            } else {
+                getDates(props.businessName);
+            }
+        })
+    }
+
+    function getDates(businessName) {
+        Axios.post("http://" + getIP() + ":3001/api/getExceptionDates", {
+            businessName: props.businessName
+        }).then((result) => {
+            const datesTemp = result.data.result;
+            setDates(datesTemp);
+            if (datesTemp.length > 0) {
+                var tableTemp = []
+                tableTemp.push(
+                    <Table size="small">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell size="small">Date</TableCell>
+                            <TableCell>Open</TableCell>
+                            <TableCell>Close</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {datesTemp.map((date, index) => (
+                            <TableRow>
+                                <TableCell><strong>{date.date}</strong></TableCell>
+                                <TableCell>{(date.startTime === 'closed')?<strong>CLOSED</strong>:(new Date(date.startTime)).toLocaleTimeString()}</TableCell>
+                                <TableCell>{(date.endTime === 'closed')?<strong>CLOSED</strong>:(new Date(date.endTime)).toLocaleTimeString()}</TableCell>
+                                <TableCell align="right"><Button onClick={() => clearDate(date.ID)}>Remove</Button></TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                    </Table>
+                );
+                setTable(tableTemp);
+            }
+        })
+    }
+
+    function clearDate(id) {
+        Axios.post("http://" + getIP() + ":3001/api/deleteExceptionDate", {
+            id: id
+        }).then((result) => {
+            if (result.data.result.affectedRows === 0) {
+            } else {
+                getDates(props.businessName);
+            }
+        })
+    }
+
+    function openClose(event) {
+        event.preventDefault();
+        let arr = [];
+        console.log(openExcTime)
+        if (openExcTime) {
+            setOpenExcTime(null);
+            setCloseExcTime(null);
+            arr.push(<Grid item xs={12} sm={4} fullWidth align="center"><strong>CLOSED</strong></Grid>);
+        } else {
+            setOpenExcTime(new Date(formattedDate + "T00:00"));
+            setCloseExcTime(new Date(formattedDate + "T23:59"));
+        }
+        setTimeArray(arr);
+    }
+
     function getContact(businessName) {
         Axios.post("http://" + getIP() + ":3001/api/managerGetContact", {
             businessName: props.businessName
@@ -294,6 +412,7 @@ export default function Orders(props) {
     useEffect(() => {
         getBusinessHours();
         getFAQ(props.businessName);
+        getDates(props.businessName);
     }, []);
     if (rows.length > 0) {
 
@@ -332,6 +451,93 @@ export default function Orders(props) {
                         >
                             Save
                     </Button>
+                    <Title>Add an Exception Date</Title>
+                    <br></br>
+                    {table[0]}
+                    <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            sx={{ mt: 3, mb: 2 }}
+                            onClick={handleOpen}
+                        >
+                            Add an exception
+                    </Button>
+                    <Modal
+                        open={open}
+                        onClose={handleClose}
+                        disableEscapeKeyDown
+                        aria-labelledby='modal-modal-title'
+                        aria-describedby='modal-modal-description'
+                    ><Box sx={style}>
+                    <Typography id="modal-modal-title" align="center">Add an Exception Date</Typography>
+                    <But onClick={openClose} fullWidth>{openExcTime?"CLOSE":"OPEN"}</But>
+                    <br></br>
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} sm={4}>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker
+                                    id="reservationDate"
+                                    label="Select Date"
+                                    validate="true"
+                                    value={exceptionDate}
+                                    onChange={(newValue) => { setExceptionDate(newValue)} }
+                                    renderInput={(params) => <TextField {...params}/>}
+                                    shouldDisableDate={(date) => {
+                                        if (date < new Date()) {
+                                            return true;
+                                        }
+                                        return false;
+                                    }}
+                                />
+                            </LocalizationProvider>
+                        </Grid>
+                        {(openExcTime)?<Grid item xs={12} sm={4}>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <TimePicker
+                                label="Open Time"
+                                value={openExcTime}
+                                fullWidth
+                                onChange={(newValue) => { setOpenExcTime(newValue) }}
+                                renderInput={(params) => <TextField {...params} required/>}
+                                />
+                        </LocalizationProvider>
+                        </Grid>:
+                        <Grid item xs={12} sm={4} fullWidth align="center">
+                            <strong>CLOSED</strong>
+                        </Grid>}
+                        {(closeExcTime)?<Grid item xs={12} sm={4}>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <TimePicker
+                                label="Close Time"
+                                value={closeExcTime}
+                                fullWidth
+                                onChange={(newValue) => { setCloseExcTime(newValue) }}
+                                renderInput={(params) => <TextField {...params} required />}
+                                shouldDisableTime={(timeValue, clockType) => {
+                                    const openHour = new Date((openExcTime)).getHours()
+                                    const openMinute = new Date((openExcTime)).getMinutes()
+                                    if ((clockType === 'hours' && timeValue < openHour)) {
+                                        return true;
+                                    }
+                                    if ((clockType === 'hours' && timeValue < (new Date(`${openExcTime}`).getHours()))
+                                    || ((new Date(`${openExcTime}`).getHours()) === (new Date(`${openExcTime}`).getHours()) && 
+                                    clockType === 'minutes' && timeValue <= (new Date(`${openExcTime}`).getMinutes()) )) {
+                                        return true;
+                                    }
+                                    return false;
+                                }}
+                                />
+                        </LocalizationProvider>
+                        </Grid>:
+                        <Grid item xs={12} sm={4} fullWidth align="center">
+                            <strong>CLOSED</strong>
+                        </Grid>}
+                    </Grid>
+                    <Button align="center" onClick={handleClose}>Cancel</Button>
+                    <Button align="center" form='my-form' onClick={addDate}>Submit</Button>
+                </Box>
+                </Modal>
                 </Box>
                 <br></br>
                 <br></br>

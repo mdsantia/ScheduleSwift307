@@ -1,5 +1,3 @@
-import { prototype } from "events";
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -1660,6 +1658,64 @@ app.post("/api/managerDeleteFAQ", (req, res) => {
     db.query(
         "DELETE FROM managerFAQ WHERE ID = ?",
         [faqID],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log(result)
+                res.send({ result: result })
+            }
+        }
+    )
+})
+
+app.post("/api/addExceptionDate", (req, res) => {
+    const businessName = req.body.businessName;
+    let date = req.body.date;
+    let dateSubstring = date.substring(0, 10);
+    const startTime = req.body.startTime;
+    const endTime = req.body.endTime;
+    db.query(
+        "INSERT INTO dateExceptions (businessName, date, startTime, endTime) VALUES (?,?,?,?)",
+        [businessName, dateSubstring, startTime, endTime],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result })
+            }
+        }
+    )
+})
+
+app.post("/api/getExceptionDates", (req, res) => {
+    const businessName = req.body.businessName;
+
+    db.query(
+        "SELECT * FROM dateExceptions WHERE businessName = ?",
+        [businessName],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            }
+            if (result) {
+                console.log(result)
+                res.send({ result: result })
+            }
+        }
+    )
+
+})
+
+app.post("/api/deleteExceptionDate", (req, res) => {
+    const id = req.body.id;
+    db.query(
+        "DELETE FROM dateExceptions WHERE ID = ?",
+        [id],
         (err, result) => {
             if (err) {
                 console.log(err)
