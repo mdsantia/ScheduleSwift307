@@ -101,6 +101,7 @@ const CustomerRegister = () => {
                 lastName: data.get('lastName'),
                 username: data.get('username'),
                 email: data.get('email'),
+                phoneNumber: data.get('phoneNumber'),
                 password: data.get('password'),
                 creationDate: creationDate,
                 confirmCode: uniqueConfirmCode,
@@ -130,6 +131,7 @@ const CustomerRegister = () => {
                         lastName: data.get('lastName'),
                         username: data.get('username'),
                         email: data.get('email'),
+                        phoneNumber: data.get('phoneNumber'),
                         password: data.get('password'),
                     });
                 }
@@ -198,6 +200,17 @@ const CustomerRegister = () => {
                                     label="Email Address"
                                     name="email"
                                     autoComplete="email"
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    required
+                                    fullWidth
+                                    id="phoneNumber"
+                                    label="Phone Number"
+                                    type="tel"
+                                    name="phoneNumber"
+                                    autoComplete="tel"
                                 />
                             </Grid>
                             <Grid item xs={12}>

@@ -75,7 +75,7 @@ export default function Orders(props) {
                 console.log(result.data.result);
                 setCustomerName(result.data.result[0].firstName + " " + result.data.result[0].lastName);
                 setCustomerEmail(result.data.result[0].emailAddress);
-                setCustomerPhoneNumber("(XXX) XXX-XXXX");
+                setCustomerPhoneNumber("(" + result.data.result[0].phoneNumber.substring(0, 3) + ") " + result.data.result[0].phoneNumber.substring(3, 6) + "-" + result.data.result[0].phoneNumber.substring(6));
             }
             console.log(customerName);
             console.log(customerEmail);

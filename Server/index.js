@@ -285,11 +285,12 @@ app.post("/api/customerRegister", (req, res) => {
     const lastName = req.body.lastName;
     const username = req.body.username;
     const emailAddress = req.body.email;
+    const phoneNumber = req.body.phoneNumber;
     const encryptedPassword = encrypt(req.body.password);
     const registerDate = req.body.creationDate;
     const confirmCode = req.body.confirmCode;
-    const sqlInsert = "INSERT INTO userData (firstName, lastName, username, emailAddress, password, creationDate, confirmCode) VALUES (?,?,?,?,?,?,?)"
-    db.query(sqlInsert, [firstName, lastName, username, emailAddress, encryptedPassword, registerDate, confirmCode], (err, result) => {
+    const sqlInsert = "INSERT INTO userData (firstName, lastName, username, emailAddress, phoneNumber, password, creationDate, confirmCode) VALUES (?,?,?,?,?,?,?,?)"
+    db.query(sqlInsert, [firstName, lastName, username, emailAddress, phoneNumber, encryptedPassword, registerDate, confirmCode], (err, result) => {
         if (err) {
             console.log(err.message);
             res.send({ err: err });
