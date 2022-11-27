@@ -5,8 +5,9 @@ import App from './App';
 
 export function getIP() {
   // Set the ip to be the host of the database
-  // const ip = 'localhost';
-  const ip = '192.168.1.15';
+  const ip = 'localhost';
+  // enter local network ip to work given by the terminal in the on local network field
+  // const ip = '192.168.1.15';
   return ip;
 }
 
