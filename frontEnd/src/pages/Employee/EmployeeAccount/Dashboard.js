@@ -31,6 +31,7 @@ import BallotIcon from "@mui/icons-material/Ballot";
 import BentoIcon from "@mui/icons-material/Bento";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Logo from '../Logo.png';
+import DateRangeIcon from '@mui/icons-material/DateRange';
 
 function Copyright(props) {
     return (
@@ -227,7 +228,7 @@ function DashboardContent() {
                             })
                         }}>
                             <ListItemIcon>
-                                <BallotIcon />
+                                <DateRangeIcon />
                             </ListItemIcon>
                             <ListItemText primary='Calendar View' />
                         </ListItemButton>
