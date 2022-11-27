@@ -39,6 +39,8 @@ import Logo from '../Logo.png';
 import { ClickAwayListener, Modal } from '@mui/material';
 import Axios from 'axios';
 import { useState } from 'react';
+import DateRangeIcon from '@mui/icons-material/DateRange';
+
 function Copyright(props) {
     return (
         <Typography variant="body2" color="text.secondary" align="center" {...props}>
@@ -307,7 +309,7 @@ function DashboardContent() {
                             })
                         }}>
                             <ListItemIcon>
-                                <BallotIcon />
+                                <DateRangeIcon />
                             </ListItemIcon>
                             <ListItemText primary='Calendar View' />
                         </ListItemButton>
@@ -477,7 +479,7 @@ function DashboardContent() {
                             })
                         }}>
                             <ListItemIcon>
-                                <BallotIcon />
+                                <DateRangeIcon />
                             </ListItemIcon>
                             <ListItemText primary='Calendar View' />
                         </ListItemButton>
