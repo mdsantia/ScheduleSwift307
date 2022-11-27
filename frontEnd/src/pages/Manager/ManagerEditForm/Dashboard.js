@@ -34,6 +34,8 @@ import { Navigate, useNavigate, useLocation } from "react-router-dom";
 import { useState } from 'react';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Logo from '../Logo.png';
+import AddBoxIcon from '@mui/icons-material/AddBox';
+import DescriptionIcon from '@mui/icons-material/Description';
 
 function Copyright(props) {
     return (
@@ -217,7 +219,7 @@ function DashboardContent() {
                             })
                         }}>
                             <ListItemIcon>
-                                <BallotIcon />
+                                <DescriptionIcon />
                             </ListItemIcon>
                             <ListItemText primary='Reservation Form' />
                         </ListItemButton>
@@ -231,7 +233,7 @@ function DashboardContent() {
                             })
                         }}>
                             <ListItemIcon>
-                                <BallotIcon />
+                                <AddBoxIcon />
                             </ListItemIcon>
                             <ListItemText primary='Create Event' />
                         </ListItemButton>
