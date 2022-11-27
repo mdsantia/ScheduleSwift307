@@ -64,8 +64,6 @@ export default function Orders(props) {
     }, [])
 
     function getContactInfo(reservedBy) {
-        console.log("in get contact info function");
-        console.log(reservedBy);
         Axios.post("http://" + getIP() + ":3001/api/getContactInfo", {
             username: reservedBy,
         }).then((result) => {
