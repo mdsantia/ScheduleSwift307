@@ -1,4 +1,4 @@
-import { prototype } from "events";
+// import { prototype } from "events";
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -41,6 +41,23 @@ var transport = nodemailer.createTransport({
         pass: "txwgbslbjbxxojvb",
     },
 });
+
+app.post('/api/getContactInfo', (req, res) => {
+    const username = req.body.username;
+    db.query(
+        "SELECT * FROM userData WHERE username = ?",
+        [username], (err, result) => {
+            if (err) {
+                res.send({ err: err });
+            } else if (result.length == 0) {
+                console.log("Unable to find customer with that username");
+                res.send({ message: "Unable to find customer with that username" });
+            } else {
+                res.send({ result: result });
+            }
+        }
+    )
+})
 
 app.post('/api/allFacilityData', (req, res) => {
     console.log(`Searching by all the facilities\n`);
