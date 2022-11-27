@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getIP } from '../../..';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -17,7 +18,7 @@ export default function Orders(props) {
     const [noteSubject, setNoteSubject] = useState('');
     const [noteBody, setNoteBody] = useState('');
     function getNotes(businessName) {
-        Axios.post("http://localhost:3001/api/getBusinessNotes", {
+        Axios.post("http://" + getIP() + ":3001/api/getBusinessNotes", {
             businessName: props.businessName
         }).then((result) => {
             const allNotes = result.data.result;
@@ -28,7 +29,7 @@ export default function Orders(props) {
     }
     const addNotes = (event) => {
         event.preventDefault();
-        Axios.post("http://localhost:3001/api/addBusinessNotes", {
+        Axios.post("http://" + getIP() + ":3001/api/addBusinessNotes", {
             businessName: props.businessName,
             noteSubject: noteSubject,
             noteBody: noteBody
@@ -51,7 +52,7 @@ export default function Orders(props) {
     }
 
     function clearNote(noteID) {
-        Axios.post("http://localhost:3001/api/managerDeleteNote", {
+        Axios.post("http://" + getIP() + ":3001/api/managerDeleteNote", {
             noteID: noteID
         }).then((result) => {
             if (result.data.result.affectedRows === 0) {

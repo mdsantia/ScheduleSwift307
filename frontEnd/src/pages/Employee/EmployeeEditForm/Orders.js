@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getIP } from '../../..';
 import Link from '@mui/material/Link';
 import Avatar from '@mui/material/Avatar';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -160,7 +161,7 @@ export default function Orders(props) {
                 stringdate = stringdate.concat(`${day.getDay()}`);
             }
         }
-        Axios.post("http://localhost:3001/api/getMaxAvailable", {
+        Axios.post("http://" + getIP() + ":3001/api/getMaxAvailable", {
             businessName: businessName,
             date: stringdate
         }).then((result) => {
@@ -331,7 +332,7 @@ export default function Orders(props) {
     }
 
     function getNotes(businessName) {
-        Axios.post("http://localhost:3001/api/reservationGetNotes", {
+        Axios.post("http://" + getIP() + ":3001/api/reservationGetNotes", {
             businessName: state.businessName
         }).then((result) => {
             const notes = result.data.result;
@@ -355,7 +356,7 @@ export default function Orders(props) {
         let maxPeople = 0;
         let prices = "";
         getNotes(props.businessName);
-        Axios.post("http://localhost:3001/api/getFacilitysData", {
+        Axios.post("http://" + getIP() + ":3001/api/getFacilitysData", {
             businessName: businessName
         }).then((result) => {
             if (result.data.err) {
@@ -433,7 +434,7 @@ export default function Orders(props) {
         if (state.ID) {
             setReservationID(state.ID);
             // getNumArray
-            Axios.post("http://localhost:3001/api/getReservation", {
+            Axios.post("http://" + getIP() + ":3001/api/getReservation", {
                 ID: state.ID
             }).then((result) => {
                 // UPDATE numValues
@@ -550,7 +551,7 @@ export default function Orders(props) {
             }
         }
         if (!reservationID) {
-            Axios.post("http://localhost:3001/api/createReservation", {
+            Axios.post("http://" + getIP() + ":3001/api/createReservation", {
                 businessName: businessName,
                 reservationDate: currentDate,
                 reservable: ReservedItems,
@@ -567,7 +568,7 @@ export default function Orders(props) {
             })
         } else{
             // UPDATE RESERVATION INSTEAD
-            Axios.post("http://localhost:3001/api/updateReservation", {
+            Axios.post("http://" + getIP() + ":3001/api/updateReservation", {
                 ID: reservationID,
                 businessName: businessName,
                 reservationDate: currentDate,

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getIP } from '../../..';
 import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -40,7 +41,7 @@ export default function Orders() {
     }
 
     function startFill() {
-        Axios.post("http://localhost:3001/api/allFacilityData").then((result) => {
+        Axios.post("http://" + getIP() + ":3001/api/allFacilityData").then((result) => {
             if (result.data.err) {
                 alert("Facility data missing!");
             } else {
@@ -88,7 +89,7 @@ export default function Orders() {
     
     const addRow = (e) => {
         e.preventDefault();
-        Axios.post("http://localhost:3001/api/allFacilityData").then((result) => {
+        Axios.post("http://" + getIP() + ":3001/api/allFacilityData").then((result) => {
             if (result.data.message) {
                 alert(`There are no more associated active reservations to your account.`);
             } else {

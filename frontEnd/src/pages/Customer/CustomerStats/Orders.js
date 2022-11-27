@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getIP } from '../../..';
 import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -22,7 +23,7 @@ export default function Orders(props) {
         getMemberSince();
     }, []);
     function getMemberSince() {
-        Axios.post("http://localhost:3001/api/memberSince", {
+        Axios.post("http://" + getIP() + ":3001/api/memberSince", {
             username: props.username,
             password: props.password
         })

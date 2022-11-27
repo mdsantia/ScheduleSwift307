@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getIP } from '../..';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -92,12 +93,12 @@ const EmailChangeForm = () => {
             setEmailStatus("Please enter in a new email address.");
         } else {
             if (state.businessName) {
-                Axios.post("http://localhost:3001/api/changeEmail", {
+                Axios.post("http://" + getIP() + ":3001/api/changeEmail", {
                     username: state.username,
                     email: newEmail,
                     businessName: state.businessName
                 });
-                Axios.post("http://localhost:3001/api/sendConfirmEmail", {
+                Axios.post("http://" + getIP() + ":3001/api/sendConfirmEmail", {
                     username: state.username,
                     email: newEmail,
                     firstName: state.firstName,
@@ -105,11 +106,11 @@ const EmailChangeForm = () => {
                     confirmCode: uniqueConfirmCode
                 });
             } else {
-                Axios.post("http://localhost:3001/api/changeEmail", {
+                Axios.post("http://" + getIP() + ":3001/api/changeEmail", {
                     username: state.username,
                     email: newEmail
                 });
-                Axios.post("http://localhost:3001/api/sendConfirmEmail", {
+                Axios.post("http://" + getIP() + ":3001/api/sendConfirmEmail", {
                     username: state.username,
                     email: newEmail,
                     firstName: state.firstName,

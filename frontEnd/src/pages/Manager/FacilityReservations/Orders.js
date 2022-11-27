@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getIP } from '../../..';
 import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -32,7 +33,7 @@ export default function Orders(props) {
     const [reservationIDs, setReservationIDs] = useState('');
     const navigate = useNavigate();
     function getReservations(business) {
-        Axios.post("http://localhost:3001/api/getBusinessReservations", {
+        Axios.post("http://" + getIP() + ":3001/api/getBusinessReservations", {
             businessName: props.businessName
         }).then((result) => {
             const allReserves = result.data.result;
@@ -57,7 +58,7 @@ export default function Orders(props) {
     }
     function deleteReservation(resID) {
         if(window.confirm("ID: " + resID + "\nAre you sure you want to cancel this reservation?")) {
-            Axios.post("http://localhost:3001/api/managerDeleteReservation", {
+            Axios.post("http://" + getIP() + ":3001/api/managerDeleteReservation", {
                 reservationID: resID
             }).then((result) => {
                 if (result.data.result.affectedRows === 0) {
@@ -96,7 +97,7 @@ export default function Orders(props) {
         console.log(data.get('resID'));
         console.log(data.get('newPrice'));
 
-        Axios.post("http://localhost:3001/api/managerChangePrice", {    
+        Axios.post("http://" + getIP() + ":3001/api/managerChangePrice", {    
 
             id: data.get('resID'),
             newPrice: data.get('newPrice'),
@@ -108,7 +109,7 @@ export default function Orders(props) {
 
     const filter = () => {
         if (currentDate && searchUsername) {
-            Axios.post("http://localhost:3001/api/getReservationsbyDateUser", {
+            Axios.post("http://" + getIP() + ":3001/api/getReservationsbyDateUser", {
                 businessName: props.businessName,
                 reservationDate: currentDate,
                 username: searchUsername
@@ -122,7 +123,7 @@ export default function Orders(props) {
                 setReservationIDs(reservationIDs);
             })
         } else if (currentDate) {
-            Axios.post("http://localhost:3001/api/getReservationsbyDate", {
+            Axios.post("http://" + getIP() + ":3001/api/getReservationsbyDate", {
                 businessName: props.businessName,
                 reservationDate: currentDate
             }).then((result) => {
@@ -135,7 +136,7 @@ export default function Orders(props) {
                 setReservationIDs(reservationIDs);
             })
         } else if (searchUsername) {
-            Axios.post("http://localhost:3001/api/getReservationsbyUsername", {
+            Axios.post("http://" + getIP() + ":3001/api/getReservationsbyUsername", {
                 businessName: props.businessName,
                 username: searchUsername
             }).then((result) => {

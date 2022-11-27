@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getIP } from '../../..';
 import Link from '@mui/material/Link';
 import Avatar from '@mui/material/Avatar';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -62,7 +63,7 @@ export default function Orders(props) {
     }, [])
 
     function getNotes(businessName) {
-        Axios.post("http://localhost:3001/api/reservationGetNotes", {
+        Axios.post("http://" + getIP() + ":3001/api/reservationGetNotes", {
             businessName: props.businessName
         }).then((result) => {
             const notes = result.data.result;
@@ -75,7 +76,7 @@ export default function Orders(props) {
         editList.push(false);
         setEditPolicy(editList);
         event.preventDefault();
-        Axios.post("http://localhost:3001/api/addReservationNote", {
+        Axios.post("http://" + getIP() + ":3001/api/addReservationNote", {
             businessName: props.businessName,
             note: note
         }).then((result) => {
@@ -91,7 +92,7 @@ export default function Orders(props) {
     function editNote(index) {
         let editList = [...editPolicy];
         if (editList[index]) {
-            Axios.post("http://localhost:3001/api/editReservationNote", {
+            Axios.post("http://" + getIP() + ":3001/api/editReservationNote", {
                 note: notes[index],
                 id: notes[index].ID
             }).then((result) => {
@@ -108,7 +109,7 @@ export default function Orders(props) {
 
     function clearNote(noteID) {
         if(window.confirm("Are you sure you want to clear this policy/note?")) {
-            Axios.post("http://localhost:3001/api/reservationDeleteNote", {
+            Axios.post("http://" + getIP() + ":3001/api/reservationDeleteNote", {
                 noteID: parseInt(noteID)
             }).then((result) => {
                 if (result.data.result.affectedRows === 0) {
@@ -201,7 +202,7 @@ export default function Orders(props) {
     }
 
     function insertValues() {
-        Axios.post("http://localhost:3001/api/getFacilitysData", {
+        Axios.post("http://" + getIP() + ":3001/api/getFacilitysData", {
             businessName: props.businessName
         }).then((result) => {
             if (result.data.err) {
@@ -373,7 +374,7 @@ export default function Orders(props) {
             paymentRequire = paymentStatus;
             paymentValue = paymentNum;
         }
-        Axios.post("http://localhost:3001/api/updateMinMax", {
+        Axios.post("http://" + getIP() + ":3001/api/updateMinMax", {
             businessName: data.get('business'),
             reservableItems: ReservedItems,
             paymentRequire: paymentRequire,

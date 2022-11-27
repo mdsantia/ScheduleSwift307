@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getIP } from '../../..';
 import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -35,7 +36,7 @@ export default function Orders(props) {
     }, []);
 
     function getAccountInfo() {
-        axios.post("http://localhost:3001/api/customerEdit", {
+        axios.post("http://" + getIP() + ":3001/api/customerEdit", {
             username: props.username,
             password: props.password,
             businessName: props.businessName,

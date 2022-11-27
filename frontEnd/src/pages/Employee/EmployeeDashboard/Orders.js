@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getIP } from '../../..';
 import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -29,7 +30,7 @@ export default function Orders(props) {
     }
 
     function getNotes(businessName) {
-        Axios.post("http://localhost:3001/api/getBusinessNotes", {
+        Axios.post("http://" + getIP() + ":3001/api/getBusinessNotes", {
             businessName: props.businessName
         }).then((result) => {
             const allNotes = result.data.result;
@@ -40,7 +41,7 @@ export default function Orders(props) {
     }
 
     function getShifts(username) {
-        Axios.post("http://localhost:3001/api/getShifts", {
+        Axios.post("http://" + getIP() + ":3001/api/getShifts", {
             username: props.username
         }).then((result) => {
             const shifts = result.data.result;
@@ -49,7 +50,7 @@ export default function Orders(props) {
     }
 
     function getInOut() {
-        Axios.post("http://localhost:3001/api/findOpenShift", {
+        Axios.post("http://" + getIP() + ":3001/api/findOpenShift", {
             username: props.username
         }).then((result) => {
             const openShift = result.data.result;
@@ -73,7 +74,7 @@ export default function Orders(props) {
 
         let comp;
 
-            Axios.post("http://localhost:3001/api/findOpenShift", {
+            Axios.post("http://" + getIP() + ":3001/api/findOpenShift", {
                 username: props.username
             }).then((result) => {
                 const openShift = result.data.result;
@@ -86,14 +87,14 @@ export default function Orders(props) {
                     comp = 'no';
                 }
                 if (comp == 'no') {
-                    Axios.post("http://localhost:3001/api/closeShift", {
+                    Axios.post("http://" + getIP() + ":3001/api/closeShift", {
                         ID: openShift[0].ID,
                         oldTime: parseInt(openShift[0].time)
                     }).then((result) => {
                         getShifts(props.username);
                     })
                 } else {
-                    Axios.post("http://localhost:3001/api/createShifts", {
+                    Axios.post("http://" + getIP() + ":3001/api/createShifts", {
                     username: props.username
                 }).then((result) => {
                     getShifts(props.username);

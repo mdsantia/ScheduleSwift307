@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getIP } from '../../..';
 import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -35,7 +36,7 @@ export default function Orders(props) {
     }, []);
 
     function getAccountInfo() {
-        axios.post("http://localhost:3001/api/customerEdit", {
+        axios.post("http://" + getIP() + ":3001/api/customerEdit", {
             username: props.username,
             password: props.password,
             businessName: props.businessName,
@@ -52,7 +53,7 @@ export default function Orders(props) {
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        Axios.post("http://localhost:3001/api/updateCustomerInfo", {
+        Axios.post("http://" + getIP() + ":3001/api/updateCustomerInfo", {
             oldUsername: managerData.username,
             oldPassword: managerData.password,
             firstName: data.get('firstName'),

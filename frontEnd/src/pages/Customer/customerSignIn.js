@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getIP } from '../..';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -78,7 +79,7 @@ export default function CustomerSignIn() {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         const uniqueConfirmCode = makeUniqueID(8);
-        Axios.post("http://localhost:3001/api/customerSignIn", {
+        Axios.post("http://" + getIP() + ":3001/api/customerSignIn", {
             username: data.get('username'),
             password: data.get('password'),
             confirmCode: uniqueConfirmCode,

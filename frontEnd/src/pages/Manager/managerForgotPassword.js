@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getIP } from '../..';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -73,7 +74,7 @@ const ManagerForgotPassword = () => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         if (error !== "Passwords do not match!") {
-            Axios.post("http://localhost:3001/api/managerForgot", {
+            Axios.post("http://" + getIP() + ":3001/api/managerForgot", {
                 username: state.username,
                 email: state.email,
                 password: data.get('password')

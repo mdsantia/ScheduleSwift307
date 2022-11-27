@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getIP } from '../../..';
 import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -21,7 +22,7 @@ export default function Orders(props) {
     const [reserveRes, setReserveRes] = useState('');
     const navigate = useNavigate();
     function getReservations() {
-        Axios.post("http://localhost:3001/api/getAllAvailableReservations", {
+        Axios.post("http://" + getIP() + ":3001/api/getAllAvailableReservations", {
         }).then((result) => {
             const allReserves = result.data.result;
             console.log(allReserves);

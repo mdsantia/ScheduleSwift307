@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getIP } from '../..';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -95,7 +96,7 @@ const CustomerRegister = () => {
         const data = new FormData(event.currentTarget);
         if (error !== "Passwords do not match!") {
             const uniqueConfirmCode = makeUniqueID(8);
-            Axios.post("http://localhost:3001/api/customerRegister", {
+            Axios.post("http://" + getIP() + ":3001/api/customerRegister", {
                 firstName: data.get('firstName'),
                 lastName: data.get('lastName'),
                 username: data.get('username'),

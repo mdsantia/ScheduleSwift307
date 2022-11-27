@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getIP } from '../../..';
 import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -55,7 +56,7 @@ export default function Orders() {
     }
 
     function getReservationDetails() {
-        Axios.post("http://localhost:3001/api/customerMakeReservation", {
+        Axios.post("http://" + getIP() + ":3001/api/customerMakeReservation", {
             reservationID: state.reservationID,
             username: state.username
         }).then((result) => {
@@ -77,7 +78,7 @@ export default function Orders() {
                 numReservedItems = numReservedItems.concat(";", data.get(reservableItems[element]));
             }
         }
-        Axios.post("http://localhost:3001/api/customerConfirmReservation", {
+        Axios.post("http://" + getIP() + ":3001/api/customerConfirmReservation", {
             reservationID: state.reservationID,
             startTime: startTime,
             endTime: endTime,

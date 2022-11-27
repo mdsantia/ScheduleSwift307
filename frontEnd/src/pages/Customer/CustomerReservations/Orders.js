@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getIP } from '../../..';
 import Axios from 'axios';
 import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
@@ -19,7 +20,7 @@ export default function Orders(props) {
     const [error, setError] = useState('');
 
     function getReservations() {
-        Axios.post("http://localhost:3001/api/activeEvents", {
+        Axios.post("http://" + getIP() + ":3001/api/activeEvents", {
             username: state.username
         }).then((result) => {
             const allReserves = result.data.result;
@@ -40,7 +41,7 @@ export default function Orders(props) {
 
     function deleteReservation(resID) {
         if(window.confirm("ID: " + resID + "\nAre you sure you want to cancel this reservation?")) {
-            Axios.post("http://localhost:3001/api/managerDeleteReservation", {
+            Axios.post("http://" + getIP() + ":3001/api/managerDeleteReservation", {
                 reservationID: resID
             }).then((result) => {
                 if (result.data.result.affectedRows === 0) {

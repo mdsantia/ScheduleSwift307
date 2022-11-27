@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getIP } from '../../..';
 import Link from '@mui/material/Link';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -105,7 +106,7 @@ export default function Orders(props) {
                 prices = prices.concat(";", data.get("Price" + element));
             }
         }
-        Axios.post("http://localhost:3001/api/managerCreateReservation", {
+        Axios.post("http://" + getIP() + ":3001/api/managerCreateReservation", {
             businessName: data.get('business'),
             reservationDate: currentDate,
             reservable: ReservedItems,

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getIP } from '../..';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -65,7 +66,7 @@ export default function EmployeeSignIn() {
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        Axios.post("http://localhost:3001/api/employeeSignIn", {
+        Axios.post("http://" + getIP() + ":3001/api/employeeSignIn", {
             username: data.get('username'),
             password: data.get('password'),
         }).then((result) => {

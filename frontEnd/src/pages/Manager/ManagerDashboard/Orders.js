@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getIP } from '../../..';
 import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -55,7 +56,7 @@ export default function Orders(props) {
     const [actualContact, setActualContact] = useState('');
 
     function getBusinessHours() {
-        Axios.post("http://localhost:3001/api/getFacilitysData", {
+        Axios.post("http://" + getIP() + ":3001/api/getFacilitysData", {
             businessName: props.businessName
         }).then((result) => {
             let Sun = result.data.result[0].Sun;
@@ -114,7 +115,7 @@ export default function Orders(props) {
                 setCloseTime(close);
             }
         }
-        Axios.post("http://localhost:3001/api/updateTimes", {
+        Axios.post("http://" + getIP() + ":3001/api/updateTimes", {
                 businessName: props.businessName,
                 open: open,
                 close: close
@@ -215,7 +216,7 @@ export default function Orders(props) {
 
     function getFAQ(businessName) {
 
-        Axios.post("http://localhost:3001/api/managerGetFAQ", {
+        Axios.post("http://" + getIP() + ":3001/api/managerGetFAQ", {
             businessName: props.businessName
         }).then((result) => {
             const faqs = result.data.result;
@@ -226,7 +227,7 @@ export default function Orders(props) {
     const addFAQ = (event) => {
 
         event.preventDefault();
-        Axios.post("http://localhost:3001/api/addManagerFAQ", {
+        Axios.post("http://" + getIP() + ":3001/api/addManagerFAQ", {
             businessName: props.businessName,
             question: question,
             answer: answer
@@ -242,7 +243,7 @@ export default function Orders(props) {
     }
 
     function clearFAQ(faqID) {
-        Axios.post("http://localhost:3001/api/managerDeleteFAQ", {
+        Axios.post("http://" + getIP() + ":3001/api/managerDeleteFAQ", {
             faqID: faqID
         }).then((result) => {
             if (result.data.result.affectedRows === 0) {
@@ -253,7 +254,7 @@ export default function Orders(props) {
     }
 
     function getContact(businessName) {
-        Axios.post("http://localhost:3001/api/managerGetContact", {
+        Axios.post("http://" + getIP() + ":3001/api/managerGetContact", {
             businessName: props.businessName
         }).then((result) => {
             const contacts = result.data.result;
@@ -264,7 +265,7 @@ export default function Orders(props) {
     const addContact = (event) => {
 
         event.preventDefault();
-        Axios.post("http://localhost:3001/api/addManagerContact", {
+        Axios.post("http://" + getIP() + ":3001/api/addManagerContact", {
             businessName: props.businessName,
             contactType: contactType,
             actualContact: actualContact
@@ -280,7 +281,7 @@ export default function Orders(props) {
     }
 
     function clearContact(contactID) {
-        Axios.post("http://localhost:3001/api/managerDeleteContact", {
+        Axios.post("http://" + getIP() + ":3001/api/managerDeleteContact", {
             contactID: contactID
         }).then((result) => {
             if (result.data.result.affectedRows === 0) {

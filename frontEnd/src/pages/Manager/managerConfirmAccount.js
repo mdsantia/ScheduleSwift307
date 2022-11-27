@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getIP } from '../..';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -85,7 +86,7 @@ const ManagerConfirmAccount = () => {
         endTime = newEndTime;
         setUniqueConfirmCode(newConfirmCode);
         setEndTime(newEndTime);
-        Axios.post("http://localhost:3001/api/sendConfirmEmail", {
+        Axios.post("http://" + getIP() + ":3001/api/sendConfirmEmail", {
             username: state.username,
             email: state.email,
             firstName: state.firstName,
@@ -116,7 +117,7 @@ const ManagerConfirmAccount = () => {
         if (inputConfirmCode !== uniqueConfirmCode) {
             setConfirmStatus("Incorrect Confirmation Code.");
         } else {
-            Axios.post("http://localhost:3001/api/confirmAccount", {
+            Axios.post("http://" + getIP() + ":3001/api/confirmAccount", {
                 confirmCode: uniqueConfirmCode,
                 username: state.username,
                 endTime: endTime,

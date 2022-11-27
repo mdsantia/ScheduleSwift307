@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getIP } from '../../..';
 import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -46,7 +47,7 @@ export default function Orders(props) {
     const [contact, setContact] = useState([]);
 
     function getBusinessHours() {
-        Axios.post("http://localhost:3001/api/getFacilitysData", {
+        Axios.post("http://" + getIP() + ":3001/api/getFacilitysData", {
             businessName: state.businessName
         }).then((result) => {
             let Sun = result.data.result[0].Sun;
@@ -150,7 +151,7 @@ export default function Orders(props) {
 
     function getFAQ(businessName) {
 
-        Axios.post("http://localhost:3001/api/managerGetFAQ", {
+        Axios.post("http://" + getIP() + ":3001/api/managerGetFAQ", {
             businessName: state.businessName
         }).then((result) => {
             const faqs = result.data.result;
@@ -160,7 +161,7 @@ export default function Orders(props) {
 
     function getContact(businessName) {
 
-        Axios.post("http://localhost:3001/api/managerGetContact", {
+        Axios.post("http://" + getIP() + ":3001/api/managerGetContact", {
             businessName: state.businessName
         }).then((result) => {
             const contacts = result.data.result;

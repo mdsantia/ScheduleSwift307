@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
+import { getIP } from '../..';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -77,7 +78,7 @@ export default function ManagerSignIn() {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         const uniqueConfirmCode = makeUniqueID(8);
-        Axios.post("http://localhost:3001/api/managerSignIn", {
+        Axios.post("http://" + getIP() + ":3001/api/managerSignIn", {
             username: data.get('username'),
             password: data.get('password'),
             confirmCode: uniqueConfirmCode,

@@ -1,3 +1,5 @@
+import { prototype } from "events";
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -10,6 +12,7 @@ const nodemailer = require("nodemailer");
 const { send } = require("process");
 const e = require("express");
 const cron = require('node-cron');
+const port = 3001;
 
 const db = mysql.createPool({
     host: "localhost",
@@ -1917,7 +1920,7 @@ app.post("/api/managerDeleteContact", (req, res) => {
 
 var scheduledEmails = new Array();
 
-app.listen(3001, () => {
+app.listen(port, () => {
     console.log("Running on Port 3001");
 
     db.query(
@@ -2105,5 +2108,4 @@ function GarbageCollector() {
                 }
             }
         )
-        console.log("Running Garbage Collector");
     }
