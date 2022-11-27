@@ -684,8 +684,8 @@ export default function Orders(props) {
                 <Typography style={{color:"#98402E"}} component="h5" variant="h10">
                     {MAXSTRING}
                 </Typography>
-                <Typography component="p" variant="p">
-                    Reservation ID: {reservationID}
+                <Typography component="p" variant="p" fontWeight="bold">
+                    Reservation ID: #{reservationID}
                 </Typography>
                 <Box component="form" id='my-form' validate="true" sx={{ mt: 3 }}>
                     <Grid container spacing={2}>
