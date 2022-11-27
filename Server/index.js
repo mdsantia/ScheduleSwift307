@@ -670,6 +670,7 @@ app.post("/api/updateCustomerInfo", (req, res) => {
     const lastName = req.body.lastname;
     const username = req.body.username;
     const email = req.body.email;
+    const phoneNumber = req.body.phoneNumber;
     const password = req.body.password;
     const encryptedPassword = encrypt(password);
     const businessName = req.body.businessName;
