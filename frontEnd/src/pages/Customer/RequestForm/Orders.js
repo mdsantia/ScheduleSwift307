@@ -24,6 +24,7 @@ import Title from './Title';
 import {TableCell, Table, TableBody, TableRow} from '@mui/material';
 import { Button, TextField, Grid, Typography, Divider } from '@mui/material';
 import Modal from '@mui/material/Modal';
+import { ValidatorForm } from 'react-material-ui-form-validator';
 
 function preventDefault(event) {
     event.preventDefault();
@@ -57,13 +58,20 @@ export default function Orders(props) {
     const [closed, setClosed] = useState('');
     const [MAXSTRING, setMAXSTRING] = useState(null);
     const [notes, setNotes] = useState([]);
+    const [checked, setChecked] = useState(false);
     const [paymentRequire, setPaymentRequire] = useState("none");
     const [paymentValue, setPaymentValue] = useState(0);
+    const [hasError, setHasError] = useState(false);
+    const [buttonDisabled, setButtonDisabled] = useState(false);
     const[open, setOpen] = React.useState(false);
     const handleOpen = (event) => {
-        setOpen(true);
-        event.preventDefault();
-        console.log("In open"); 
+        setHasError(false);
+        if(!hasError) {
+            setOpen(true);
+            event.preventDefault();
+            console.log("In open"); 
+        }
+
     }
     const handleClose = () => setOpen(false);
     const style={
@@ -100,9 +108,8 @@ export default function Orders(props) {
             paymentBox.push(str);
         }
     }
-
     function updateNotesBox() {
-        if (notesBox.length == 0 && notes.length > 0) {
+        if (notesBox.length === 0 && notes.length > 0) {
             notesBox.push(<Title>Reservation Policies and Notes</Title>);
             notesBox.push(
             <Table size="small">
@@ -115,7 +122,7 @@ export default function Orders(props) {
                 </TableBody>
             </Table>);
             notesBox.push(
-                <Grid container><Checkbox required/><p style={{color:"#98622E"}} component="h5" variant="h8">
+                <Grid container><Checkbox required onChange={(e) => {setChecked(e.target.checked)}}/><p style={{color:"#98622E"}} component="h5" variant="h8">
                     *I Agree with all the policies set by the facility for their reservations.
                 </p></Grid>
             );
@@ -126,6 +133,21 @@ export default function Orders(props) {
         var arg1 = new Date(start);
         var arg2 = new Date(end);
         return Math.abs(arg1 - arg2);
+    }
+    function validForm() {
+        if (notesBox.length > 0 && !checked) {
+            return false;
+        }
+        if (numPeople > availableNumPeople || numPeople <= 0) {
+            return false;
+        }
+        for (let i = 0; i < numReservableItems; i++) {
+            if(numArray[i] > availableArray[i] || numArray[i] < minArray[i]) {
+                return false;
+            }
+        }
+        console.log(`Num Array: ${numArray}\nAvailable Array: ${availableArray  }\nMin Array: ${minArray}`);
+        return true;
     }
 
     function updateMaxString(availableNumPeople, nameArray, availableArray) {
@@ -536,7 +558,6 @@ export default function Orders(props) {
             }
     }
     function makeReceipt() {
-        console.log("In Make receipt");
         let tot = 0;
         for (let i = 0; i < numReservableItems; i++) {
             tot = tot + numArray[i];
@@ -570,7 +591,6 @@ export default function Orders(props) {
             }
         }
         const reservedItemsSplit = ReservedItems.split(";");
-        console.log("Split array:" + reservedItemsSplit.length)
         const numberReservedSplit = numReserved.split(";");
         const pricesSplit = prices.split(";");
         for (let i = 0; i < reservedItemsSplit.length; i++) {
@@ -851,7 +871,8 @@ export default function Orders(props) {
                             && (timeDiff(new Date(openTime[new Date(currentDate).getDay()]), startTime) <= 0) &&
                             (timeDiff(new Date(closeTime[new Date(currentDate).getDay()]), endTime) >= 0) &&
                             (timeDiff(new Date(new Date(currentDate)), endTime) !== 0) &&
-                            (timeDiff(startTime, endTime) < 0) && (new Date(startTime).getMinutes() % 5 === 0) && (new Date(endTime).getMinutes() % 5 === 0)
+                            (timeDiff(startTime, endTime) < 0) && (new Date(startTime).getMinutes() % 5 === 0) && (new Date(endTime).getMinutes() % 5 === 0) &&
+                            validForm()
                             ) ? false : true}
                         fullWidth
                         variant="contained"
