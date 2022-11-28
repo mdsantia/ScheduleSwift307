@@ -294,6 +294,20 @@ function DashboardContent() {
                             <ListItemText primary="Account Info" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
+                            navigate("/managerManageEmployees", {
+                                state: {
+                                    username: state.username,
+                                    password: state.password,
+                                    businessName: state.businessName
+                                }
+                            })
+                        }}>
+                            <ListItemIcon>
+                                <AccountCircleIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="My Employees" />
+                        </ListItemButton>
+                        <ListItemButton onClick={() => {
                             navigate("/managerCreateAccount", {
                                 state: {
                                     username: state.username,

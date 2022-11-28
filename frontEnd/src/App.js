@@ -39,6 +39,7 @@ import EmailChangeForm from './pages/Customer/emailChangeForm';
 import EmployeeAccount from './pages/Employee/EmployeeAccount/Dashboard';
 import EmployeeEditForm from './pages/Employee/EmployeeEditForm/Dashboard';
 import EmployeeCalendar from './pages/Employee/EmployeeCalendar/Dashboard';
+import ManagerManageEmployees from './pages/Manager/ManagerManageEmployees/Dashboard';
 
 function App() {
   return (
@@ -61,6 +62,7 @@ function App() {
           <Route path="/customerStats" element={<CustomerStats />} />
           <Route path="/employeeMain" element={<EmployeeMain />} />
           <Route path="/managerMain" element={<ManagerMain />} />
+          <Route path="/managerManageEmployees" element={<ManagerManageEmployees />} />
           <Route path="/FacilityForm" element={<FacilityForm />} />
           <Route path="/managerCreateReservation" element={<ManagerCreateReservation />} />
           <Route path="/managerEditForm" element={<ManagerEditForm />} />
