@@ -134,19 +134,15 @@ export default function Orders(props) {
         var arg2 = new Date(end);
         return Math.abs(arg1 - arg2);
     }
-    function validForm() {
+    const validForm = () => {
+        var validItems = true;
         if (notesBox.length > 0 && !checked) {
             return false;
         }
         if (numPeople > availableNumPeople || numPeople <= 0) {
             return false;
         }
-        for (let i = 0; i < numReservableItems; i++) {
-            if(numArray[i] > availableArray[i] || numArray[i] < minArray[i]) {
-                return false;
-            }
-        }
-        console.log(`Num Array: ${numArray}\nAvailable Array: ${availableArray  }\nMin Array: ${minArray}`);
+        //console.log(`Num Array: ${numArray}\nAvailable Array: ${availableArray  }\nMin Array: ${minArray}`);
         return true;
     }
 
@@ -543,7 +539,9 @@ export default function Orders(props) {
                         label={'# of Units '}
                         type="number"
                         id={element}
-                        InputProps={{ inputProps: { min: minArray[element - 1], max: max[element - 1], step: 1 } }}
+                        InputProps={{ inputProps: { min: minArray[element - 1], max: max[element - 1], step: 1, onKeyDown: (event) => {
+                            event.preventDefault();
+                        } } }}
                         value={numArray[element - 1]}
                         onChange={(newValue) => { 
                             let newArr = [...numArray];
