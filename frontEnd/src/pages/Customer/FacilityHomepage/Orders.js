@@ -43,7 +43,7 @@ export default function Orders(props) {
     const [faq, setFAQ] = useState([]);
     const [question, setQuestion] = useState('');
     const [answer, setAnswer] = useState('');
-
+    const [allNonReserves, setAllNonReserves] = useState([]);
     const [contact, setContact] = useState([]);
 
     function getBusinessHours() {
@@ -158,7 +158,14 @@ export default function Orders(props) {
             setFAQ(faqs);
         })
     }
-
+    function getNonReserves(businessName) {
+        Axios.post("http://" + getIP() + ":3001/api/getNonReserves", {
+            businessName: state.businessName
+        }).then((result) => {
+            const allNonReserves = result.data.result;
+            setAllNonReserves(allNonReserves);
+        })
+    }
     function getContact(businessName) {
 
         Axios.post("http://" + getIP() + ":3001/api/managerGetContact", {
@@ -173,6 +180,7 @@ export default function Orders(props) {
         getBusinessHours();
         getFAQ(state.businessName);
         getContact(state.businessName);
+        getNonReserves(state.businessName);
     }, []);
     if (rows.length > 0) {
 
@@ -210,6 +218,26 @@ export default function Orders(props) {
                     </Button>
                 </Box>
                 <br></br>
+                <Title>Non-Reservable Items</Title>
+                <Typography>If you are interested in any of these items, feel free to contact the business for help reserving them!</Typography>
+                <Table size="small">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell size="small">Non-Reservable Item:</TableCell>
+                            <TableCell>Price:</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                    {allNonReserves.map((nonRes, index) => (
+                            <TableRow>
+                                <TableCell><strong>{nonRes.nonReservable}</strong></TableCell>
+                                <TableCell>${nonRes.price}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                <br></br>
+                <Box sx={{m: 5}}><Typography> </Typography></Box>
                 <Title>FAQ</Title>
                 <Table size="small">
                     <TableHead>
@@ -228,6 +256,7 @@ export default function Orders(props) {
                     </TableBody>
                 </Table>
                 <br></br>
+                <Box sx={{m: 5}}><Typography> </Typography></Box>
                 <Title>Contact Information</Title>
                 <Table size="small">
                     <TableHead>
@@ -245,7 +274,7 @@ export default function Orders(props) {
                         ))}
                     </TableBody>
                 </Table>
-            </React.Fragment >
+            </React.Fragment>
         );
     } else {
         return (

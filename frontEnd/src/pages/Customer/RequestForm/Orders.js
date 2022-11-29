@@ -146,7 +146,7 @@ export default function Orders(props) {
                 return false;
             }
         }
-        console.log(`Num Array: ${numArray}\nAvailable Array: ${availableArray  }\nMin Array: ${minArray}`);
+        //console.log(`Num Array: ${numArray}\nAvailable Array: ${availableArray  }\nMin Array: ${minArray}`);
         return true;
     }
 

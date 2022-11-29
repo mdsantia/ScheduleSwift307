@@ -70,7 +70,10 @@ export default function Orders(props) {
     const [open, setOpen] = React.useState(false);
     const [openExcTime, setOpenExcTime] = useState(Dayjs | null);
     const [closeExcTime, setCloseExcTime] = useState(Dayjs | null);
+    const [allNonReserves, setAllNonReserves] = useState([]);
     const [exceptionDate, setExceptionDate] = useState(new Date(formattedDate));
+    const [nonReservable, setNonReservable] = useState('');
+    const [nonReservablePrice, setNonReservablePrice] = useState('');
     const [dates, setDates] = useState([]);
     const [table, setTable] = useState([]);
     const [timeArray, setTimeArray] = useState([<Grid item xs={12} sm={4} fullWidth align="center"><strong>CLOSED</strong></Grid>,
@@ -266,6 +269,15 @@ export default function Orders(props) {
         })
     }
 
+    function getNonReserves(businessName) {
+        Axios.post("http://" + getIP() + ":3001/api/getNonReserves", {
+            businessName: props.businessName
+        }).then((result) => {
+            const allNonReserves = result.data.result;
+            setAllNonReserves(allNonReserves);
+        })
+    }
+
     const addFAQ = (event) => {
 
         event.preventDefault();
@@ -284,6 +296,23 @@ export default function Orders(props) {
         })
     }
 
+    const addNonReserve = (event) => {
+        event.preventDefault();
+        Axios.post("http://" + getIP() + ":3001/api/addNonReserve", {
+            businessName: props.businessName,
+            nonReservable: nonReservable,
+            price: nonReservablePrice
+        }).then((result) => {
+            if(result.data.err) {
+                alert("Error! Something has gone wrong!")
+            } else {
+                setNonReservable('');
+                setNonReservablePrice('');
+                getNonReserves(props.businessName);
+            }
+        })
+    }
+
     function clearFAQ(faqID) {
         Axios.post("http://" + getIP() + ":3001/api/managerDeleteFAQ", {
             faqID: faqID
@@ -291,6 +320,17 @@ export default function Orders(props) {
             if (result.data.result.affectedRows === 0) {
             } else {
                 getFAQ(props.businessName);
+            }
+        })
+    }
+    function clearNonRes(nonResID) {
+        Axios.post("http://" + getIP() + ":3001/api/deleteNonReserve", {
+            nonResID: nonResID
+        }).then((result) => {
+            if (result.data.result.affectedRows === 0) {
+
+            } else {
+                getNonReserves(props.businessName);
             }
         })
     }
@@ -413,6 +453,7 @@ export default function Orders(props) {
         getBusinessHours();
         getFAQ(props.businessName);
         getDates(props.businessName);
+        getNonReserves(props.businessName);
     }, []);
     if (rows.length > 0) {
 
@@ -541,7 +582,64 @@ export default function Orders(props) {
                 </Box>
                 <br></br>
                 <br></br>
-                <Title>FAQ</Title>
+                <Title>Non-Reservables</Title>
+                <Table size="small">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell size="small">Non-Reservable Item:</TableCell>
+                            <TableCell>Price:</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                    {allNonReserves.map((nonRes, index) => (
+                            <TableRow>
+                                <TableCell><strong>{nonRes.nonReservable}</strong></TableCell>
+                                <TableCell>${nonRes.price}</TableCell>
+                                <TableCell align="right"><Button onClick={() => clearNonRes(nonRes.ID)}>Clear</Button></TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                <br></br>
+                <br></br>
+                <Divider> Add a Non-Reservable Item </Divider>
+                <Box component="form" onSubmit={addNonReserve} noValidate sx={{ mt: 1 }}>
+                    <TextField
+                        margin="normal"
+                        fullWidth
+                        required
+                        id="nonReservable"
+                        label="Non-Reservable Item"
+                        name="nonReservable"
+                        value={nonReservable}
+                        autoComplete="nonReservable"
+                        onChange={(e) => setNonReservable(e.target.value)}
+                    />
+                    <TextField
+                        margin="normal"
+                        fullWidth
+                        required
+                        name="nonReservablePrice"
+                        label="Non-Reservable Item's Price"
+                        type="number"
+                        id="nonReservablePrice"
+                        value={nonReservablePrice}
+                        autoComplete="nonReservablePrice"
+                        InputProps={{
+                            maxLength: 500,
+                        }}
+                        onChange={(e) => setNonReservablePrice(e.target.value)}
+                    />
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2 }}
+                    >
+                        Add Non-Reservable
+                    </Button>
+                </Box>
+                <br></br><Title>FAQ</Title>
                 <Table size="small">
                     <TableHead>
                         <TableRow>

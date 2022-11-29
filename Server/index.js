@@ -1633,6 +1633,25 @@ app.post("/api/reservationDeleteNote", (req, res) => {
     )
 })
 
+app.post("/api/addNonReserve", (req,res) => {
+    const businessName = req.body.businessName;
+    const nonReservable = req.body.nonReservable;
+    const price = req.body.price;
+    db.query(
+        "INSERT INTO nonReservables (businessName, nonReservable, price) VALUES (?, ?, ?)",
+        [businessName, nonReservable, price],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log({result})
+                res.send({result})
+            }
+        }
+    )
+})
+
 app.post("/api/addManagerFAQ", (req, res) => {
     const businessName = req.body.businessName;
     const question = req.body.question;
@@ -1651,7 +1670,23 @@ app.post("/api/addManagerFAQ", (req, res) => {
         }
     )
 })
-
+app.post("/api/getNonReserves", (req, res) => {
+    const businessName = req.body.businessName;
+    db.query(
+        "SELECT * FROM nonReservables WHERE businessName = ?",
+        [businessName],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                res.send({err: err})
+            }
+            if (result) {
+                console.log(result)
+                res.send({result:result})
+            }
+        }
+    )
+})
 app.post("/api/managerGetFAQ", (req, res) => {
     const businessName = req.body.businessName;
 
@@ -1684,6 +1719,23 @@ app.post("/api/managerDeleteFAQ", (req, res) => {
             if (result) {
                 console.log(result)
                 res.send({ result: result })
+            }
+        }
+    )
+})
+
+app.post("/api/deleteNonReserve", (req, res) => {
+    const nonResID = req.body.nonResID;
+    db.query(
+        "DELETE FROM nonReservables WHERE ID = ?",
+        [nonResID],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log(result)
+                res.send({result: result})
             }
         }
     )
