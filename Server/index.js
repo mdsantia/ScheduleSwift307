@@ -1854,6 +1854,8 @@ app.post("/api/getShifts", (req, res) => {
 
     const username = req.body.username;
 
+    console.log(req.body);
+
     db.query(
         "SELECT * FROM shifts WHERE username = ?",
         [username],
@@ -1869,6 +1871,24 @@ app.post("/api/getShifts", (req, res) => {
         }
     )
 
+})
+
+app.post("/api/getEmployeeName", (req, res) => {
+
+    const username = req.body.username;
+
+    db.query(
+        "SELECT * FROM employeeData WHERE username = ?",
+        [username],
+        (err, result) => {
+            if (err) {
+                res.send({err: err})
+            }
+            if (result) {
+                res.send({result})
+            }
+        }
+    )
 })
 
 app.post("/api/findOpenShift", (req, res) => {

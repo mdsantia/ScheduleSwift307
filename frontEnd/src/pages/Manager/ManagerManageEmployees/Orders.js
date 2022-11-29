@@ -97,7 +97,7 @@ export default function Orders(props) {
                     username: state.username,
                     password: state.password,
                     businessName: props.businessName,
-                    other: e.currentTarget.id
+                    other: e.currentTarget.id,
                 }
             })
         } else {
@@ -122,6 +122,7 @@ export default function Orders(props) {
                             <TableRow>
                                 <TableCell align="center">First Name</TableCell>
                                 <TableCell align="center">Last Name</TableCell>
+                                <TableCell align="center">Username</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -129,7 +130,8 @@ export default function Orders(props) {
                                 <TableRow>
                                     <TableCell align="center">{names.firstName}</TableCell>
                                     <TableCell align="center">{names.lastName}</TableCell>
-                                    <TableCell align="right"><Button name = {"Dash"} id ={names.username} onClick={open}>
+                                    <TableCell align="center">{names.username}</TableCell>
+                                    <TableCell align="right"><Button name = {"Dash"} id ={names.username} ud={names.firstName} onClick={open}>
                                     View Shifts</Button></TableCell>
                                     <TableCell align="right"><Button name = {"Make"} onClick={open}>
                                     Change Permissions</Button></TableCell>
