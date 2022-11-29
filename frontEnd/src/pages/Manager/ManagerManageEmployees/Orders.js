@@ -19,6 +19,8 @@ import { Dayjs } from 'dayjs';
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Modal from '@mui/material/Modal';
 import { getDate } from 'date-fns';
+import { get } from 'react-hook-form';
+import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 
 function preventDefault(event) {
     event.preventDefault();
@@ -62,607 +64,86 @@ cursor: pointer;
 `;
 
 export default function Orders(props) {
-    const year = new Date().getFullYear();
-    const month = new Date().getMonth() + 1;
-    const day = new Date().getDate();
-    const formattedDate = `${year}-${month}-${day}`;
 
-    const [open, setOpen] = React.useState(false);
-    const [openExcTime, setOpenExcTime] = useState(Dayjs | null);
-    const [closeExcTime, setCloseExcTime] = useState(Dayjs | null);
-    const [exceptionDate, setExceptionDate] = useState(new Date(formattedDate));
-    const [dates, setDates] = useState([]);
-    const [table, setTable] = useState([]);
-    const [timeArray, setTimeArray] = useState([<Grid item xs={12} sm={4} fullWidth align="center"><strong>CLOSED</strong></Grid>,
-    <Grid item xs={12} sm={4} fullWidth align="center"><strong>CLOSED</strong></Grid>]);
 
-    const box = [];
-    const [rows, setRows] = useState([]);
-    const [openTime, setOpenTime] = useState(Dayjs | null);
-    const [closeTime, setCloseTime] = useState(Dayjs | null);
-    const [closed, setClosed] = useState('');
+    const [names, setNames] = useState([]);
+    const { state } = useLocation();
+    const navigate = useNavigate();
 
-    const [faq, setFAQ] = useState([]);
-    const [question, setQuestion] = useState('');
-    const [answer, setAnswer] = useState('');
+    function getNames(businessName) {
 
-    const [contact, setContact] = useState([]);
-    const [contactType, setContactType] = useState('');
-    const [actualContact, setActualContact] = useState('');
-
-    function getBusinessHours() {
-        Axios.post("http://" + getIP() + ":3001/api/getFacilitysData", {
-            businessName: props.businessName
-        }).then((result) => {
-            let Sun = result.data.result[0].Sun;
-            let Mon = result.data.result[0].Mon;
-            let Tues = result.data.result[0].Tues;
-            let Wed = result.data.result[0].Wed;
-            let Thurs = result.data.result[0].Thurs;
-            let Fri = result.data.result[0].Fri;
-            let Sat = result.data.result[0].Sat;
-            let full = `${Sun};${Mon};${Tues};${Wed};${Thurs};${Fri};${Sat}`;
-            let val = full.split(';');
-            let closed = [];
-            let open = [];
-            let close = [];
-            for (let i = 0; i < 14; i++) {
-                if (i % 2 === 0) {
-                    if (val[i] === 'null') {
-                        closed.push(1);
-                        open.push(new Date(formattedDate+"T00:00"));
-                    } else {
-                        closed.push(0);
-                        open.push(val[i]);
-                    }
-                } else {
-                    if (val[i] === 'null') {
-                        close.push(new Date(formattedDate+"T00:00"));
-                    } else {
-                        close.push(val[i]);
-                    }
-                }
-            }
-            setClosed(closed);
-            setOpenTime(open);
-            setCloseTime(close);
-        });
-
-        // setClosed([0, 0, 0, 0, 0, 0, 0]);
-        // setOpenTime([formattedDate, formattedDate, formattedDate, formattedDate, formattedDate, formattedDate, formattedDate]);
-        // setCloseTime([formattedDate, formattedDate, formattedDate, formattedDate, formattedDate, formattedDate, formattedDate]);
-        setRows([createDay(0, 'Sunday'), createDay(1, 'Monday') , 
-        createDay(2, 'Tuesday'), createDay(3, 'Wednesday'), 
-        createDay(4, 'Thursday'), createDay(5, 'Friday'), 
-        createDay(6, 'Saturday')]);
-    }
-    
-    const handleOpen = (event) => {
-        setOpen(true);
-        event.preventDefault();
-    }
-
-    const handleClose = () => setOpen(false);
-
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        alert(`${props.businessName}'s Business Hours have been saved!`);
-        let open = [...openTime];
-        let close = [...closeTime];
-        for (let i = 0; i < 7; i++) {
-            if (closed[i]) {
-                open[i] = null;
-                close[i] = null;
-                setOpenTime(open);
-                setCloseTime(close);
-            }
-        }
-        Axios.post("http://" + getIP() + ":3001/api/updateTimes", {
-                businessName: props.businessName,
-                open: open,
-                close: close
-            }).then((result) => {
-                // alert(`Your reservation has been saved! Your reservation's id is ${result.data.id}`);
-            })
-    }
-
-    const col = (day) => {
-        let row = [];
-        if (!closed[day]) {
-            row.push(
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <TimePicker
-                        label="Open Time"
-                        value={openTime[day]}
-                        fullWidth
-                        onChange={(newValue) => { let open = [...openTime]; open[day] = newValue; setOpenTime(open) }}
-                        renderInput={(params) => <TextField {...params} required/>}
-                        shouldDisableTime={(timeValue, clockType) => {
-                        // if (clockType === 'minutes' && timeValue % 5) {
-                        //     return true;
-                        // }
-                        return false;
-                        }}
-                    />
-                </LocalizationProvider>
-            )
-            row.push(
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <TimePicker
-                        validate
-                        label="Close Time"
-                        value={closeTime[day]}
-                        fullWidth
-                        onChange={(newValue) => { let close = [...closeTime]; close[day] = newValue; setCloseTime(close) }}
-                        renderInput={(params) => <TextField {...params} required/>}
-                        shouldDisableTime={(timeValue, clockType) => {
-                            const openHour = new Date((openTime[day])).getHours()
-                            const openMinute = new Date((openTime[day])).getMinutes()
-                        if ((clockType === 'hours' && timeValue < openHour)) {
-                                return true;
-                            }
-                        // if ((clockType === 'minutes' && (new Date(closeTime[day]).getHours()) === openHour && timeValue <= openMinute)
-                        //     || ((new Date(closeTime[day]).getHours()) === closeHour && clockType === 'minutes' && timeValue > closeMinute)) {
-                        //         return true;
-                        //     }
-                        if ((clockType === 'hours' && timeValue < (new Date(`${openTime[day]}`).getHours()))
-                            || ((new Date(`${openTime[day]}`).getHours()) === (new Date(`${closeTime[day]}`).getHours()) && 
-                                clockType === 'minutes' && timeValue <= (new Date(`${openTime[day]}`).getMinutes()) )) {
-                                return true;
-                            }
-                        // if (clockType === 'minutes' && timeValue % 5) {
-                        //         return true;
-                        //     }
-                        return false;
-                        }}
-                    />
-                </LocalizationProvider>
-            )
-            box.push(row);
-        } else {
-            row.push(
-                <b>CLOSED</b>
-            )
-            row.push(
-                <b>CLOSED</b>
-            )
-            box.push(row);
-        }
-    }
-    
-    const close = (e) => {
-        e.preventDefault();
-        let copy = [...closed];
-        if (closed[e.currentTarget.id]) {
-            copy[e.currentTarget.id] = 0;
-        } else {
-            copy[e.currentTarget.id] = 1;
-        }
-        setClosed(copy);
-    }
-
-    function test () {
-        let count = 0;
-        for (let i = 0; i < 7; i++) {
-            if (closed[i]) {
-                count++;
-            }
-            if (((timeDiff(openTime[i], closeTime[i]) < 0)) && !closed[i])
-                return true;
-        }
-        if (count == 7) {
-            return true;
-        }
-        return false;
-    }
-
-    function getFAQ(businessName) {
-
-        Axios.post("http://" + getIP() + ":3001/api/managerGetFAQ", {
-            businessName: props.businessName
-        }).then((result) => {
-            const faqs = result.data.result;
-            setFAQ(faqs);
-        })
-    }
-
-    const addFAQ = (event) => {
-
-        event.preventDefault();
-        Axios.post("http://" + getIP() + ":3001/api/addManagerFAQ", {
+        Axios.post("http://" + getIP() + ":3001/api/getEmployees", {
             businessName: props.businessName,
-            question: question,
-            answer: answer
         }).then((result) => {
             if (result.data.err) {
                 alert("Error! Something has gone wrong!")
             } else {
-                setQuestion('');
-                setAnswer('');
-                getFAQ(props.businessName);
-            }
-        })
-    }
-
-    function clearFAQ(faqID) {
-        Axios.post("http://" + getIP() + ":3001/api/managerDeleteFAQ", {
-            faqID: faqID
-        }).then((result) => {
-            if (result.data.result.affectedRows === 0) {
-            } else {
-                getFAQ(props.businessName);
-            }
-        })
-    }
-
-    const addDate = (event) => {
-        event.preventDefault();
-        Axios.post("http://" + getIP() + ":3001/api/addExceptionDate", {
-            businessName: props.businessName,
-            date: exceptionDate,
-            startTime: openExcTime?openExcTime:"closed",
-            endTime: closeExcTime?closeExcTime:"closed"
-        }).then((result) => {
-            if (result.data.err) {
-                alert("Error! Something has gone wrong!")
-            } else {
-                getDates(props.businessName);
-            }
-        })
-    }
-
-    function getDates(businessName) {
-        Axios.post("http://" + getIP() + ":3001/api/getExceptionDates", {
-            businessName: props.businessName
-        }).then((result) => {
-            const datesTemp = result.data.result;
-            setDates(datesTemp);
-            if (datesTemp.length > 0) {
-                var tableTemp = []
-                tableTemp.push(
-                    <Table size="small">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell size="small">Date</TableCell>
-                            <TableCell>Open</TableCell>
-                            <TableCell>Close</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {datesTemp.map((date, index) => (
-                            <TableRow>
-                                <TableCell><strong>{date.date}</strong></TableCell>
-                                <TableCell>{(date.startTime === 'closed')?<strong>CLOSED</strong>:(new Date(date.startTime)).toLocaleTimeString()}</TableCell>
-                                <TableCell>{(date.endTime === 'closed')?<strong>CLOSED</strong>:(new Date(date.endTime)).toLocaleTimeString()}</TableCell>
-                                <TableCell align="right"><Button onClick={() => clearDate(date.ID)}>Remove</Button></TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                    </Table>
-                );
-                setTable(tableTemp);
-            }
-        })
-    }
-
-    function clearDate(id) {
-        Axios.post("http://" + getIP() + ":3001/api/deleteExceptionDate", {
-            id: id
-        }).then((result) => {
-            if (result.data.result.affectedRows === 0) {
-            } else {
-                getDates(props.businessName);
-            }
-        })
-    }
-
-    function openClose(event) {
-        event.preventDefault();
-        let arr = [];
-        console.log(openExcTime)
-        if (openExcTime) {
-            setOpenExcTime(null);
-            setCloseExcTime(null);
-            arr.push(<Grid item xs={12} sm={4} fullWidth align="center"><strong>CLOSED</strong></Grid>);
-        } else {
-            setOpenExcTime(new Date(formattedDate + "T00:00"));
-            setCloseExcTime(new Date(formattedDate + "T23:59"));
-        }
-        setTimeArray(arr);
-    }
-
-    function getContact(businessName) {
-        Axios.post("http://" + getIP() + ":3001/api/managerGetContact", {
-            businessName: props.businessName
-        }).then((result) => {
-            const contacts = result.data.result;
-            setContact(contacts);
-        })
-    }
-
-    const addContact = (event) => {
-
-        event.preventDefault();
-        Axios.post("http://" + getIP() + ":3001/api/addManagerContact", {
-            businessName: props.businessName,
-            contactType: contactType,
-            actualContact: actualContact
-        }).then((result) => {
-            if (result.data.err) {
-                alert("Error! Something has gone wrong!")
-            } else {
-                setContactType('');
-                setActualContact('');
-                getContact(props.businessName);
-            }
-        })
-    }
-
-    function clearContact(contactID) {
-        Axios.post("http://" + getIP() + ":3001/api/managerDeleteContact", {
-            contactID: contactID
-        }).then((result) => {
-            if (result.data.result.affectedRows === 0) {
-            } else {
-                getContact(props.businessName);
+                const names = result.data.result;
+                setNames(names);
             }
         })
     }
 
     useEffect(() => {
-        getBusinessHours();
-        getFAQ(props.businessName);
-        getDates(props.businessName);
+        getNames(props.businessName);
+
     }, []);
-    if (rows.length > 0) {
+
+    const open = (e) => {
+        e.preventDefault();
+        if (e.currentTarget.name === 'Dash') {
+            navigate("/managerViewShifts", {
+                state: {
+                    username: state.username,
+                    password: state.password,
+                    businessName: props.businessName,
+                    other: e.currentTarget.id
+                }
+            })
+        } else {
+            navigate("/requestForm", {
+                state: {
+                    username: state.username,
+                    password: state.password,
+                    businessName: e.currentTarget.id
+                }
+            })
+        }
+    }
+
+    if (names.length > 0) {
 
         return (
             <React.Fragment>
-                <Box component="form" validate="true" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-                    <Title>{props.businessName}'s Business Hours</Title>
+                <Box component="form" validate="true" /*onSubmit={}*/ sx={{ mt: 3 }}>
+                    <Title>{props.businessName}'s Employees</Title>
                     <Table size="small">
                         <TableHead>
                             <TableRow>
-                                <TableCell align="center">Week Day</TableCell>
-                                <TableCell align="center">Opens at</TableCell>
-                                <TableCell align="center">Closes at</TableCell>
+                                <TableCell align="center">First Name</TableCell>
+                                <TableCell align="center">Last Name</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {rows.map((weekday, index) => (
-                                <TableRow key={weekday.day}>
-                                    <TableCell align="center">{<b>{weekday.day}</b>}</TableCell>
-                                    {col(weekday.int)}
-                                    <TableCell align="center">{box[weekday.int][0]}</TableCell>
-                                    <TableCell align="center">{box[weekday.int][1]}</TableCell>
-                                    <TableCell align="center"><Button id={weekday.int} onClick={close}>{closed[weekday.int] ? "OPEN":"CLOSE"}</Button></TableCell>
+                            {names.map((names, index) => (
+                                <TableRow>
+                                    <TableCell align="center">{names.firstName}</TableCell>
+                                    <TableCell align="center">{names.lastName}</TableCell>
+                                    <TableCell align="right"><Button name = {"Dash"} id ={names.username} onClick={open}>
+                                    View Shifts</Button></TableCell>
+                                    <TableCell align="right"><Button name = {"Make"} onClick={open}>
+                                    Change Permissions</Button></TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
-                    <Button
-                            type="submit"
-                            disabled={
-                                (test())
-                             ? false : true }
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
-                        >
-                            Save
-                    </Button>
-                    <Title>Add an Exception Date</Title>
-                    <br></br>
-                    {table[0]}
-                    <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
-                            onClick={handleOpen}
-                        >
-                            Add an exception
-                    </Button>
-                    <Modal
-                        open={open}
-                        onClose={handleClose}
-                        disableEscapeKeyDown
-                        aria-labelledby='modal-modal-title'
-                        aria-describedby='modal-modal-description'
-                    ><Box sx={style}>
-                    <Typography id="modal-modal-title" align="center">Add an Exception Date</Typography>
-                    <But onClick={openClose} fullWidth>{openExcTime?"CLOSE":"OPEN"}</But>
-                    <br></br>
-                    <Grid container spacing={3}>
-                        <Grid item xs={12} sm={4}>
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DatePicker
-                                    id="reservationDate"
-                                    label="Select Date"
-                                    validate="true"
-                                    value={exceptionDate}
-                                    onChange={(newValue) => { setExceptionDate(newValue)} }
-                                    renderInput={(params) => <TextField {...params}/>}
-                                    shouldDisableDate={(date) => {
-                                        if (date < new Date()) {
-                                            return true;
-                                        }
-                                        return false;
-                                    }}
-                                />
-                            </LocalizationProvider>
-                        </Grid>
-                        {(openExcTime)?<Grid item xs={12} sm={4}>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <TimePicker
-                                label="Open Time"
-                                value={openExcTime}
-                                fullWidth
-                                onChange={(newValue) => { setOpenExcTime(newValue) }}
-                                renderInput={(params) => <TextField {...params} required/>}
-                                />
-                        </LocalizationProvider>
-                        </Grid>:
-                        <Grid item xs={12} sm={4} fullWidth align="center">
-                            <strong>CLOSED</strong>
-                        </Grid>}
-                        {(closeExcTime)?<Grid item xs={12} sm={4}>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <TimePicker
-                                label="Close Time"
-                                value={closeExcTime}
-                                fullWidth
-                                onChange={(newValue) => { setCloseExcTime(newValue) }}
-                                renderInput={(params) => <TextField {...params} required />}
-                                shouldDisableTime={(timeValue, clockType) => {
-                                    const openHour = new Date((openExcTime)).getHours()
-                                    const openMinute = new Date((openExcTime)).getMinutes()
-                                    if ((clockType === 'hours' && timeValue < openHour)) {
-                                        return true;
-                                    }
-                                    if ((clockType === 'hours' && timeValue < (new Date(`${openExcTime}`).getHours()))
-                                    || ((new Date(`${openExcTime}`).getHours()) === (new Date(`${openExcTime}`).getHours()) && 
-                                    clockType === 'minutes' && timeValue <= (new Date(`${openExcTime}`).getMinutes()) )) {
-                                        return true;
-                                    }
-                                    return false;
-                                }}
-                                />
-                        </LocalizationProvider>
-                        </Grid>:
-                        <Grid item xs={12} sm={4} fullWidth align="center">
-                            <strong>CLOSED</strong>
-                        </Grid>}
-                    </Grid>
-                    <Button align="center" onClick={handleClose}>Cancel</Button>
-                    <Button align="center" form='my-form' onClick={addDate}>Submit</Button>
-                </Box>
-                </Modal>
-                </Box>
-                <br></br>
-                <br></br>
-                <Title>FAQ</Title>
-                <Table size="small">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell size="small">Question:</TableCell>
-                            <TableCell>Answer:</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {faq.map((faq, index) => (
-                            <TableRow>
-                                <TableCell><strong>{faq.question}</strong></TableCell>
-                                <TableCell>{faq.answer}</TableCell>
-                                <TableCell align="right"><Button onClick={() => clearFAQ(faq.ID)}>Clear</Button></TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-                <br></br>
-                <br></br>
-                <Divider> Add an Additional FAQ </Divider>
-                <Box component="form" onSubmit={addFAQ} noValidate sx={{ mt: 1 }}>
-                    <TextField
-                        margin="normal"
-                        fullWidth
-                        required
-                        id="question"
-                        label="Question"
-                        name="question"
-                        value={question}
-                        autoComplete="question"
-                        onChange={(e) => setQuestion(e.target.value)}
-                    />
-                    <TextField
-                        margin="normal"
-                        fullWidth
-                        required
-                        name="answer"
-                        label="Answer"
-                        type="answer"
-                        id="answer"
-                        value={answer}
-                        autoComplete="answer"
-                        InputProps={{
-                            maxLength: 500,
-                        }}
-                        onChange={(e) => setAnswer(e.target.value)}
-                    />
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        sx={{ mt: 3, mb: 2 }}
-                    >
-                        Add FAQ
-                    </Button>
-                </Box>
-                <br></br>
-                <br></br>
-                <Title>Contact Information</Title>
-                <Table size="small">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell size="small">Contact Type:</TableCell>
-                            <TableCell>Contact:</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {contact.map((contact, index) => (
-                            <TableRow>
-                                <TableCell>{contact.contactType}</TableCell>
-                                <TableCell><strong>{contact.actualContact}</strong></TableCell>
-                                <TableCell align="right"><Button onClick={() => clearContact(contact.ID)}>Clear</Button></TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-                <br></br>
-                <br></br>
-                <Divider> Add Additional Contacts </Divider>
-                <Box component="form" onSubmit={addContact} noValidate sx={{ mt: 1 }}>
-                    <TextField
-                        margin="normal"
-                        fullWidth
-                        required
-                        id="question"
-                        label="Contact Type (i.e., Phone Number, email, etc)"
-                        name="contactType"
-                        value={contactType}
-                        autoComplete="Contact Type"
-                        onChange={(e) => setContactType(e.target.value)}
-                    />
-                    <TextField
-                        margin="normal"
-                        fullWidth
-                        required
-                        name="contact"
-                        label="Contact"
-                        type="answer"
-                        id="answer"
-                        value={actualContact}
-                        autoComplete="contact"
-                        InputProps={{
-                            maxLength: 500,
-                        }}
-                        onChange={(e) => setActualContact(e.target.value)}
-                    />
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        sx={{ mt: 3, mb: 2 }}
-                    >
-                        Add Contact
-                    </Button>
                 </Box>
 
             </React.Fragment >
         );
     } else {
         return (
-            <p>Awaiting Response</p>
+            <p>No Employees</p>
         )
     }
 }

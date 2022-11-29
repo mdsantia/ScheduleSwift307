@@ -1993,6 +1993,24 @@ app.post("/api/managerDeleteContact", (req, res) => {
     )
 })
 
+app.post("/api/getEmployees", (req, res) => {
+    const businessName = req.body.businessName;
+    db.query(
+        "SELECT * FROM employeeData WHERE businessName = ?",
+        [businessName],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log(result)
+                res.send({result: result})
+            }
+        }
+    )
+})
+
+
 var scheduledEmails = new Array();
 
 app.listen(port, () => {
