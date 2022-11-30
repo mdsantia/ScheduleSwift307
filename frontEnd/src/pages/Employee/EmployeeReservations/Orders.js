@@ -57,19 +57,31 @@ export default function Orders(props) {
         })
     }
     function deleteReservation(resID) {
-        if(window.confirm("ID: " + resID + "\nAre you sure you want to cancel this reservation?")) {
-            Axios.post("http://" + getIP() + ":3001/api/managerDeleteReservation", {
-                reservationID: resID
-            }).then((result) => {
-                if (result.data.result.affectedRows === 0) {
-                    setError("No Reservation with that ID exists")
-                } else {
-                    setError("");
+
+        Axios.post("http://" + getIP() + ":3001/api/checkDelete", {
+            username: props.username
+        }).then((result) => {
+            if (result === "No") {
+                window.alert("You don't have permissions to delete reservations!");
+            } else {
+
+            if(window.confirm("ID: " + resID + "\nAre you sure you want to cancel this reservation?")) {
+                Axios.post("http://" + getIP() + ":3001/api/employeeDeleteReservation", {
+                    reservationID: resID
+                }).then((result) => {
+                    if (result.data.result.affectedRows === 0) {
+                        setError("No Reservation with that ID exists")
+                 } else {
+                  setError("");
                     getReservations(props.businessName);
                     alert("The reservation has been cancelled!\nA confirmation email has been sent to the organizer containing the details of the cancelled reservation.");
-                }
-            })
+                    }
+                 getReservations(props.business);
+                })
+            }
         }
+
+        })
     }
 
     function total(numReservable, price) {

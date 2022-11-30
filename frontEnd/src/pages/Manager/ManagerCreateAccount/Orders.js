@@ -88,6 +88,9 @@ export default function Orders(props) {
                 business: data.get('business'),
                 password: data.get('password')
             })
+            Axios.post("http://" + getIP() + ":3001/api/defaultPermissions", {
+                username: data.get('username'),
+            })
             navigate("/managerMain", {
                 state: {
                     username: props.username,

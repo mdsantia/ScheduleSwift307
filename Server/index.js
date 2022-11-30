@@ -2082,6 +2082,42 @@ app.post("/api/getEmployees", (req, res) => {
     )
 })
 
+app.post("/api/checkDelete", (req, res) => {
+    const username = req.body.username;
+    const del = "Yes";
+    db.query(
+        "SELECT * FROM permissions WHERE username = ? AND deleteReservations = ?",
+        [username, del],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result.length == 0) {
+                res.send("No");
+            } else {
+                res.send("Yes");
+            }
+        }
+    )
+})
+
+app.post("/api/defaultPermissions", (req, res) => {
+    const username = req.body.username;
+    const del = "No"
+    db.query(
+        "INSERT INTO permissions (username, deleteReservations) VALUES (?, ?)",
+        [username, del],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result })
+            }
+        }
+    )
+})
 
 var scheduledEmails = new Array();
 
