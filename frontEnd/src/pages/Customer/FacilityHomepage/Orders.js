@@ -41,6 +41,9 @@ export default function Orders(props) {
     const [closed, setClosed] = useState('');
 
     const [faq, setFAQ] = useState([]);
+    const [table, setTable] = useState([]);
+    const [FAQarray, setFAQarray] = useState([]);
+    const [NONarray, setNONarray] = useState([]);
     const [question, setQuestion] = useState('');
     const [answer, setAnswer] = useState('');
     const [allNonReserves, setAllNonReserves] = useState([]);
@@ -64,7 +67,7 @@ export default function Orders(props) {
             let close = [];
             for (let i = 0; i < 14; i++) {
                 if (i % 2 === 0) {
-                    if (val[i] === 'null') {
+                    if (val[i] === 'null' || val[i] == null) {
                         closed.push(1);
                         open.push(formattedDate);
                     } else {
@@ -72,7 +75,7 @@ export default function Orders(props) {
                         open.push(val[i]);
                     }
                 } else {
-                    if (val[i] === 'null') {
+                    if (val[i] === 'null' || val[i] == null) {
                         close.push(formattedDate);
                     } else {
                         close.push(val[i]);
@@ -155,7 +158,29 @@ export default function Orders(props) {
             businessName: state.businessName
         }).then((result) => {
             const faqs = result.data.result;
+            let temp = [];
             setFAQ(faqs);
+            if (faqs.length > 0) {
+                console.log("here")
+                temp.push(<Title>Frquently Asked Questions</Title>);
+                temp.push(<Table size="small">
+                <TableHead>
+                    <TableRow>
+                        <TableCell size="small">Question:</TableCell>
+                        <TableCell>Answer:</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {faqs.map((faq, index) => (
+                        <TableRow>
+                            <TableCell><strong>{faq.question}</strong></TableCell>
+                            <TableCell>{faq.answer}</TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>);
+            }
+            setFAQarray(temp);
         })
     }
     function getNonReserves(businessName) {
@@ -164,6 +189,28 @@ export default function Orders(props) {
         }).then((result) => {
             const allNonReserves = result.data.result;
             setAllNonReserves(allNonReserves);
+            let temp = [];
+            if (allNonReserves.length > 0) {
+                temp.push(<Title>Non-Reservable Items</Title>);
+                temp.push(<Typography>If you are interested in any of these items, feel free to contact {state.businessName}!</Typography>);
+                temp.push(<Table size="small">
+                <TableHead>
+                    <TableRow>
+                        <TableCell size="small">Non-Reservable Item:</TableCell>
+                        <TableCell>Price:</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                {allNonReserves.map((nonRes, index) => (
+                        <TableRow>
+                            <TableCell><strong>{nonRes.nonReservable}</strong></TableCell>
+                            <TableCell>${nonRes.price}</TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>);
+            }
+            setNONarray(temp);
         })
     }
     function getContact(businessName) {
@@ -175,11 +222,44 @@ export default function Orders(props) {
             setContact(contacts);
         })
     }
+    function getDates(businessName) {
+        Axios.post("http://" + getIP() + ":3001/api/getExceptionDates", {
+            businessName: state.businessName
+        }).then((result) => {
+            const datesTemp = result.data.result;
+            var tableTemp = [];
+            if (datesTemp.length > 0) {
+                tableTemp.push(<Title>The aforementioned hours do not apply on:</Title>);
+                tableTemp.push(
+                    <Table size="small">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell size="small">Date</TableCell>
+                            <TableCell>Opens at</TableCell>
+                            <TableCell>Closes at</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {datesTemp.map((date, index) => (
+                            <TableRow>
+                                <TableCell><strong>{(new Date(date.date)).toDateString()}</strong></TableCell>
+                                <TableCell>{(date.startTime === 'closed')?<strong>CLOSED</strong>:(new Date(date.startTime)).toLocaleTimeString()}</TableCell>
+                                <TableCell>{(date.endTime === 'closed')?<strong>CLOSED</strong>:(new Date(date.endTime)).toLocaleTimeString()}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                    </Table>
+                );
+            }
+            setTable(tableTemp);
+        })
+    }
 
     useEffect(() => {
         getBusinessHours();
         getFAQ(state.businessName);
         getContact(state.businessName);
+        getDates(state.businessName);
         getNonReserves(state.businessName);
     }, []);
     if (rows.length > 0) {
@@ -208,7 +288,36 @@ export default function Orders(props) {
                             ))}
                         </TableBody>
                     </Table>
-                    <Button
+                    {table[0]?<br></br>:false}
+                    {table[0]}
+                    {table[1]}
+                </Box>
+                {FAQarray[0]?<br></br>:false}
+                {FAQarray[0]}
+                {FAQarray[1]}
+                {NONarray[0]?<br></br>:false}
+                {NONarray[0]}
+                {NONarray[1]}
+                {NONarray[2]}
+                <br></br>
+                <Title>Contact Information</Title>
+                <Table size="small">
+                    {/* <TableHead>
+                        <TableRow>
+                            <TableCell size="small">Contact Type:</TableCell>
+                            <TableCell>Contact:</TableCell>
+                        </TableRow>
+                    </TableHead> */}
+                    <TableBody>
+                        {contact[0]?contact.map((contact, index) => (
+                            <TableRow>
+                                <TableCell><strong>{contact.contactType}</strong></TableCell>
+                                <TableCell>{contact.actualContact}</TableCell>
+                            </TableRow>
+                        )):<text>No contact information given by the manager of {state.businessName}.</text>}
+                    </TableBody>
+                </Table>
+                <Button
                             type="submit"
                             fullWidth
                             variant="contained"
@@ -216,64 +325,6 @@ export default function Orders(props) {
                         >
                             Make Reservation
                     </Button>
-                </Box>
-                <br></br>
-                <Title>Non-Reservable Items</Title>
-                <Typography>If you are interested in any of these items, feel free to contact the business for help reserving them!</Typography>
-                <Table size="small">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell size="small">Non-Reservable Item:</TableCell>
-                            <TableCell>Price:</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                    {allNonReserves.map((nonRes, index) => (
-                            <TableRow>
-                                <TableCell><strong>{nonRes.nonReservable}</strong></TableCell>
-                                <TableCell>${nonRes.price}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-                <br></br>
-                <Box sx={{m: 5}}><Typography> </Typography></Box>
-                <Title>FAQ</Title>
-                <Table size="small">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell size="small">Question:</TableCell>
-                            <TableCell>Answer:</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {faq.map((faq, index) => (
-                            <TableRow>
-                                <TableCell><strong>{faq.question}</strong></TableCell>
-                                <TableCell>{faq.answer}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-                <br></br>
-                <Box sx={{m: 5}}><Typography> </Typography></Box>
-                <Title>Contact Information</Title>
-                <Table size="small">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell size="small">Contact Type:</TableCell>
-                            <TableCell>Contact:</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {contact.map((contact, index) => (
-                            <TableRow>
-                                <TableCell><strong>{contact.contactType}</strong></TableCell>
-                                <TableCell>{contact.actualContact}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
             </React.Fragment>
         );
     } else {
