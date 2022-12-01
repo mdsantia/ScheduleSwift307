@@ -79,16 +79,11 @@ const EmailChangeForm = () => {
     const handleSubmit = () => {
         const newConfirmCode = makeUniqueID(8);
         const newEndTime = new Date();
-        newEndTime.setMinutes((newEndTime.getMinutes() + 1));
+        newEndTime.setMinutes((newEndTime.getMinutes() + 10));
         uniqueConfirmCode = newConfirmCode;
         endTime = newEndTime;
         setUniqueConfirmCode(newConfirmCode);
         setEndTime(newEndTime);
-        // if (endTime.getMinutes() < 10) {
-        //     endTime.setHours(startTime.getHours() + 1);
-        // } else {
-        // endTime.setHours(startTime.getHours());
-        // }
         if (newEmail === '') {
             setEmailStatus("Please enter in a new email address.");
         } else {
