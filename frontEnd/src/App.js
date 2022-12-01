@@ -41,6 +41,7 @@ import EmployeeEditForm from './pages/Employee/EmployeeEditForm/Dashboard';
 import EmployeeCalendar from './pages/Employee/EmployeeCalendar/Dashboard';
 import ManagerManageEmployees from './pages/Manager/ManagerManageEmployees/Dashboard';
 import ViewShifts from './pages/Manager/ManagerViewShifts/Dashboard';
+import ChangePermissions from './pages/Manager/ManagerChangePermissions/Dashboard';
 
 function App() {
   return (
@@ -87,6 +88,7 @@ function App() {
           <Route path="/employeeEditForm" element={<EmployeeEditForm />} />
           <Route path="/employeeCalendar" element={<EmployeeCalendar />} />
           <Route path="/managerViewShifts" element={<ViewShifts />} />
+          <Route path="/managerChangePermissions" element={<ChangePermissions />} />
         </Routes>
       </Router>
     </div>

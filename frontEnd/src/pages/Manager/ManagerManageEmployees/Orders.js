@@ -101,11 +101,13 @@ export default function Orders(props) {
                 }
             })
         } else {
-            navigate("/requestForm", {
+            navigate("/managerChangePermissions", {
                 state: {
                     username: state.username,
                     password: state.password,
-                    businessName: e.currentTarget.id
+                    businessName: props.businessName,
+                    other: e.currentTarget.id,
+
                 }
             })
         }
@@ -131,9 +133,9 @@ export default function Orders(props) {
                                     <TableCell align="center">{names.firstName}</TableCell>
                                     <TableCell align="center">{names.lastName}</TableCell>
                                     <TableCell align="center">{names.username}</TableCell>
-                                    <TableCell align="right"><Button name = {"Dash"} id ={names.username} ud={names.firstName} onClick={open}>
+                                    <TableCell align="right"><Button name = {"Dash"} id ={names.username} onClick={open}>
                                     View Shifts</Button></TableCell>
-                                    <TableCell align="right"><Button name = {"Make"} onClick={open}>
+                                    <TableCell align="right"><Button name = {"Make"} id ={names.username} onClick={open}>
                                     Change Permissions</Button></TableCell>
                                 </TableRow>
                             ))}

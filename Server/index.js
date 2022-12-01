@@ -2105,8 +2105,79 @@ app.post("/api/defaultPermissions", (req, res) => {
     const username = req.body.username;
     const del = "No"
     db.query(
-        "INSERT INTO permissions (username, deleteReservations) VALUES (?, ?)",
-        [username, del],
+        "INSERT INTO permissions (username, deleteReservations, editReservations, viewReservations) VALUES (?, ?, ?, ?)",
+        [username, del, del, del],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result })
+            }
+        }
+    )
+})
+
+app.post("/api/getPermissions", (req, res) => {
+    const username = req.body.username;
+    db.query(
+        "SELECT * FROM permissions WHERE username = ?",
+        [username],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result })
+            }
+        }
+    )
+})
+
+app.post("/api/changeDelete", (req, res) => {
+    const username = req.body.username;
+    const changed = req.body.changed;
+    db.query(
+        "UPDATE permissions SET deleteReservations = ? WHERE username = ?",
+        [changed, username],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result })
+            }
+        }
+    )
+})
+
+app.post("/api/changeEdit", (req, res) => {
+    const username = req.body.username;
+    const changed = req.body.changed;
+    db.query(
+        "UPDATE permissions SET editReservations = ? WHERE username = ?",
+        [changed, username],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result })
+            }
+        }
+    )
+})
+
+app.post("/api/changeView", (req, res) => {
+    const username = req.body.username;
+    const changed = req.body.changed;
+    db.query(
+        "UPDATE permissions SET viewReservations = ? WHERE username = ?",
+        [changed, username],
         (err, result) => {
             if (err) {
                 console.log(err)
