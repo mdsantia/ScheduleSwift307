@@ -930,7 +930,11 @@ app.post("/api/updateReservation", (req, res) => {
                             }
                             if (scheduledEmails[indexOfUpdatedReservation]) {
                                 console.log("ID of updated reservation: " + scheduledEmails[indexOfUpdatedReservation].ID);
-                                scheduledEmails[indexOfUpdatedReservation].cronSchedule.stop();
+                                let job = scheduledEmails[indexOfUpdatedReservation].cronSchedule;
+                                console.log(job);
+                                setImmediate( () => {
+                                    job.stop();
+                                })
                                 const mailOptionsReminder = {
                                     from:
                                     {
@@ -989,8 +993,7 @@ app.post("/api/updateReservation", (req, res) => {
                                 const date = reminderTime.getDate();
                                 const month = reminderTime.getMonth() + 1;
                                 const dayOfWeek = reminderTime.getDay();
-                                scheduledEmails[indexOfUpdatedReservation].cronSchedule = {
-                                    cronSchedule: 
+                                scheduledEmails[indexOfUpdatedReservation].cronSchedule =
                                     cron.schedule("0 " + minutes + " " + hours + " " + date + " " + month + " " + dayOfWeek + "", function () {
                                         transport.sendMail(mailOptionsReminder, (err, res) => {
                                             if (err) {
@@ -1001,8 +1004,7 @@ app.post("/api/updateReservation", (req, res) => {
                                                 console.log("Reminder email for Reservation #" + ID + " successfully sent.");
                                             }
                                         })
-                                    }),
-                                }
+                                    })
                             }
                         })
                     }
@@ -1285,7 +1287,9 @@ app.post("/api/managerDeleteReservation", (req, res) => {
         }
     }
     if (scheduledEmails[indexOfCancelledReservation]) {
-        scheduledEmails[indexOfCancelledReservation].cronSchedule.stop();
+        setImmediate( () => {
+            scheduledEmails[indexOfCancelledReservation].cronSchedule.stop();
+        })
         scheduledEmails.splice(indexOfCancelledReservation, 1);
     }
     db.query(
@@ -2297,7 +2301,9 @@ function GarbageCollector() {
                                     console.log("before removing email: " + scheduledEmails.length);
                                     if (scheduledEmails[indexOfCancelledReservation] && indexOfCancelledReservation >= 0) {
                                         // console.log("cancelled reservation ID: " + scheduledEmails[indexOfCancelledReservation].ID);
-                                        scheduledEmails[indexOfCancelledReservation].cronSchedule.stop();
+                                        setImmediate( () => {
+                                            scheduledEmails[indexOfCancelledReservation].cronSchedule.stop();
+                                        })
                                         scheduledEmails.splice(indexOfCancelledReservation, 1);
                                     }
                                     deleted++;
