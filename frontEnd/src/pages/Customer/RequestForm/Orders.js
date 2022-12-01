@@ -64,12 +64,17 @@ export default function Orders(props) {
     const [hasError, setHasError] = useState(false);
     const [buttonDisabled, setButtonDisabled] = useState(false);
     const[open, setOpen] = React.useState(false);
+    const [storedNumPeople, setStoredNumPeople] = useState(null);
+    const [storedStartTime, setStoredStartTime] = useState(null);
+    const [storedEndTime, setStoredEndTime] = useState(null);
+    const [storedCurrentDate, setStoredCurrentDate] = useState(null);
+    const [storedNumArray, setStoredNumArray] = useState([]);
+
     const handleOpen = (event) => {
         setHasError(false);
         if(!hasError) {
             setOpen(true);
             event.preventDefault();
-            console.log("In open"); 
         }
 
     }
@@ -492,6 +497,11 @@ export default function Orders(props) {
                 getConcurrent(date,
                     result.data.result[0].startTime, result.data.result[0].endTime, 
                     maxPeople, maxs, ReservedItems)
+                setStoredNumPeople(result.data.result[0].numPeople);
+                setStoredStartTime(result.data.result[0].startTime);
+                setStoredEndTime(result.data.result[0].endTime);
+                setStoredNumArray(numValues);
+                setStoredCurrentDate(date);
             })
         } else {
             getConcurrent(null, null, null, null, maxPeople, maxs, ReservedItems)
@@ -658,21 +668,31 @@ export default function Orders(props) {
             })
         } else{
             // UPDATE RESERVATION INSTEAD
-            Axios.post("http://" + getIP() + ":3001/api/updateReservation", {
-                ID: reservationID,
-                businessName: businessName,
-                reservationDate: currentDate,
-                reservable: ReservedItems,
-                price: prices,
-                startTime: startTime,
-                endTime: endTime,
-                reservedBy: state.username,
-                numPeople: numPeople,
-                numReservable: numReserved
-            }).then((result) => {
-                alert(`Your reservation has been updated!\nAn confirmation email has been sent to you containing your Reservation ID and updated reservation details.`);
-                setOpen(false);
-            })
+            if (new Date(currentDate).getTime() === new Date(storedCurrentDate).getTime() && new Date(startTime).getTime() === new Date(storedStartTime).getTime() &&
+            new Date(endTime).getTime() === new Date(storedEndTime).getTime() && parseInt(numPeople) === parseInt(storedNumPeople) && (numArray.map(Number)).join() === (storedNumArray.map(Number)).join()) {
+                    alert("Please modify the reservation before submitting the form.");
+            } else {
+                Axios.post("http://" + getIP() + ":3001/api/updateReservation", {
+                    ID: reservationID,
+                    businessName: businessName,
+                    reservationDate: currentDate,
+                    reservable: ReservedItems,
+                    price: prices,
+                    startTime: startTime,
+                    endTime: endTime,
+                    reservedBy: state.username,
+                    numPeople: numPeople,
+                    numReservable: numReserved
+                }).then((result) => {
+                    alert(`Your reservation has been updated!\nAn confirmation email has been sent to you containing your Reservation ID and updated reservation details.`);
+                    setOpen(false);
+                })
+                setStoredNumArray(numArray);
+                setStoredCurrentDate(currentDate);
+                setStoredNumPeople(numPeople);
+                setStoredStartTime(startTime);
+                setStoredEndTime(endTime);
+            }
         }
     }
 
@@ -865,11 +885,7 @@ export default function Orders(props) {
                     <Button
                         form='my-form'
                         type='submit'
-                        disabled={ (priceArray[0] && !closed[new Date(currentDate).getDay()] && (new Date(currentDate) > new Date())
-                            && (timeDiff(new Date(openTime[new Date(currentDate).getDay()]), startTime) <= 0) &&
-                            (timeDiff(new Date(closeTime[new Date(currentDate).getDay()]), endTime) >= 0) &&
-                            (timeDiff(new Date(new Date(currentDate)), endTime) !== 0) &&
-                            (timeDiff(startTime, endTime) < 0) && (new Date(startTime).getMinutes() % 5 === 0) && (new Date(endTime).getMinutes() % 5 === 0) &&
+                        disabled={ (priceArray[0] && 
                             validForm()
                             ) ? false : true}
                         fullWidth
