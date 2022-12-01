@@ -41,6 +41,7 @@ export default function Orders(props) {
     const [closed, setClosed] = useState('');
 
     const [faq, setFAQ] = useState([]);
+    const [table, setTable] = useState([]);
     const [question, setQuestion] = useState('');
     const [answer, setAnswer] = useState('');
     const [allNonReserves, setAllNonReserves] = useState([]);
@@ -64,7 +65,7 @@ export default function Orders(props) {
             let close = [];
             for (let i = 0; i < 14; i++) {
                 if (i % 2 === 0) {
-                    if (val[i] === 'null') {
+                    if (val[i] === 'null' || val[i] == null) {
                         closed.push(1);
                         open.push(formattedDate);
                     } else {
@@ -72,7 +73,7 @@ export default function Orders(props) {
                         open.push(val[i]);
                     }
                 } else {
-                    if (val[i] === 'null') {
+                    if (val[i] === 'null' || val[i] == null) {
                         close.push(formattedDate);
                     } else {
                         close.push(val[i]);
@@ -175,11 +176,44 @@ export default function Orders(props) {
             setContact(contacts);
         })
     }
+    function getDates(businessName) {
+        Axios.post("http://" + getIP() + ":3001/api/getExceptionDates", {
+            businessName: state.businessName
+        }).then((result) => {
+            const datesTemp = result.data.result;
+            var tableTemp = [];
+            if (datesTemp.length > 0) {
+                tableTemp.push(<Title>The aforementioned hours do not apply on:</Title>);
+                tableTemp.push(
+                    <Table size="small">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell size="small">Date</TableCell>
+                            <TableCell>Open</TableCell>
+                            <TableCell>Close</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {datesTemp.map((date, index) => (
+                            <TableRow>
+                                <TableCell><strong>{date.date}</strong></TableCell>
+                                <TableCell>{(date.startTime === 'closed')?<strong>CLOSED</strong>:(new Date(date.startTime)).toLocaleTimeString()}</TableCell>
+                                <TableCell>{(date.endTime === 'closed')?<strong>CLOSED</strong>:(new Date(date.endTime)).toLocaleTimeString()}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                    </Table>
+                );
+            }
+            setTable(tableTemp);
+        })
+    }
 
     useEffect(() => {
         getBusinessHours();
         getFAQ(state.businessName);
         getContact(state.businessName);
+        getDates(state.businessName);
         getNonReserves(state.businessName);
     }, []);
     if (rows.length > 0) {
@@ -208,6 +242,8 @@ export default function Orders(props) {
                             ))}
                         </TableBody>
                     </Table>
+                    {table[0]}
+                    {table[1]}
                     <Button
                             type="submit"
                             fullWidth

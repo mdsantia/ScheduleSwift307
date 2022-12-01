@@ -74,7 +74,6 @@ export default function Orders(props) {
     const [exceptionDate, setExceptionDate] = useState(new Date(formattedDate));
     const [nonReservable, setNonReservable] = useState('');
     const [nonReservablePrice, setNonReservablePrice] = useState('');
-    const [dates, setDates] = useState([]);
     const [table, setTable] = useState([]);
     const [timeArray, setTimeArray] = useState([<Grid item xs={12} sm={4} fullWidth align="center"><strong>CLOSED</strong></Grid>,
     <Grid item xs={12} sm={4} fullWidth align="center"><strong>CLOSED</strong></Grid>]);
@@ -111,7 +110,7 @@ export default function Orders(props) {
             let close = [];
             for (let i = 0; i < 14; i++) {
                 if (i % 2 === 0) {
-                    if (val[i] === 'null') {
+                    if (val[i] === 'null' || val[i] == null) {
                         closed.push(1);
                         open.push(new Date(formattedDate+"T00:00"));
                     } else {
@@ -119,8 +118,8 @@ export default function Orders(props) {
                         open.push(val[i]);
                     }
                 } else {
-                    if (val[i] === 'null') {
-                        close.push(new Date(formattedDate+"T00:00"));
+                    if (val[i] === 'null' || val[i] == null) {
+                        close.push(new Date(formattedDate+"T23:59"));
                     } else {
                         close.push(val[i]);
                     }
@@ -356,9 +355,9 @@ export default function Orders(props) {
             businessName: props.businessName
         }).then((result) => {
             const datesTemp = result.data.result;
-            setDates(datesTemp);
+            var tableTemp = [];
             if (datesTemp.length > 0) {
-                var tableTemp = []
+                tableTemp.push(<Title>Saved Exception Dates</Title>);
                 tableTemp.push(
                     <Table size="small">
                     <TableHead>
@@ -374,14 +373,14 @@ export default function Orders(props) {
                                 <TableCell><strong>{date.date}</strong></TableCell>
                                 <TableCell>{(date.startTime === 'closed')?<strong>CLOSED</strong>:(new Date(date.startTime)).toLocaleTimeString()}</TableCell>
                                 <TableCell>{(date.endTime === 'closed')?<strong>CLOSED</strong>:(new Date(date.endTime)).toLocaleTimeString()}</TableCell>
-                                <TableCell align="right"><Button onClick={() => clearDate(date.ID)}>Remove</Button></TableCell>
+                                <TableCell align="right"><Button onClick={() => {clearDate(date.ID)}}>Remove</Button></TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                     </Table>
                 );
-                setTable(tableTemp);
             }
+            setTable(tableTemp);
         })
     }
 
@@ -399,7 +398,6 @@ export default function Orders(props) {
     function openClose(event) {
         event.preventDefault();
         let arr = [];
-        console.log(openExcTime)
         if (openExcTime) {
             setOpenExcTime(null);
             setCloseExcTime(null);
@@ -490,11 +488,10 @@ export default function Orders(props) {
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                         >
-                            Save
+                            Save Default Business Hours
                     </Button>
-                    <Title>Add an Exception Date</Title>
-                    <br></br>
                     {table[0]}
+                    {table[1]}
                     <Button
                             type="submit"
                             fullWidth
@@ -561,9 +558,9 @@ export default function Orders(props) {
                                     if ((clockType === 'hours' && timeValue < openHour)) {
                                         return true;
                                     }
-                                    if ((clockType === 'hours' && timeValue < (new Date(`${openExcTime}`).getHours()))
-                                    || ((new Date(`${openExcTime}`).getHours()) === (new Date(`${openExcTime}`).getHours()) && 
-                                    clockType === 'minutes' && timeValue <= (new Date(`${openExcTime}`).getMinutes()) )) {
+                                    if ((clockType === 'hours' && timeValue < openHour)
+                                    || ((new Date(`${closeExcTime}`).getHours()) === openHour && 
+                                    clockType === 'minutes' && timeValue <= openMinute)) {
                                         return true;
                                     }
                                     return false;
