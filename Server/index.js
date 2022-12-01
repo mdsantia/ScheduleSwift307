@@ -853,7 +853,7 @@ app.post("/api/updateReservation", (req, res) => {
                             if (result3.length) {
                                 policiesString += "<strong>RESERVATION POLICIES AGREED</strong>";
                                 for (let i = 0; i < result3.length; i++) {
-                                    policiesString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + i + ". " + result3[i].note + "</td></tr>";
+                                    policiesString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + i + 1 + ". " + result3[i].note + "</td></tr>";
                                 }
                             }
                             var modificationMessage;
@@ -1070,7 +1070,7 @@ app.post("/api/createReservation", (req, res) => {
                             if (result3.length) {
                                 policiesString += "<strong>RESERVATION POLICIES AGREED</strong>";
                                 for (let i = 0; i < result3.length; i++) {
-                                    policiesString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + i + ". " + result3[i].note + "</td></tr>";
+                                    policiesString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + i + 1 + ". " + result3[i].note + "</td></tr>";
                                 }
                             }
                             const mailOptions = {
@@ -1342,7 +1342,7 @@ app.post("/api/managerDeleteReservation", (req, res) => {
                                             if (result4.length) {
                                                 policiesString += "<strong>RESERVATION POLICIES AGREED</strong>";
                                                 for (let i = 0; i < result4.length; i++) {
-                                                    policiesString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + i + ". " + result3[i].note + "</td></tr>";
+                                                    policiesString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + i + 1 + ". " + result3[i].note + "</td></tr>";
                                                 }
                                             }
                                             const mailOptions = {
@@ -2169,7 +2169,7 @@ app.listen(port, () => {
                                         if (result3.length) {
                                             policiesString += "<strong>RESERVATION POLICIES AGREED</strong>";
                                             for (let i = 0; i < result3.length; i++) {
-                                                policiesString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + i + ". " + result3[i].note + "</td></tr>";
+                                                policiesString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + i + 1 + ". " + result3[i].note + "</td></tr>";
                                             }
                                         }
                                         const mailOptionsReminder = {
