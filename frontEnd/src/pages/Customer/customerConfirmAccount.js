@@ -203,7 +203,9 @@ const CustomerConfirmAccount = () => {
                                 Wrong Email Address? Change Email
                             </Link>
                         </Grid>
-                        <Grid item>
+                    </Grid>
+                    <Grid container>
+                        <Grid item xs>
                             <Link href="/" variant="body2">
                                 Back to Welcome Page
                             </Link>
