@@ -363,14 +363,14 @@ export default function Orders(props) {
                     <TableHead>
                         <TableRow>
                             <TableCell size="small">Date</TableCell>
-                            <TableCell>Open</TableCell>
-                            <TableCell>Close</TableCell>
+                            <TableCell>Opens at</TableCell>
+                            <TableCell>Closes at</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {datesTemp.map((date, index) => (
                             <TableRow>
-                                <TableCell><strong>{date.date}</strong></TableCell>
+                                <TableCell><strong>{(new Date(date.date)).toDateString()}</strong></TableCell>
                                 <TableCell>{(date.startTime === 'closed')?<strong>CLOSED</strong>:(new Date(date.startTime)).toLocaleTimeString()}</TableCell>
                                 <TableCell>{(date.endTime === 'closed')?<strong>CLOSED</strong>:(new Date(date.endTime)).toLocaleTimeString()}</TableCell>
                                 <TableCell align="right"><Button onClick={() => {clearDate(date.ID)}}>Remove</Button></TableCell>
