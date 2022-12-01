@@ -309,12 +309,12 @@ export default function Orders(props) {
                         </TableRow>
                     </TableHead> */}
                     <TableBody>
-                        {contact.map((contact, index) => (
+                        {contact[0]?contact.map((contact, index) => (
                             <TableRow>
                                 <TableCell><strong>{contact.contactType}</strong></TableCell>
                                 <TableCell>{contact.actualContact}</TableCell>
                             </TableRow>
-                        ))}
+                        )):<text>No contact information given by the manager of {state.businessName}.</text>}
                     </TableBody>
                 </Table>
                 <Button
