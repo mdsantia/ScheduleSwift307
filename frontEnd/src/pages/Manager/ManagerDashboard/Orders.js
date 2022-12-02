@@ -172,6 +172,11 @@ export default function Orders(props) {
     }
 
     function formatPhone(number) {
+
+        if (number === "none") {
+            setFormat(number);
+        } else {
+
         let p1 = number.substring(0, 3);
         let p2 = number.substring(3,6);
         let p3 = number.substring(6, 10);
@@ -180,6 +185,7 @@ export default function Orders(props) {
 
         console.log(finalNum);
         setFormat(finalNum);
+        }
     }
 
     const col = (day) => {
@@ -467,7 +473,11 @@ export default function Orders(props) {
         Axios.post("http://" + getIP() + ":3001/api/managerGetContact", {
             businessName: businessName,
         }).then((result) => {
+            if (formatPhone != "none") {
             formatPhone(result.data[0].phoneNumber);
+            } else {
+                setFormat("none");
+            }
             setContact(result.data[0]);
         })
     }
