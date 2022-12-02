@@ -53,9 +53,11 @@ export default function Orders(props) {
     const businessName = state.businessName;
     const navigate = useNavigate();
     const [currentDate, setCurrentDate] = useState(null);
+    const [exception, setException] = useState(-1);
     const [openTime, setOpenTime] = useState(Dayjs | null);
     const [closeTime, setCloseTime] = useState(Dayjs | null);
     const [closed, setClosed] = useState('');
+    const [dates, setDates] = useState([]);
     const [MAXSTRING, setMAXSTRING] = useState(null);
     const [notes, setNotes] = useState([]);
     const [checked, setChecked] = useState(false);
@@ -64,12 +66,17 @@ export default function Orders(props) {
     const [hasError, setHasError] = useState(false);
     const [buttonDisabled, setButtonDisabled] = useState(false);
     const[open, setOpen] = React.useState(false);
+    const [storedNumPeople, setStoredNumPeople] = useState(null);
+    const [storedStartTime, setStoredStartTime] = useState(null);
+    const [storedEndTime, setStoredEndTime] = useState(null);
+    const [storedCurrentDate, setStoredCurrentDate] = useState(null);
+    const [storedNumArray, setStoredNumArray] = useState([]);
+
     const handleOpen = (event) => {
         setHasError(false);
         if(!hasError) {
             setOpen(true);
             event.preventDefault();
-            console.log("In open"); 
         }
 
     }
@@ -129,6 +136,14 @@ export default function Orders(props) {
         }
     }
 
+    function getDates(businessName) {
+        Axios.post("http://" + getIP() + ":3001/api/getExceptionDates", {
+            businessName: businessName
+        }).then((result) => {
+            setDates(result.data.result);
+        })
+    }
+
     function dayDiff(start, end) {
         var arg1 = new Date(start);
         var arg2 = new Date(end);
@@ -137,6 +152,13 @@ export default function Orders(props) {
     const validForm = () => {
         var validItems = true;
         if (notesBox.length > 0 && !checked) {
+            return false;
+        }
+        if (!closed[new Date(currentDate).getDay()] && (new Date(currentDate) > new Date())
+        && (timeDiff(new Date(openTime[new Date(currentDate).getDay()]), startTime) <= 0) &&
+        (timeDiff(new Date(closeTime[new Date(currentDate).getDay()]), endTime) >= 0) &&
+        (timeDiff(new Date(new Date(currentDate)), endTime) !== 0) &&
+        (timeDiff(startTime, endTime) < 0) && (new Date(startTime).getMinutes() % 5 === 0) && (new Date(endTime).getMinutes() % 5 === 0)) {
             return false;
         }
         if (numPeople > availableNumPeople || numPeople <= 0) {
@@ -409,6 +431,7 @@ export default function Orders(props) {
                     setPaymentRequire(result.data.result[0].paymentRequire);
                     setPaymentValue(parseFloat(result.data.result[0].paymentValue));
                 } 
+                getDates(businessName);
                 // UPDATE NUM OF RESERVABLES
                 if (!result.data.result[0].numReservable) {
                     setNumReservableItems(1);
@@ -453,7 +476,7 @@ export default function Orders(props) {
                     let close = [];
                     for (let i = 0; i < 14; i++) {
                         if (i % 2 === 0) {
-                            if (val[i] === 'null') {
+                            if (val[i] === 'null' || val[i] === "") {
                                 closed.push(1);
                                 open.push(currentDate);
                             } else {
@@ -461,13 +484,14 @@ export default function Orders(props) {
                                 open.push(val[i]);
                             }
                         } else {
-                            if (val[i] === 'null') {
+                            if (val[i] === 'null' || val[i] === "") {
                                 close.push(currentDate);
                             } else {
                                 close.push(val[i]);
                             }
                         }
                     }
+                    console.log(closed)
                     setClosed(closed);
                     setOpenTime(open);
                     setCloseTime(close);
@@ -492,6 +516,11 @@ export default function Orders(props) {
                 getConcurrent(date,
                     result.data.result[0].startTime, result.data.result[0].endTime, 
                     maxPeople, maxs, ReservedItems)
+                setStoredNumPeople(result.data.result[0].numPeople);
+                setStoredStartTime(result.data.result[0].startTime);
+                setStoredEndTime(result.data.result[0].endTime);
+                setStoredNumArray(numValues);
+                setStoredCurrentDate(date);
             })
         } else {
             getConcurrent(null, null, null, null, maxPeople, maxs, ReservedItems)
@@ -658,21 +687,31 @@ export default function Orders(props) {
             })
         } else{
             // UPDATE RESERVATION INSTEAD
-            Axios.post("http://" + getIP() + ":3001/api/updateReservation", {
-                ID: reservationID,
-                businessName: businessName,
-                reservationDate: currentDate,
-                reservable: ReservedItems,
-                price: prices,
-                startTime: startTime,
-                endTime: endTime,
-                reservedBy: state.username,
-                numPeople: numPeople,
-                numReservable: numReserved
-            }).then((result) => {
-                alert(`Your reservation has been updated!\nAn confirmation email has been sent to you containing your Reservation ID and updated reservation details.`);
-                setOpen(false);
-            })
+            if (new Date(currentDate).getTime() === new Date(storedCurrentDate).getTime() && new Date(startTime).getTime() === new Date(storedStartTime).getTime() &&
+            new Date(endTime).getTime() === new Date(storedEndTime).getTime() && parseInt(numPeople) === parseInt(storedNumPeople) && (numArray.map(Number)).join() === (storedNumArray.map(Number)).join()) {
+                    alert("Please modify the reservation before submitting the form.");
+            } else {
+                Axios.post("http://" + getIP() + ":3001/api/updateReservation", {
+                    ID: reservationID,
+                    businessName: businessName,
+                    reservationDate: currentDate,
+                    reservable: ReservedItems,
+                    price: prices,
+                    startTime: startTime,
+                    endTime: endTime,
+                    reservedBy: state.username,
+                    numPeople: numPeople,
+                    numReservable: numReserved
+                }).then((result) => {
+                    alert(`Your reservation has been updated!\nAn confirmation email has been sent to you containing your Reservation ID and updated reservation details.`);
+                    setOpen(false);
+                })
+                setStoredNumArray(numArray);
+                setStoredCurrentDate(currentDate);
+                setStoredNumPeople(numPeople);
+                setStoredStartTime(startTime);
+                setStoredEndTime(endTime);
+            }
         }
     }
 
@@ -727,9 +766,22 @@ export default function Orders(props) {
                                     validate="true"
                                     value={currentDate}
                                     onChange={(newValue) => {if(newValue != null && newValue.isValid()) { setCurrentDate(newValue); 
-                                        getConcurrent(newValue, startTime, endTime, maxNumPeople, maxArray, nameArray)} }}
+                                        getConcurrent(newValue, startTime, endTime, maxNumPeople, maxArray, nameArray)};
+                                        for (let i = 0; i < dates.length; i++) {
+                                            if (new Date(dates[i].date + "T00:00").toString() === (new Date(newValue)).toString() && dates[i].startTime !== "closed") {
+                                                setException(parseInt(i));
+                                                break;
+                                        }} }}
                                     renderInput={(params) => <TextField {...params}/>}
                                     shouldDisableDate={(date) => {
+                                        for (let i = 0; i < dates.length; i++) {
+                                            if (new Date(dates[i].date + "T00:00").toString() === date.$d.toString() && dates[i].startTime === "closed") {
+                                                return true;
+                                            }
+                                            else if (new Date(dates[i].date + "T00:00").toString() === date.$d.toString()) {
+                                                return false;
+                                            }
+                                        }
                                         if (closed[new Date(date).getDay()] || date < new Date()) {
                                             return true;
                                         }
@@ -748,11 +800,17 @@ export default function Orders(props) {
                                         getConcurrent(currentDate, newValue, endTime, maxNumPeople, maxArray, nameArray) }}
                                     renderInput={(params) => <TextField {...params} required/>}
                                     shouldDisableTime={(timeValue, clockType) => {
-                                        const openHour = new Date((openTime[new Date(currentDate).getDay()])).getHours()
-                                        const openMinute = new Date((openTime[new Date(currentDate).getDay()])).getMinutes()
-                                        const closeHour = new Date((closeTime[new Date(currentDate).getDay()])).getHours()
-                                        const closeMinute = new Date((closeTime[new Date(currentDate).getDay()])).getMinutes()
-                                    if ((clockType === 'hours' && timeValue < openHour) || (clockType === 'hours' && timeValue >= closeHour && closeMinute === 0) || 
+                                        let openHour = new Date((openTime[new Date(currentDate).getDay()])).getHours();
+                                        let openMinute = new Date((openTime[new Date(currentDate).getDay()])).getMinutes();
+                                        let closeHour = new Date((closeTime[new Date(currentDate).getDay()])).getHours();
+                                        let closeMinute = new Date((closeTime[new Date(currentDate).getDay()])).getMinutes();
+                                        if (exception >= 0) {
+                                            openHour = new Date(dates[exception].startTime).getHours();
+                                            openMinute = new Date(dates[exception].startTime).getMinutes();
+                                            closeHour = new Date(dates[exception].endTime).getHours();
+                                            closeMinute = new Date(dates[exception].endTime).getMinutes();
+                                        }
+                                        if ((clockType === 'hours' && timeValue < openHour) || (clockType === 'hours' && timeValue >= closeHour && closeMinute === 0) || 
                                         (clockType === 'hours' && timeValue > closeHour && closeMinute > 0)) {
                                             return true;
                                         }
@@ -778,27 +836,33 @@ export default function Orders(props) {
                                         getConcurrent(currentDate, startTime, newValue, maxNumPeople, maxArray, nameArray) }}
                                     renderInput={(params) => <TextField {...params} required />}
                                     shouldDisableTime={(timeValue, clockType) => {
-                                        const openHour = new Date((openTime[new Date(currentDate).getDay()])).getHours()
-                                        const openMinute = new Date((openTime[new Date(currentDate).getDay()])).getMinutes()
-                                        const closeHour = new Date((closeTime[new Date(currentDate).getDay()])).getHours()
-                                        const closeMinute = new Date((closeTime[new Date(currentDate).getDay()])).getMinutes()
-                                    if ((clockType === 'hours' && timeValue < openHour) || 
-                                        (clockType === 'hours' && timeValue > closeHour)) {
-                                            return true;
+                                        let openHour = new Date((openTime[new Date(currentDate).getDay()])).getHours()
+                                        let openMinute = new Date((openTime[new Date(currentDate).getDay()])).getMinutes()
+                                        let closeHour = new Date((closeTime[new Date(currentDate).getDay()])).getHours()
+                                        let closeMinute = new Date((closeTime[new Date(currentDate).getDay()])).getMinutes()
+                                        if (exception >= 0) {
+                                            openHour = new Date(dates[exception].startTime).getHours();
+                                            openMinute = new Date(dates[exception].startTime).getMinutes();
+                                            closeHour = new Date(dates[exception].endTime).getHours();
+                                            closeMinute = new Date(dates[exception].endTime).getMinutes();
                                         }
-                                    if ((clockType === 'minutes' && (new Date(endTime).getHours()) === openHour && timeValue <= openMinute)
-                                        || ((new Date(endTime).getHours()) === closeHour && clockType === 'minutes' && timeValue > closeMinute)) {
-                                            return true;
-                                        }
-                                    if ((clockType === 'hours' && timeValue < (new Date(startTime).getHours()))
-                                        || ((new Date(startTime).getHours()) === (new Date(endTime).getHours()) && 
-                                            clockType === 'minutes' && timeValue <= (new Date(startTime).getMinutes()) )) {
-                                            return true;
-                                        }
-                                    if (clockType === 'minutes' && timeValue % 5) {
-                                            return true;
-                                        }
-                                    return false;
+                                        if ((clockType === 'hours' && timeValue < openHour) || 
+                                            (clockType === 'hours' && timeValue > closeHour)) {
+                                                return true;
+                                            }
+                                        if ((clockType === 'minutes' && (new Date(endTime).getHours()) === openHour && timeValue <= openMinute)
+                                            || ((new Date(endTime).getHours()) === closeHour && clockType === 'minutes' && timeValue > closeMinute)) {
+                                                return true;
+                                            }
+                                        if ((clockType === 'hours' && timeValue < (new Date(startTime).getHours()))
+                                            || ((new Date(startTime).getHours()) === (new Date(endTime).getHours()) && 
+                                                clockType === 'minutes' && timeValue <= (new Date(startTime).getMinutes()) )) {
+                                                return true;
+                                            }
+                                        if (clockType === 'minutes' && timeValue % 5) {
+                                                return true;
+                                            }
+                                        return false;
                                     }}
                                 />
                             </LocalizationProvider>
@@ -865,13 +929,7 @@ export default function Orders(props) {
                     <Button
                         form='my-form'
                         type='submit'
-                        disabled={ (priceArray[0] && !closed[new Date(currentDate).getDay()] && (new Date(currentDate) > new Date())
-                            && (timeDiff(new Date(openTime[new Date(currentDate).getDay()]), startTime) <= 0) &&
-                            (timeDiff(new Date(closeTime[new Date(currentDate).getDay()]), endTime) >= 0) &&
-                            (timeDiff(new Date(new Date(currentDate)), endTime) !== 0) &&
-                            (timeDiff(startTime, endTime) < 0) && (new Date(startTime).getMinutes() % 5 === 0) && (new Date(endTime).getMinutes() % 5 === 0) &&
-                            validForm()
-                            ) ? false : true}
+                        disabled={ (priceArray[0]&& validForm()) ? false : true}
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
@@ -931,8 +989,9 @@ export default function Orders(props) {
         </React.Fragment>
     );
     } else {
-        <React.Fragment>
-            Awaiting results.
-        </React.Fragment>
+        return(
+            <React.Fragment>
+                Awaiting results or the reservation form for {businessName} is still unformatted.
+            </React.Fragment>);
     }
 }

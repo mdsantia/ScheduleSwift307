@@ -292,7 +292,7 @@ export default function Orders(props) {
                     let close = [];
                     for (let i = 0; i < 14; i++) {
                         if (i % 2 === 0) {
-                            if (val[i] === 'null') {
+                            if (val[i] === 'null' || val[i] === "") {
                                 closed.push(1);
                                 open.push(currentDate);
                             } else {
@@ -300,7 +300,7 @@ export default function Orders(props) {
                                 open.push(val[i]);
                             }
                         } else {
-                            if (val[i] === 'null') {
+                            if (val[i] === 'null' || val[i] === "") {
                                 close.push(currentDate);
                             } else {
                                 close.push(val[i]);
