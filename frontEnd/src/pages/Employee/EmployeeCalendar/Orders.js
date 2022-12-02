@@ -45,10 +45,15 @@ export default function Orders(props) {
         }).then((result) => {
             var events = new Array();
             for (let i = 0; i < result.data.result.length; i++) {
+                const dateVar = new Date(result.data.result[i].reservationDate + "T00:00");
+                var startTime = new Date(result.data.result[i].startTime);
+                startTime.setDate(dateVar.getDate());
+                var endTime = new Date(result.data.result[i].endTime);
+                endTime.setDate(dateVar.getDate());
                 var event = {
                     title: "Reservation #" + result.data.result[i].ID,
-                    start: new Date(result.data.result[i].startTime),
-                    end: new Date(result.data.result[i].endTime),
+                    start: new Date(startTime),
+                    end: new Date(endTime),
                     desc: "Reservation Made By " + result.data.result[i].reservedBy,
                 }
                 events.push(event);
@@ -66,14 +71,11 @@ export default function Orders(props) {
 
         navigate("/employeeEditForm", {
             state: {
-                //username: (event.desc).substring(20),
-                //businessName: state.businessName,
                 ID: (event.title).substring(13),
                 username: props.username,
                 password: props.password,
                 businessName: props.businessName,
-                //ID: reserveID
-                    }
+            }
         });
     }
         
