@@ -2436,7 +2436,7 @@ app.listen(port, () => {
                                             }
                                         }
                                         let businessContactInfo = "";
-                                        db.query("SELECT * FROM managerContacts WHERE businessName = ?",
+                                        db.query("SELECT * FROM businessContacts WHERE businessName = ?",
                                         [result[i].businessName], (err4, result4) => {
                                             if (err4) {
                                                 console.log(err4);
