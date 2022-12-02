@@ -10,7 +10,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Axios from 'axios';
-import { Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { Navigate, useNavigate, useLocation, UNSAFE_DataRouterContext } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useSlotProps } from '@mui/base';
 import { Dayjs } from 'dayjs';
@@ -64,7 +64,6 @@ export default function Orders(props) {
     const [paymentRequire, setPaymentRequire] = useState("none");
     const [paymentValue, setPaymentValue] = useState(0);
     const [hasError, setHasError] = useState(false);
-    const [buttonDisabled, setButtonDisabled] = useState(false);
     const[open, setOpen] = React.useState(false);
     const [storedNumPeople, setStoredNumPeople] = useState(null);
     const [storedStartTime, setStoredStartTime] = useState(null);
@@ -150,21 +149,43 @@ export default function Orders(props) {
         return Math.abs(arg1 - arg2);
     }
     const validForm = () => {
-        var validItems = true;
         if (notesBox.length > 0 && !checked) {
             return false;
         }
-        // if (!closed[new Date(currentDate).getDay()] && (new Date(currentDate) > new Date())
-        // && (timeDiff(new Date(openTime[new Date(currentDate).getDay()]), startTime) <= 0) &&
-        // (timeDiff(new Date(closeTime[new Date(currentDate).getDay()]), endTime) >= 0) &&
-        // (timeDiff(new Date(new Date(currentDate)), endTime) !== 0) &&
-        // (timeDiff(startTime, endTime) < 0) && (new Date(startTime).getMinutes() % 5 === 0) && (new Date(endTime).getMinutes() % 5 === 0)) {
-        //     return false;
-        // }
-        if (numPeople > availableNumPeople || numPeople <= 0) {
+        if (numPeople > availableNumPeople || numPeople <= 0 || numPeople === undefined) {
             return false;
         }
-        //console.log(`Num Array: ${numArray}\nAvailable Array: ${availableArray  }\nMin Array: ${minArray}`);
+        for (let i = 0; i < numReservableItems; i ++) {
+            if (numArray[i] > maxArray[i] || numArray[i] < minArray[i] || numArray[i] === undefined) {
+                return false;
+            }
+        }
+        if (currentDate === null || startTime === null || endTime === null) {
+            return false;
+        }
+        let openHour = new Date((openTime[new Date(currentDate).getDay()])).getHours();
+        let openMinute = new Date((openTime[new Date(currentDate).getDay()])).getMinutes();
+        let closeHour = new Date((closeTime[new Date(currentDate).getDay()])).getHours();
+        let closeMinute = new Date((closeTime[new Date(currentDate).getDay()])).getMinutes();
+        if (exception >= 0) {
+            openHour = new Date(dates[exception].startTime).getHours();
+            openMinute = new Date(dates[exception].startTime).getMinutes();
+            closeHour = new Date(dates[exception].endTime).getHours();
+            closeMinute = new Date(dates[exception].endTime).getMinutes();
+        }
+        const startHour = new Date(startTime).getHours();
+        const startMinute = new Date(startTime).getMinutes();
+        if (startHour < openHour || (startHour === openHour && startMinute < openMinute)) {
+            return false;
+        }
+        const endHour = new Date(endTime).getHours();
+        const endMinute = new Date(endTime).getMinutes();
+        if (endHour > closeHour || (closeHour === endHour && endMinute > closeMinute)) {
+            return false;
+        }
+        if (startHour > endHour || (endHour === startHour && endMinute < startMinute)) {
+            return false;
+        }
         return true;
     }
 
@@ -237,94 +258,6 @@ export default function Orders(props) {
                 updateMaxString(maxNumPeople, nameArray, maxArray);
             } else {
                 result = result.data.result;
-                
-                {// BUILD CONCURRENCY TABLE
-                // {var table = [];
-                // for (let i = 0; i < result.length + 1; i++) {
-                //     table.push(new Array(result.length + 1));
-                // }
-                // for (let i = 0; i < result.length; i++) {
-                //     if (result[i].isReserved && (result[i].ID != reservationID && result[i].ID != state.ID)) {
-                //         if ((timeDiff(start, result[i].endTime) < 0 && 
-                //         timeDiff(end, result[i].startTime) > 0) || 
-                //         (timeDiff(start, result[i].endTime) > 0 && 
-                //         timeDiff(end, result[i].startTime) < 0)) {
-                //             table[i][result.length] = 1;
-                //             table[result.length][i] = 1;
-                //         }
-                //         else {
-                //             table[i][result.length] = 0;
-                //             table[result.length][i] = 0;
-                //         }
-                //     } else {
-                //         table[i][result.length] = 0;
-                //         table[result.length][i] = 0;
-                //     }
-                // }
-                // for (let j = 0; j < result.length; j++) {
-                //     for (let i = 0; i < result.length; i++) {
-                //         if (result[i].isReserved && (result[i].ID != reservationID && result[i].ID != state.ID) &&
-                //             result[j].isReserved && (result[j].ID != reservationID && result[j].ID != state.ID) 
-                //             && result[i].ID !== result[j].ID) {
-                //             if ((timeDiff(result[j].startTime, result[i].endTime) < 0 && 
-                //             timeDiff(result[j].endTime, result[i].startTime) > 0) || 
-                //             (timeDiff(result[j].startTime, result[i].endTime) > 0 && 
-                //             timeDiff(result[j].endTime, result[i].startTime) < 0)) {
-                //                 table[i][j] = 1;
-                //                 table[j][i] = 1;
-                //             }
-                //             else {
-                //                 table[i][j] = 0;
-                //                 table[j][i] = 0;
-                //             }
-                //         } else {
-                //             table[i][j] = 0;
-                //             table[j][i] = 0;
-                //         }
-                //     }
-                // table[result.length][result.length] = 0}
-                // }
-
-                // var tempAvailable = [];
-                //TODO
-                // var tempPeople = [];
-                // var numOverlaps = 0;
-                // for (let i = 0; i < table[result.length].length; i++) {
-                //     if (table[result.length][i]) {
-                //         numOverlaps++;
-                //     }
-                // }
-                {// for (let i = 0; i < table[result.length].length - 1; i++) {
-                //     if (table[result.length][i]) {
-                //         var tracker = [];
-                //         for (let j = 0; j < table[result.length].length - 1; j++) {
-                //             if (tracker.indexOf(j) < 0 && table[i][j]) {
-                //                 var currentClass = [];
-                //                 currentClass.push(j);
-                //                 for (let k = 0; k < table[result.length].length - 1; k++) {
-                //                     if (table[result.length][k] && table[k][i] && table[k][j]) {
-
-                //                     }
-                //                 }
-                //                 tracker.push(j);
-                //             }
-                //         }
-                //         let people = parseInt(maxNumPeople);
-                //         let available = [...maxArray];
-
-                //     }
-                // }
-                // console.log(table);
-                }
-                
-                // if (tempAvailable.length == 0) {
-                //     endAvailable = [...maxArray];
-                //     endPeople = maxNumPeople;
-                // } else {
-                //     // TODO
-                // }
-                }
-
                 var arrayInBlock = [...result];
                 // BUILD LIST OF ALL CONCURRENT RESERVATIONS IN SLOT
                 for (let i = 0; i < result.length; i++) {
@@ -491,7 +424,6 @@ export default function Orders(props) {
                             }
                         }
                     }
-                    console.log(closed)
                     setClosed(closed);
                     setOpenTime(open);
                     setCloseTime(close);
@@ -511,6 +443,18 @@ export default function Orders(props) {
                 setNumPeople(result.data.result[0].numPeople);
                 setStartTime(result.data.result[0].startTime);
                 var date = new Date(`${result.data.result[0].reservationDate}T00:00`);
+                Axios.post("http://" + getIP() + ":3001/api/getExceptionDates", {
+                    businessName: state.businessName
+                }).then((result) => {
+                    const datesTemp = result.data.result;
+                    for (let i = 0; i < datesTemp.length; i++) {
+                        if (new Date(datesTemp[i].date + "T00:00").toString() === (new Date(date)).toString() && datesTemp[i].startTime !== "closed") {
+                            setException(parseInt(i));
+                            break;
+                        } else {
+                            setException(parseInt(-1)); 
+                    }}
+                })
                 setEndTime(result.data.result[0].endTime);
                 setCurrentDate(date);
                 getConcurrent(date,
@@ -568,13 +512,12 @@ export default function Orders(props) {
                         label={'# of Units '}
                         type="number"
                         id={element}
-                        InputProps={{ inputProps: { min: minArray[element - 1], max: max[element - 1], step: 1, onKeyDown: (event) => {
-                            event.preventDefault();
-                        } } }}
+                        InputProps={{ inputProps: { min: minArray[element - 1], max: maxArray[element - 1], step: 1
+                        } } }
                         value={numArray[element - 1]}
                         onChange={(newValue) => { 
                             let newArr = [...numArray];
-                            newArr[parseInt(newValue.target.id) - 1] = newValue.target.value;
+                            newArr[element - 1] = (newValue.target.value !== ""?parseInt(newValue.target.value):parseInt(0));
                             setNumArray(newArr);
                             calculateTotal(priceArray.length, priceArray, newArr);
                         }}
@@ -635,6 +578,7 @@ export default function Orders(props) {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        makeReceipt();
         let tot = 0;
         for (let i = 0; i < numReservableItems; i++) {
             tot = tot + numArray[i];
@@ -668,7 +612,6 @@ export default function Orders(props) {
             }
         }
         if (!reservationID) {
-            console.log(ReservedItems);
             Axios.post("http://" + getIP() + ":3001/api/createReservation", {
                 businessName: businessName,
                 reservationDate: currentDate,
@@ -685,7 +628,7 @@ export default function Orders(props) {
                 alert(`Your reservation has been saved!\nAn confirmation email has been sent to you containing your Reservation ID and reservation details.`);
                 setOpen(false);
             })
-        } else{
+        } else {
             // UPDATE RESERVATION INSTEAD
             if (new Date(currentDate).getTime() === new Date(storedCurrentDate).getTime() && new Date(startTime).getTime() === new Date(storedStartTime).getTime() &&
             new Date(endTime).getTime() === new Date(storedEndTime).getTime() && parseInt(numPeople) === parseInt(storedNumPeople) && (numArray.map(Number)).join() === (storedNumArray.map(Number)).join()) {
@@ -765,13 +708,17 @@ export default function Orders(props) {
                                     label="Select Date"
                                     validate="true"
                                     value={currentDate}
-                                    onChange={(newValue) => {if(newValue != null && newValue.isValid()) { setCurrentDate(newValue); 
-                                        getConcurrent(newValue, startTime, endTime, maxNumPeople, maxArray, nameArray)};
+                                    InputProps={{ onKeyDown: (event) => { event.preventDefault();} } }
+                                    onChange={(newValue) => {setCurrentDate(newValue); 
+                                        getConcurrent(newValue, startTime, endTime, maxNumPeople, maxArray, nameArray);
                                         for (let i = 0; i < dates.length; i++) {
-                                            if (new Date(dates[i].date + "T00:00").toString() === (new Date(newValue)).toString() && dates[i].startTime !== "closed") {
+                                            if ((new Date(dates[i].date + "T00:00").toString() === (new Date(newValue)).toString() && dates[i].startTime !== "closed")) {
                                                 setException(parseInt(i));
                                                 break;
-                                        }} }}
+                                            } else {
+                                                setException(parseInt(-1)); 
+                                            }}
+                                    }}
                                     renderInput={(params) => <TextField {...params}/>}
                                     shouldDisableDate={(date) => {
                                         for (let i = 0; i < dates.length; i++) {
@@ -796,6 +743,7 @@ export default function Orders(props) {
                                     label="Start Time"
                                     value={startTime}
                                     fullWidth
+                                    InputProps={{ onKeyDown: (event) => { event.preventDefault();} } }
                                     onChange={(newValue) => { setStartTime(newValue);
                                         getConcurrent(currentDate, newValue, endTime, maxNumPeople, maxArray, nameArray) }}
                                     renderInput={(params) => <TextField {...params} required/>}
@@ -832,6 +780,7 @@ export default function Orders(props) {
                                     label="End Time"
                                     value={endTime}
                                     fullWidth
+                                    InputProps={{ onKeyDown: (event) => { event.preventDefault();} } }
                                     onChange={(newValue) => { setEndTime(newValue); 
                                         getConcurrent(currentDate, startTime, newValue, maxNumPeople, maxArray, nameArray) }}
                                     renderInput={(params) => <TextField {...params} required />}
@@ -878,7 +827,7 @@ export default function Orders(props) {
                                     InputProps={{ inputProps: { max: availableNumPeople,  min: 1, step: 1 } }}
                                     value={numPeople}
                                     onChange={(newValue) => { 
-                                        setNumPeople(parseInt(newValue.target.value));
+                                        setNumPeople(newValue.target.value===""?parseInt(0):parseInt(newValue.target.value));
                                         getConcurrent(currentDate, startTime, endTime, maxNumPeople, maxArray, nameArray);
                                     }}
                                 />
@@ -929,7 +878,8 @@ export default function Orders(props) {
                     <Button
                         form='my-form'
                         type='submit'
-                        disabled={ (priceArray[0] && validForm()) ? false : true}
+                        disabled={ ( validForm() && !(new Date(currentDate).getTime() === new Date(storedCurrentDate).getTime() && new Date(startTime).getTime() === new Date(storedStartTime).getTime() &&
+                            new Date(endTime).getTime() === new Date(storedEndTime).getTime() && parseInt(numPeople) === parseInt(storedNumPeople) && (numArray.map(Number)).join() === (storedNumArray.map(Number)).join())) ? false : true}
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
@@ -945,7 +895,6 @@ export default function Orders(props) {
                         aria-describedby='modal-modal-description'
                     >
                     <Box sx={style}>
-                        {makeReceipt()}
                         <Typography id="modal-modal-title" align="center">Itemized Receipt</Typography>
                         <Grid item xs={12} sm={6}>
                                 {receiptTypo[0]}

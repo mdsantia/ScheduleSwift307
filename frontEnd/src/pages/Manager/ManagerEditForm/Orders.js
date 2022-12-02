@@ -24,6 +24,7 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Logo from '../Logo.png';
 import EventIcon from '@mui/icons-material/Event';
+import { getDate } from 'date-fns';
 
 function preventDefault(event) {
     event.preventDefault();
@@ -48,6 +49,8 @@ export default function Orders(props) {
     const [reservationID, setReservationID] = useState(null);
     const businessName = state.businessName;
     const navigate = useNavigate();
+    var [exception, setException] = useState(null);
+    const [dates, setDates] = useState([]);
     const [currentDate, setCurrentDate] = useState(null);
     const [openTime, setOpenTime] = useState(Dayjs | null);
     const [closeTime, setCloseTime] = useState(Dayjs | null);
@@ -58,10 +61,24 @@ export default function Orders(props) {
     const [customerName, setCustomerName] = useState(null);
     const [customerEmail, setCustomerEmail] = useState(null);
     const [customerPhoneNumber, setCustomerPhoneNumber] = useState(null);
+    const [storedNumPeople, setStoredNumPeople] = useState(null);
+    const [storedStartTime, setStoredStartTime] = useState(null);
+    const [storedEndTime, setStoredEndTime] = useState(null);
+    const [storedCurrentDate, setStoredCurrentDate] = useState(null);
+    const [storedNumArray, setStoredNumArray] = useState([]);
     
     useEffect(() => {
         insertValues();
     }, [])
+
+    function getDates(businessName) {
+        Axios.post("http://" + getIP() + ":3001/api/getExceptionDates", {
+            businessName: businessName
+        }).then((result) => {
+            setDates(result.data.result);
+            return result.data.result;
+        })
+    }
 
     function getContactInfo(reservedBy) {
         Axios.post("http://" + getIP() + ":3001/api/getContactInfo", {
@@ -72,14 +89,10 @@ export default function Orders(props) {
             } else if (result.data.message) {
                 console.log(result.data.message);
             } else {
-                console.log(result.data.result);
                 setCustomerName(result.data.result[0].firstName + " " + result.data.result[0].lastName);
                 setCustomerEmail(result.data.result[0].emailAddress);
                 setCustomerPhoneNumber("(" + result.data.result[0].phoneNumber.substring(0, 3) + ") " + result.data.result[0].phoneNumber.substring(3, 6) + "-" + result.data.result[0].phoneNumber.substring(6));
             }
-            console.log(customerName);
-            console.log(customerEmail);
-            console.log(customerPhoneNumber);
         })
     }
 
@@ -97,6 +110,44 @@ export default function Orders(props) {
         var arg1 = new Date(start);
         var arg2 = new Date(end);
         return Math.abs(arg1 - arg2);
+    }
+
+    const validForm = () => {
+        if (numPeople > availableNumPeople || numPeople <= 0 || numPeople === undefined) {
+            return false;
+        }
+        for (let i = 0; i < numReservableItems; i ++) {
+            if (numArray[i] > maxArray[i] || numArray[i] < minArray[i] || numArray[i] === undefined) {
+                return false;
+            }
+        }
+        if (currentDate === null || startTime === null || endTime === null) {
+            return false;
+        }
+        let openHour = new Date((openTime[new Date(currentDate).getDay()])).getHours();
+        let openMinute = new Date((openTime[new Date(currentDate).getDay()])).getMinutes();
+        let closeHour = new Date((closeTime[new Date(currentDate).getDay()])).getHours();
+        let closeMinute = new Date((closeTime[new Date(currentDate).getDay()])).getMinutes();
+        if (exception >= 0) {
+            openHour = new Date(dates[exception].startTime).getHours();
+            openMinute = new Date(dates[exception].startTime).getMinutes();
+            closeHour = new Date(dates[exception].endTime).getHours();
+            closeMinute = new Date(dates[exception].endTime).getMinutes();
+        }
+        const startHour = new Date(startTime).getHours();
+        const startMinute = new Date(startTime).getMinutes();
+        if (startHour < openHour || (startHour === openHour && startMinute < openMinute)) {
+            return false;
+        }
+        const endHour = new Date(endTime).getHours();
+        const endMinute = new Date(endTime).getMinutes();
+        if (endHour > closeHour || (closeHour === endHour && endMinute > closeMinute)) {
+            return false;
+        }
+        if (startHour > endHour || (endHour === startHour && endMinute < startMinute)) {
+            return false;
+        }
+        return true;
     }
 
     function timeDiff(start, end) {
@@ -176,7 +227,6 @@ export default function Orders(props) {
 
                 // BY INCREMENTS OF 5 MINS FILL ARRAY OF AVAILABILITIES
                 var temp = start;
-                // console.log(new Date(temp + 1000000), end);
                 // To improve time we could increase this value, 5 is the most accurate as increasing it would lose precision
                 var interval = 5;
                 var allAvailable = [];
@@ -248,6 +298,7 @@ export default function Orders(props) {
             if (result.data.err) {
                 alert("Facility data missing!");
             } else {
+                getDates(businessName);
                 // UPDATE NUM OF RESERVABLES
                 if (!result.data.result[0].numReservable) {
                     setNumReservableItems(1);
@@ -326,6 +377,18 @@ export default function Orders(props) {
                 setNumPeople(result.data.result[0].numPeople);
                 setStartTime(result.data.result[0].startTime);
                 var date = new Date(`${result.data.result[0].reservationDate}T00:00`);
+                Axios.post("http://" + getIP() + ":3001/api/getExceptionDates", {
+                    businessName: props.businessName
+                }).then((result) => {
+                    const datesTemp = result.data.result;
+                    for (let i = 0; i < datesTemp.length; i++) {
+                        if (new Date(datesTemp[i].date + "T00:00").toString() === date.toString() && datesTemp[i].startTime !== "closed") {
+                            setException(parseInt(i));
+                            break;
+                        } else {
+                            setException(parseInt(-1)); 
+                    }}
+                })
                 setEndTime(result.data.result[0].endTime);
                 setCurrentDate(date);
                 getConcurrent(date,
@@ -333,6 +396,11 @@ export default function Orders(props) {
                     maxPeople, maxs, ReservedItems);
                 setReservedBy(result.data.result[0].reservedBy);
                 getContactInfo(result.data.result[0].reservedBy);
+                setStoredNumPeople(result.data.result[0].numPeople);
+                setStoredStartTime(result.data.result[0].startTime);
+                setStoredEndTime(result.data.result[0].endTime);
+                setStoredNumArray(numValues);
+                setStoredCurrentDate(date);
             })
         } else {
             getConcurrent(null, null, null, null, maxPeople, maxs, ReservedItems)
@@ -380,11 +448,11 @@ export default function Orders(props) {
                         label={'# of Units '}
                         type="number"
                         id={element}
-                        InputProps={{ inputProps: { min: minArray[element - 1], max: max[element - 1], step: 1 } }}
+                        InputProps={{ inputProps: { min: minArray[element - 1], max: maxArray[element - 1], step: 1 } }}
                         value={numArray[element - 1]}
                         onChange={(newValue) => { 
                             let newArr = [...numArray];
-                            newArr[parseInt(newValue.target.id) - 1] = newValue.target.value;
+                            newArr[element - 1] = (newValue.target.value !== ""?parseInt(newValue.target.value):parseInt(0));
                             setNumArray(newArr);
                             calculateTotal(priceArray.length, priceArray, newArr);
                         }}
@@ -450,27 +518,37 @@ export default function Orders(props) {
                 setReservationID(result.data.id);
                 alert(`The reservation has been saved!\nAn confirmation email has been sent to the customer containing their Reservation ID and reservation details.`);
             })
-        } else{
+        } else {
             // UPDATE RESERVATION INSTEAD
-            Axios.post("http://" + getIP() + ":3001/api/updateReservation", {
-                ID: reservationID,
-                businessName: businessName,
-                reservationDate: currentDate,
-                reservable: ReservedItems,
-                price: prices,
-                startTime: startTime,
-                endTime: endTime,
-                reservedBy: reservedBy,
-                numPeople: numPeople,
-                numReservable: numReserved,
-                modifiedBy: "a manager or an employee"
-            }).then((result) => {
-                alert(`The reservation has been updated!\nAn confirmation email has been sent to the customer containing their Reservation ID and updated reservation details.`);
-            })
+            if (new Date(currentDate).getTime() === new Date(storedCurrentDate).getTime() && new Date(startTime).getTime() === new Date(storedStartTime).getTime() &&
+            new Date(endTime).getTime() === new Date(storedEndTime).getTime() && parseInt(numPeople) === parseInt(storedNumPeople) && (numArray.map(Number)).join() === (storedNumArray.map(Number)).join()) {
+                    alert("Please modify the reservation before submitting the form.");
+            } else {
+                Axios.post("http://" + getIP() + ":3001/api/updateReservation", {
+                    ID: reservationID,
+                    businessName: businessName,
+                    reservationDate: currentDate,
+                    reservable: ReservedItems,
+                    price: prices,
+                    startTime: startTime,
+                    endTime: endTime,
+                    reservedBy: reservedBy,
+                    numPeople: numPeople,
+                    numReservable: numReserved,
+                    modifiedBy: "a manager or an employee"
+                }).then((result) => {
+                    alert(`The reservation has been updated!\nAn confirmation email has been sent to the customer containing their Reservation ID and updated reservation details.`);
+                })
+                setStoredNumArray(numArray);
+                setStoredCurrentDate(currentDate);
+                setStoredNumPeople(numPeople);
+                setStoredStartTime(startTime);
+                setStoredEndTime(endTime);
+            }
         }
     }
 
-    if (MAXSTRING) {
+    if (MAXSTRING && exception !== null) {
     return (
         <React.Fragment>
             <Box
@@ -530,10 +608,27 @@ export default function Orders(props) {
                                     label="Select Date"
                                     validate="true"
                                     value={currentDate}
-                                    onChange={(newValue) => { setCurrentDate(newValue); 
-                                        getConcurrent(newValue, startTime, endTime, maxNumPeople, maxArray, nameArray) }}
+                                    InputProps={{ onKeyDown: (event) => { event.preventDefault();} } }
+                                    onChange={(newValue) => {setCurrentDate(newValue); 
+                                        getConcurrent(newValue, startTime, endTime, maxNumPeople, maxArray, nameArray);
+                                        for (let i = 0; i < dates.length; i++) {
+                                            if (new Date(dates[i].date + "T00:00").toString() === (new Date(newValue)).toString() && dates[i].startTime !== "closed") {
+                                                setException(parseInt(i));
+                                                break;
+                                            } else {
+                                                setException(parseInt(-1)); 
+                                        }}
+                                    }}
                                     renderInput={(params) => <TextField {...params}/>}
                                     shouldDisableDate={(date) => {
+                                        for (let i = 0; i < dates.length; i++) {
+                                            if (new Date(dates[i].date + "T00:00").toString() === date.$d.toString() && dates[i].startTime === "closed") {
+                                                return true;
+                                            }
+                                            else if (new Date(dates[i].date + "T00:00").toString() === date.$d.toString()) {
+                                                return false;
+                                            }
+                                        }
                                         if (closed[new Date(date).getDay()] || date < new Date()) {
                                             return true;
                                         }
@@ -548,14 +643,21 @@ export default function Orders(props) {
                                     label="Start Time"
                                     value={startTime}
                                     fullWidth
+                                    InputProps={{ onKeyDown: (event) => { event.preventDefault();} } }
                                     onChange={(newValue) => { if(newValue != null && newValue.isValid()) {setStartTime(newValue);
                                         getConcurrent(currentDate, newValue, endTime, maxNumPeople, maxArray, nameArray); }}}
                                     renderInput={(params) => <TextField {...params} required/>}
                                     shouldDisableTime={(timeValue, clockType) => {
-                                        const openHour = new Date((openTime[new Date(currentDate).getDay()])).getHours()
-                                        const openMinute = new Date((openTime[new Date(currentDate).getDay()])).getMinutes()
-                                        const closeHour = new Date((closeTime[new Date(currentDate).getDay()])).getHours()
-                                        const closeMinute = new Date((closeTime[new Date(currentDate).getDay()])).getMinutes()
+                                        let openHour = new Date((openTime[new Date(currentDate).getDay()])).getHours()
+                                        let openMinute = new Date((openTime[new Date(currentDate).getDay()])).getMinutes()
+                                        let closeHour = new Date((closeTime[new Date(currentDate).getDay()])).getHours()
+                                        let closeMinute = new Date((closeTime[new Date(currentDate).getDay()])).getMinutes()
+                                        if (exception >= 0) {
+                                            openHour = new Date(dates[exception].startTime).getHours();
+                                            openMinute = new Date(dates[exception].startTime).getMinutes();
+                                            closeHour = new Date(dates[exception].endTime).getHours();
+                                            closeMinute = new Date(dates[exception].endTime).getMinutes();
+                                        }
                                     if ((clockType === 'hours' && timeValue < openHour) || (clockType === 'hours' && timeValue >= closeHour && closeMinute === 0) || 
                                         (clockType === 'hours' && timeValue > closeHour && closeMinute > 0)) {
                                             return true;
@@ -578,14 +680,21 @@ export default function Orders(props) {
                                     label="End Time"
                                     value={endTime}
                                     fullWidth
+                                    InputProps={{ onKeyDown: (event) => { event.preventDefault();} } }
                                     onChange={(newValue) => { setEndTime(newValue); 
                                         getConcurrent(currentDate, startTime, newValue, maxNumPeople, maxArray, nameArray) }}
                                     renderInput={(params) => <TextField {...params} required />}
                                     shouldDisableTime={(timeValue, clockType) => {
-                                        const openHour = new Date((openTime[new Date(currentDate).getDay()])).getHours()
-                                        const openMinute = new Date((openTime[new Date(currentDate).getDay()])).getMinutes()
-                                        const closeHour = new Date((closeTime[new Date(currentDate).getDay()])).getHours()
-                                        const closeMinute = new Date((closeTime[new Date(currentDate).getDay()])).getMinutes()
+                                        let openHour = new Date((openTime[new Date(currentDate).getDay()])).getHours()
+                                        let openMinute = new Date((openTime[new Date(currentDate).getDay()])).getMinutes()
+                                        let closeHour = new Date((closeTime[new Date(currentDate).getDay()])).getHours()
+                                        let closeMinute = new Date((closeTime[new Date(currentDate).getDay()])).getMinutes()
+                                        if (exception >= 0) {
+                                            openHour = new Date(dates[exception].startTime).getHours();
+                                            openMinute = new Date(dates[exception].startTime).getMinutes();
+                                            closeHour = new Date(dates[exception].endTime).getHours();
+                                            closeMinute = new Date(dates[exception].endTime).getMinutes();
+                                        }
                                     if ((clockType === 'hours' && timeValue < openHour) || 
                                         (clockType === 'hours' && timeValue > closeHour)) {
                                             return true;
@@ -618,7 +727,7 @@ export default function Orders(props) {
                                     InputProps={{ inputProps: { max: availableNumPeople,  min: 1, step: 1 } }}
                                     value={numPeople}
                                     onChange={(newValue) => { 
-                                        setNumPeople(parseInt(newValue.target.value));
+                                        setNumPeople(newValue.target.value===""?parseInt(0):parseInt(newValue.target.value));
                                         getConcurrent(currentDate, startTime, endTime, maxNumPeople, maxArray, nameArray);
                                     }}
                                 />
@@ -662,12 +771,8 @@ export default function Orders(props) {
                     </Typography>
                     <Button
                         type="submit"
-                        disabled={ (priceArray[0] && !closed[new Date(currentDate).getDay()] && (new Date(currentDate) > new Date())
-                            && (timeDiff(new Date(openTime[new Date(currentDate).getDay()]), startTime) <= 0) &&
-                            (timeDiff(new Date(closeTime[new Date(currentDate).getDay()]), endTime) >= 0) &&
-                            (timeDiff(new Date(new Date(currentDate)), endTime) !== 0) && (new Date(startTime).getMinutes() % 5 === 0) &&
-                            (timeDiff(startTime, endTime) < 0) && (new Date(endTime).getMinutes() % 5 === 0)
-                            ) ? false : true}
+                        disabled={ ( validForm()) && !(new Date(currentDate).getTime() === new Date(storedCurrentDate).getTime() && new Date(startTime).getTime() === new Date(storedStartTime).getTime() &&
+                            new Date(endTime).getTime() === new Date(storedEndTime).getTime() && parseInt(numPeople) === parseInt(storedNumPeople) && (numArray.map(Number)).join() === (storedNumArray.map(Number)).join()) ? false : true}
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
