@@ -155,7 +155,7 @@ export default function Orders(props) {
         }
         const endHour = new Date(endTime).getHours();
         const endMinute = new Date(endTime).getMinutes();
-        if (endHour > closeHour || (closeHour === endHour && endMinute < closeMinute)) {
+        if (endHour > closeHour || (closeHour === endHour && endMinute > closeMinute)) {
             return false;
         }
         if (startHour > endHour || (endHour === startHour && endMinute < startMinute)) {
