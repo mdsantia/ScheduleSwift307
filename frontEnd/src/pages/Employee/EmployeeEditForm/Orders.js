@@ -66,10 +66,27 @@ export default function Orders(props) {
     const [storedEndTime, setStoredEndTime] = useState(null);
     const [storedCurrentDate, setStoredCurrentDate] = useState(null);
     const [storedNumArray, setStoredNumArray] = useState([]);
+    const [stopEdit, setStop] = useState('');
     
     useEffect(() => {
         insertValues();
+        checkEdit();
     }, [])
+
+    function checkEdit() {
+
+        console.log(props);
+
+        Axios.post("http://" + getIP() + ":3001/api/checkEdit", {
+            username: props.username,
+        }).then((result) => {
+            if (result.data === "No") {
+                setStop("Yes");
+            } else {
+                setStop("No");
+            }
+        })
+    }
 
     function getDates(businessName) {
         Axios.post("http://" + getIP() + ":3001/api/getExceptionDates", {
@@ -526,7 +543,7 @@ export default function Orders(props) {
                     numReservable: numReserved,
                     modifiedBy: "a manager or an employee"
                 }).then((result) => {
-                    alert(`The reservation has been updated!\nAn confirmation email has been sent to the customer containing their Reservation ID and updated reservation details.`);
+                    alert(`Your reservation has been updated!\nAn confirmation email has been sent to you containing your Reservation ID and updated reservation details.`);
                 })
                 setStoredNumArray(numArray);
                 setStoredCurrentDate(currentDate);

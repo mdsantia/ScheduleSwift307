@@ -10,6 +10,7 @@ const nodemailer = require("nodemailer");
 const { send } = require("process");
 const e = require("express");
 const cron = require('node-cron');
+const { brotliDecompress } = require("zlib");
 const port = 3001;
 
 const db = mysql.createPool({
@@ -818,7 +819,6 @@ app.post("/api/updateReservation", (req, res) => {
                 res.send({ err: err })
             }
             if (result) {
-                console.log(result);
                 res.send( { id: result.insertId } )
                 db.query("SELECT * from userData WHERE username = ?", [reservedBy], (err2, result2) => {
                     if (err2) {
@@ -829,18 +829,18 @@ app.post("/api/updateReservation", (req, res) => {
                         let allReservablePrices = price.split(";");
                         let allNumReservable = numReservable.split(";");
                         var allReservableItemsString = "";
-                        var subTotal = 0;
+                        var total = 0;
                         if (allReservableItems.length === 0) {
                             allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + numReservable + " x " + reservable + "</td>";
                             allReservableItemsString += "<td width=\"20%\"> (" + numReservable + " x $" + price + ")" + "</td><td width=\"5%\">=</td>";
                             allReservableItemsString += "<td style=\"text-align:right\">$" + (price * numReservable).toFixed(2) + "</td></tr>";
-                            subTotal = price * numReservable;
+                            total = price * numReservable;
                         } else {
                             for (i = 0; i < allReservableItems.length; i++) {
                                 allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + allNumReservable[i] + " x " + allReservableItems[i] + "</td>";
                                 allReservableItemsString += "<td width=\"20%\"> (" + allNumReservable[i] + " x $" + allReservablePrices[i] + ")" + "</td><td width=\"5%\">=</td>";
                                 allReservableItemsString += "<td style=\"text-align:right\">$" + (allReservablePrices[i] * allNumReservable[i]).toFixed(2) + "</td></tr>";
-                                subTotal += allReservablePrices[i] * allNumReservable[i];
+                                total += allReservablePrices[i] * allNumReservable[i];
                             }
                         }
                         let policiesString = "";
@@ -854,7 +854,7 @@ app.post("/api/updateReservation", (req, res) => {
                             if (result3.length) {
                                 policiesString += "<strong>RESERVATION POLICIES AGREED</strong>";
                                 for (let i = 0; i < result3.length; i++) {
-                                    policiesString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + i + 1 + ". " + result3[i].note + "</td></tr>";
+                                    policiesString += `<br />${i + 1}. ${result3[i].note}`;
                                 }
                             }
                             var modificationMessage;
@@ -904,9 +904,7 @@ app.post("/api/updateReservation", (req, res) => {
                                     allReservableItemsString +
                                     "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
                                     "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
-                                    "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
-                                    "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
-                                    "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
+                                    "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + total.toFixed(2) + "</strong></td></tr>" +
                                     "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
                                     "<p>Thank you for reserving with ScheduleSwift!</p>" +
                                     "</td></tr></table>" +
@@ -977,9 +975,7 @@ app.post("/api/updateReservation", (req, res) => {
                                         allReservableItemsString +
                                         "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
                                         "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
-                                        "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
-                                        "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
-                                        "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
+                                        "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + total.toFixed(2) + "</strong></td></tr>" +
                                         "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
                                         "<p>Thank you for reserving with ScheduleSwift!</p>" +
                                         "</td></tr></table>" +
@@ -1055,18 +1051,18 @@ app.post("/api/createReservation", (req, res) => {
                         let allReservablePrices = price.split(";");
                         let allNumReservable = numReservable.split(";");
                         var allReservableItemsString = "";
-                        var subTotal = 0;
+                        var total = 0;
                         if (allReservableItems.length === 0) {
                             allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + numReservable + " x " + reservable + "</td>";
                             allReservableItemsString += "<td width=\"20%\"> (" + numReservable + " x $" + price + ")" + "</td><td width=\"5%\">=</td>";
                             allReservableItemsString += "<td style=\"text-align:right\">$" + (price * numReservable).toFixed(2) + "</td></tr>";
-                            subTotal = price * numReservable;
+                            total = price * numReservable;
                         } else {
                             for (let i = 0; i < allReservableItems.length; i++) {
                                 allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + allNumReservable[i] + " x " + allReservableItems[i] + "</td>";
                                 allReservableItemsString += "<td width=\"20%\"> (" + allNumReservable[i] + " x $" + allReservablePrices[i] + ")" + "</td><td width=\"5%\">=</td>";
                                 allReservableItemsString += "<td style=\"text-align:right\">$" + (allReservablePrices[i] * allNumReservable[i]).toFixed(2) + "</td></tr>";
-                                subTotal += allReservablePrices[i] * allNumReservable[i];
+                                total += allReservablePrices[i] * allNumReservable[i];
                             }
                         }
                         let policiesString = "";
@@ -1080,7 +1076,7 @@ app.post("/api/createReservation", (req, res) => {
                             if (result3.length) {
                                 policiesString += "<strong>RESERVATION POLICIES AGREED</strong>";
                                 for (let i = 0; i < result3.length; i++) {
-                                    policiesString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + i + 1 + ". " + result3[i].note + "</td></tr>";
+                                    policiesString += `<br />${i + 1}. ${result3[i].note}`;
                                 }
                             }
                             const mailOptions = {
@@ -1124,9 +1120,7 @@ app.post("/api/createReservation", (req, res) => {
                                     allReservableItemsString +
                                     "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
                                     "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
-                                    "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
-                                    "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
-                                    "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
+                                    "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + total.toFixed(2) + "</strong></td></tr>" +
                                     "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
                                     "<p>Thank you for reserving with ScheduleSwift!</p>" +
                                     "</td></tr></table>" +
@@ -1183,9 +1177,7 @@ app.post("/api/createReservation", (req, res) => {
                                     allReservableItemsString +
                                     "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
                                     "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
-                                    "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
-                                    "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
-                                    "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
+                                    "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + total.toFixed(2) + "</strong></td></tr>" +
                                     "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
                                     "<p>Thank you for reserving with ScheduleSwift!</p>" +
                                     "</td></tr></table>" +
@@ -1294,9 +1286,11 @@ app.post("/api/managerDeleteReservation", (req, res) => {
             break;
         }
     }
+    console.log(scheduledEmails[indexOfCancelledReservation]);
     if (scheduledEmails[indexOfCancelledReservation]) {
+        let job = scheduledEmails[indexOfCancelledReservation].cronSchedule
         setImmediate( () => {
-            scheduledEmails[indexOfCancelledReservation].cronSchedule.stop();
+            job.stop();
         })
         scheduledEmails.splice(indexOfCancelledReservation, 1);
     }
@@ -1336,18 +1330,18 @@ app.post("/api/managerDeleteReservation", (req, res) => {
                                         let allReservablePrices = result3[0].price.split(";");
                                         let allNumReservable = result3[0].numReservable.split(";");
                                         var allReservableItemsString = "";
-                                        var subTotal = 0;
+                                        var total = 0;
                                         if (allReservableItems.length === 0) {
                                             allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + result3[0].numReservable + " x " + result3[0].reservableItem + "</td>";
                                             allReservableItemsString += "<td width=\"20%\"> (" + result3[0].numReservable + " x $" + result3[0].price + ")" + "</td><td width=\"5%\">=</td>";
                                             allReservableItemsString += "<td style=\"text-align:right\">$" + (result3[0].price * result3[0].numReservable).toFixed(2) + "</td></tr>";
-                                            subTotal = result3[0].price * result3[0].numReservable;
+                                            total = result3[0].price * result3[0].numReservable;
                                         } else {
                                             for (i = 0; i < allReservableItems.length; i++) {
                                                 allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + allNumReservable[i] + " x " + allReservableItems[i] + "</td>";
                                                 allReservableItemsString += "<td width=\"20%\"> (" + allNumReservable[i] + " x $" + allReservablePrices[i] + ")" + "</td><td width=\"5%\">=</td>";
                                                 allReservableItemsString += "<td style=\"text-align:right\">$" + (allReservablePrices[i] * allNumReservable[i]).toFixed(2) + "</td></tr>";
-                                                subTotal += allReservablePrices[i] * allNumReservable[i];
+                                                total += allReservablePrices[i] * allNumReservable[i];
                                             }
                                         }
                                         let policiesString = "";
@@ -1361,7 +1355,7 @@ app.post("/api/managerDeleteReservation", (req, res) => {
                                             if (result4.length) {
                                                 policiesString += "<strong>RESERVATION POLICIES AGREED</strong>";
                                                 for (let i = 0; i < result4.length; i++) {
-                                                    policiesString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + i + 1 + ". " + result3[i].note + "</td></tr>";
+                                                    policiesString += `<br />${i + 1}. ${result3[i].note}`;
                                                 }
                                             }
                                             const mailOptions = {
@@ -1384,7 +1378,7 @@ app.post("/api/managerDeleteReservation", (req, res) => {
                                                     "</style>" +
                                                 "</head>" + 
                                                 "<body><table width=\"600\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"600\" colspan=\"2\" align=\"center\" style=\"text-align:center\"><h4><center>RESERVATION CANCELLATION CONFIRMATION</center></h4><p><center>The following reservation has been cancelled.</center></p> \
-                                                Please contact" + result3[0].businessName + "if you have any questions or concerns.</td></tr>" +
+                                                Please contact " + result3[0].businessName + " if you have any questions or concerns.</td></tr>" +
                                                 "<tr><td width=\"400\" valign=\"top\">" +
                                                 "<br /><br /><strong>" + result3[0].businessName + "</strong>" +
                                                 "<br />123 Address St" +
@@ -1406,9 +1400,7 @@ app.post("/api/managerDeleteReservation", (req, res) => {
                                                 allReservableItemsString +
                                                 "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
                                                 "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
-                                                "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
-                                                "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
-                                                "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
+                                                "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + total.toFixed(2) + "</strong></td></tr>" +
                                                 "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
                                                 "<p>Thank you for reserving with ScheduleSwift!</p>" +
                                                 "</td></tr></table>" +
@@ -2143,6 +2135,7 @@ app.post("/api/checkEdit", (req, res) => {
 
 app.post("/api/checkView", (req, res) => {
     const username = req.body.username;
+    console.log(username);
     const del = "Yes";
     db.query(
         "SELECT * FROM permissions WHERE username = ? AND viewReservations = ?",
@@ -2151,6 +2144,9 @@ app.post("/api/checkView", (req, res) => {
             if (err) {
                 console.log(err)
             }
+            console.log("HERE");
+            console.log(result);
+            console.log("HERE");
             if (result.length == 0) {
                 res.send("No");
             } else {
@@ -2249,6 +2245,51 @@ app.post("/api/changeView", (req, res) => {
     )
 })
 
+app.post("/api/deleteEmployee", (req, res) => {
+    const username = req.body.username;
+
+    db.query(
+        "DELETE FROM employeeData WHERE username = ?",
+        [username],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                //console.log({ result })
+                //res.send({ result })
+                db.query(
+                    "DELETE FROM permissions WHERE username = ?",
+                    [username],
+                    (err, result) => {
+                        if (err) {
+                            console.log(err)
+                        }
+                        if (result) {
+                            //console.log({ result })
+                            //res.send({ result })
+                            db.query(
+                                "DELETE FROM shifts WHERE username = ?",
+                                [username],
+                                (err, result) => {
+                                    if (err) {
+                                        console.log(err)
+                                    }
+                                    if (result) {
+                                        console.log({ result })
+                                        res.send({ result })
+                                    }
+                                }
+                            )
+                        }
+                    }
+                )
+
+            }
+        }
+    )
+})
+
 var scheduledEmails = new Array();
 
 app.listen(port, () => {
@@ -2274,18 +2315,18 @@ app.listen(port, () => {
                                     let allReservablePrices = result[i].price.split(";");
                                     let allNumReservable = result[i].numReservable.split(";");
                                     var allReservableItemsString = "";
-                                    var subTotal = 0;
+                                    var total = 0;
                                     if (allReservableItems.length === 0) {
                                         allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + result[i].numReservable + " x " + result[i].reservableItem + "</td>";
                                         allReservableItemsString += "<td width=\"20%\"> (" + result[i].numReservable + " x $" + result[i].price + ")" + "</td><td width=\"5%\">=</td>";
                                         allReservableItemsString += "<td style=\"text-align:right\">$" + (result[i].price * result[i].numReservable).toFixed(2) + "</td></tr>";
-                                        subTotal = result[i].price * result[i].numReservable;
+                                        total = result[i].price * result[i].numReservable;
                                     } else {
                                         for (let j = 0; j < allReservableItems.length; j++) {
                                             allReservableItemsString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + allNumReservable[j] + " x " + allReservableItems[j] + "</td>";
                                             allReservableItemsString += "<td width=\"20%\"> (" + allNumReservable[j] + " x $" + allReservablePrices[j] + ")" + "</td><td width=\"5%\">=</td>";
                                             allReservableItemsString += "<td style=\"text-align:right\">$" + (allReservablePrices[j] * allNumReservable[j]).toFixed(2) + "</td></tr>";
-                                            subTotal += allReservablePrices[j] * allNumReservable[j];
+                                            total += allReservablePrices[j] * allNumReservable[j];
                                         }
                                     }
                                     let policiesString = "";
@@ -2299,7 +2340,7 @@ app.listen(port, () => {
                                         if (result3.length) {
                                             policiesString += "<strong>RESERVATION POLICIES AGREED</strong>";
                                             for (let i = 0; i < result3.length; i++) {
-                                                policiesString += "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\">" + i + 1 + ". " + result3[i].note + "</td></tr>";
+                                                policiesString += `<br />${i + 1}. ${result3[i].note}`;
                                             }
                                         }
                                         const mailOptionsReminder = {
@@ -2343,9 +2384,7 @@ app.listen(port, () => {
                                                 allReservableItemsString +
                                                 "<tr><td width=\"60%\" class=\"AttentionText\" colspan=\"2\"></td><td width=\"20%\" /><td width=\"5%\" /><td style=\"text-align:right\" /></tr></table>" +
                                                 "<table width=\"600\" cellspacing=\"0\" cellpadding=\"0\">" +
-                                                "<tr><td width=\"50%\">SUBTOTAL</td><td width=\"50%\" class=\"money\">$" + subTotal.toFixed(2) + "</td></tr>" +
-                                                "<tr><td width=\"50%\">TAX</td><td width=\"50%\" class=\"money\">$" + (subTotal * 0.07).toFixed(2) + "</td></tr>" +
-                                                "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + (subTotal * 1.07).toFixed(2) + "</strong></td></tr>" +
+                                                "<tr><td width\50%\"><br /><strong>TOTAL</strong></td><td width=\"50%\" class=\"money\"><br /><strong>$" + total.toFixed(2) + "</strong></td></tr>" +
                                                 "<tr><td colspan=\"2\" height=\"1\" bgcolor=\"black\" /></tr><tr><td colspan=\"2\"><br />" +
                                                 "<p>Thank you for reserving with ScheduleSwift!</p>" +
                                                 "</td></tr></table>" +
@@ -2408,6 +2447,20 @@ function GarbageCollector() {
                 for (let i = 0; i < result.length; i++) {
                     // Deletes all reservations two days prior to the current UTC times to avoid deleting reservations that havenot happened in current time
                     if (new Date(result[i].reservationDate) < new Date(new Date().setDate(new Date().getDate() - 2))) {
+                        db.query("SELECT * FROM reservations WHERE ID = ?", [result[i].ID], (err2, result2) => {
+                            if (err2) {
+                                console.log("Error retreiving reservation with ID " + result[i].ID);
+                            } else {
+                                db.query("UPDATE userData SET `numCompletedReservations` = `numCompletedReservations` + 1, SET `numActiveReservations` = `numActiveReservations` - 1 WHERE username = ? "),
+                                [result.data.result[0].reservedBy], (err3, result3) => {
+                                    if (err3) {
+                                        console.log("Error updating numCompletedReservations");
+                                    } else {
+                                        console.log("Successfully updated numCompletedReservations");
+                                    }
+                                }
+                            }
+                        })
                         db.query(
                             "DELETE FROM reservations WHERE ID = ?",
                             [result[i].ID], (err1, result1) => {
@@ -2427,8 +2480,9 @@ function GarbageCollector() {
                                     console.log("before removing email: " + scheduledEmails.length);
                                     if (scheduledEmails[indexOfCancelledReservation] && indexOfCancelledReservation >= 0) {
                                         // console.log("cancelled reservation ID: " + scheduledEmails[indexOfCancelledReservation].ID);
+                                        let job = scheduledEmails[indexOfCancelledReservation].cronSchedule;
                                         setImmediate( () => {
-                                            scheduledEmails[indexOfCancelledReservation].cronSchedule.stop();
+                                            job.stop();
                                         })
                                         scheduledEmails.splice(indexOfCancelledReservation, 1);
                                     }
