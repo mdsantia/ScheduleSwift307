@@ -111,12 +111,7 @@ const CustomerRegister = () => {
                     }                
                 } else {
                     var endTime = new Date();
-                    endTime.setMinutes((endTime.getMinutes() + 1));
-                    // if (endTime.getMinutes() < 10) {
-                    //     endTime.setHours(startTime.getHours() + 1);
-                    // } else {
-                    // endTime.setHours(startTime.getHours());
-                    // }
+                    endTime.setMinutes((endTime.getMinutes() + 10));
                     navigate("/managerConfirmAccount", {
                         state: {
                             username: data.get('username'),
