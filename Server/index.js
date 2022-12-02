@@ -2454,6 +2454,20 @@ function GarbageCollector() {
                 for (let i = 0; i < result.length; i++) {
                     // Deletes all reservations two days prior to the current UTC times to avoid deleting reservations that havenot happened in current time
                     if (new Date(result[i].reservationDate) < new Date(new Date().setDate(new Date().getDate() - 2))) {
+                        db.query("SELECT * FROM reservations WHERE ID = ?", [result[i].ID], (err2, result2) => {
+                            if (err2) {
+                                console.log("Error retreiving reservation with ID " + result[i].ID);
+                            } else {
+                                db.query("UPDATE userData SET `numCompletedReservations` = `numCompletedReservations` + 1, SET `numActiveReservations` = `numActiveReservations` - 1 WHERE username = ? "),
+                                [result.data.result[0].reservedBy], (err3, result3) => {
+                                    if (err3) {
+                                        console.log("Error updating numCompletedReservations");
+                                    } else {
+                                        console.log("Successfully updated numCompletedReservations");
+                                    }
+                                }
+                            }
+                        })
                         db.query(
                             "DELETE FROM reservations WHERE ID = ?",
                             [result[i].ID], (err1, result1) => {
