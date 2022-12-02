@@ -931,7 +931,11 @@ app.post("/api/updateReservation", (req, res) => {
                             }
                             if (scheduledEmails[indexOfUpdatedReservation]) {
                                 console.log("ID of updated reservation: " + scheduledEmails[indexOfUpdatedReservation].ID);
-                                scheduledEmails[indexOfUpdatedReservation].cronSchedule.stop();
+                                let job = scheduledEmails[indexOfUpdatedReservation].cronSchedule;
+                                console.log(job);
+                                setImmediate( () => {
+                                    job.stop();
+                                })
                                 const mailOptionsReminder = {
                                     from:
                                     {
@@ -990,8 +994,7 @@ app.post("/api/updateReservation", (req, res) => {
                                 const date = reminderTime.getDate();
                                 const month = reminderTime.getMonth() + 1;
                                 const dayOfWeek = reminderTime.getDay();
-                                scheduledEmails[indexOfUpdatedReservation].cronSchedule = {
-                                    cronSchedule: 
+                                scheduledEmails[indexOfUpdatedReservation].cronSchedule =
                                     cron.schedule("0 " + minutes + " " + hours + " " + date + " " + month + " " + dayOfWeek + "", function () {
                                         transport.sendMail(mailOptionsReminder, (err, res) => {
                                             if (err) {
@@ -1002,8 +1005,7 @@ app.post("/api/updateReservation", (req, res) => {
                                                 console.log("Reminder email for Reservation #" + ID + " successfully sent.");
                                             }
                                         })
-                                    }),
-                                }
+                                    })
                             }
                         })
                     }
@@ -1286,7 +1288,9 @@ app.post("/api/managerDeleteReservation", (req, res) => {
         }
     }
     if (scheduledEmails[indexOfCancelledReservation]) {
-        scheduledEmails[indexOfCancelledReservation].cronSchedule.stop();
+        setImmediate( () => {
+            scheduledEmails[indexOfCancelledReservation].cronSchedule.stop();
+        })
         scheduledEmails.splice(indexOfCancelledReservation, 1);
     }
     db.query(
@@ -2106,8 +2110,79 @@ app.post("/api/defaultPermissions", (req, res) => {
     const username = req.body.username;
     const del = "No"
     db.query(
-        "INSERT INTO permissions (username, deleteReservations) VALUES (?, ?)",
-        [username, del],
+        "INSERT INTO permissions (username, deleteReservations, editReservations, viewReservations) VALUES (?, ?, ?, ?)",
+        [username, del, del, del],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result })
+            }
+        }
+    )
+})
+
+app.post("/api/getPermissions", (req, res) => {
+    const username = req.body.username;
+    db.query(
+        "SELECT * FROM permissions WHERE username = ?",
+        [username],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result })
+            }
+        }
+    )
+})
+
+app.post("/api/changeDelete", (req, res) => {
+    const username = req.body.username;
+    const changed = req.body.changed;
+    db.query(
+        "UPDATE permissions SET deleteReservations = ? WHERE username = ?",
+        [changed, username],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result })
+            }
+        }
+    )
+})
+
+app.post("/api/changeEdit", (req, res) => {
+    const username = req.body.username;
+    const changed = req.body.changed;
+    db.query(
+        "UPDATE permissions SET editReservations = ? WHERE username = ?",
+        [changed, username],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                console.log({ result })
+                res.send({ result })
+            }
+        }
+    )
+})
+
+app.post("/api/changeView", (req, res) => {
+    const username = req.body.username;
+    const changed = req.body.changed;
+    db.query(
+        "UPDATE permissions SET viewReservations = ? WHERE username = ?",
+        [changed, username],
         (err, result) => {
             if (err) {
                 console.log(err)
@@ -2298,7 +2373,9 @@ function GarbageCollector() {
                                     console.log("before removing email: " + scheduledEmails.length);
                                     if (scheduledEmails[indexOfCancelledReservation] && indexOfCancelledReservation >= 0) {
                                         // console.log("cancelled reservation ID: " + scheduledEmails[indexOfCancelledReservation].ID);
-                                        scheduledEmails[indexOfCancelledReservation].cronSchedule.stop();
+                                        setImmediate( () => {
+                                            scheduledEmails[indexOfCancelledReservation].cronSchedule.stop();
+                                        })
                                         scheduledEmails.splice(indexOfCancelledReservation, 1);
                                     }
                                     deleted++;

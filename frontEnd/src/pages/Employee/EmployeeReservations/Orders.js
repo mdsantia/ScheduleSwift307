@@ -61,7 +61,8 @@ export default function Orders(props) {
         Axios.post("http://" + getIP() + ":3001/api/checkDelete", {
             username: props.username
         }).then((result) => {
-            if (result === "No") {
+            console.log(result.data);
+            if (result.data === "No") {
                 window.alert("You don't have permissions to delete reservations!");
             } else {
 
