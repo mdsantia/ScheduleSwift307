@@ -1750,8 +1750,10 @@ app.post("/api/addExceptionDate", (req, res) => {
     const businessName = req.body.businessName;
     let date = req.body.date;
     let dateSubstring = date.substring(0, 10);
-    const startTime = req.body.startTime;
-    const endTime = req.body.endTime;
+    let startTime = req.body.startTime.substring(10,);
+    startTime?startTime = dateSubstring + startTime:startTime = "closed";
+    let endTime = req.body.endTime.substring(10,);
+    endTime?endTime = dateSubstring + endTime:endTime = "closed";
     db.query(
         "INSERT INTO dateExceptions (businessName, date, startTime, endTime) VALUES (?,?,?,?)",
         [businessName, dateSubstring, startTime, endTime],

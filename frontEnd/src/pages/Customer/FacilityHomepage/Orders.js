@@ -266,7 +266,7 @@ export default function Orders(props) {
 
         return (
             <React.Fragment>
-                <Box component="form" validate="true" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+                <Box component="form" validate="true" sx={{ mt: 3 }}>
                     <Title>{state.businessName}'s Business Hours</Title>
                     <Table size="small">
                         <TableHead>
@@ -321,6 +321,7 @@ export default function Orders(props) {
                             type="submit"
                             fullWidth
                             variant="contained"
+                            onClick={handleSubmit}
                             sx={{ mt: 3, mb: 2 }}
                         >
                             Make Reservation
