@@ -14,7 +14,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { useEffect, useState } from 'react';
-import { Button, TextField, Grid, Typography, Divider } from '@mui/material';
+import { Button, TextField, Grid, Typography, Divider, Stack, NativeSelect, InputLabel } from '@mui/material';
 import { Dayjs } from 'dayjs';
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Modal from '@mui/material/Modal';
@@ -409,41 +409,52 @@ export default function Orders(props) {
         setTimeArray(arr);
     }
 
-    function getContact(businessName) {
-        Axios.post("http://" + getIP() + ":3001/api/managerGetContact", {
-            businessName: props.businessName
-        }).then((result) => {
-            const contacts = result.data.result;
-            setContact(contacts);
-        })
-    }
-
-    const addContact = (event) => {
+    const changeContact = (event) => {
 
         event.preventDefault();
-        Axios.post("http://" + getIP() + ":3001/api/addManagerContact", {
-            businessName: props.businessName,
-            contactType: contactType,
-            actualContact: actualContact
-        }).then((result) => {
-            if (result.data.err) {
-                alert("Error! Something has gone wrong!")
+
+        if (contactType == "Phone") {
+            var phoneno = /^\d{10}$/;
+            if(actualContact.match(phoneno)){
+
+                Axios.post("http://" + getIP() + ":3001/api/changeContact", {
+                businessName: props.businessName,
+                contactType: contactType,
+                actualContact: actualContact
+
+                }).then((result) => {
+                    if (result.data.err) {
+                        alert("Error! Something has gone wrong!")
+                    } else {
+                        getContact(props.businessName);
+                    }
+                }) 
             } else {
-                setContactType('');
-                setActualContact('');
-                getContact(props.businessName);
+                alert("Enter a Valid Phone Number");
             }
-        })
+        
+        } else {
+
+            Axios.post("http://" + getIP() + ":3001/api/changeContact", {
+                businessName: props.businessName,
+                contactType: contactType,
+                actualContact: actualContact
+            }).then((result) => {
+                if (result.data.err) {
+                    alert("Error! Something has gone wrong!")
+                } else {
+                    getContact(props.businessName);
+                }
+            }) 
+        }
     }
 
-    function clearContact(contactID) {
-        Axios.post("http://" + getIP() + ":3001/api/managerDeleteContact", {
-            contactID: contactID
+    function getContact(businessName) {
+        Axios.post("http://" + getIP() + ":3001/api/managerGetContact", {
+            businessName: businessName,
         }).then((result) => {
-            if (result.data.result.affectedRows === 0) {
-            } else {
-                getContact(props.businessName);
-            }
+            console.log(result.data[0]);
+            setContact(result.data[0]);
         })
     }
 
@@ -452,6 +463,7 @@ export default function Orders(props) {
         getFAQ(props.businessName);
         getDates(props.businessName);
         getNonReserves(props.businessName);
+        getContact(props.businessName);
     }, []);
     if (rows.length > 0) {
 
@@ -697,40 +709,38 @@ export default function Orders(props) {
                 <br></br>
                 <Title>Contact Information</Title>
                 <Table size="small">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell size="small">Contact Type:</TableCell>
-                            <TableCell>Contact:</TableCell>
-                        </TableRow>
-                    </TableHead>
                     <TableBody>
-                        {contact.map((contact, index) => (
-                            <TableRow>
-                                <TableCell>{contact.contactType}</TableCell>
-                                <TableCell><strong>{contact.actualContact}</strong></TableCell>
-                                <TableCell align="right"><Button onClick={() => clearContact(contact.ID)}>Clear</Button></TableCell>
-                            </TableRow>
-                        ))}
+                        <TableRow>
+                            <TableCell>Address</TableCell>
+                            <TableCell>{contact.address}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Phone</TableCell>
+                            <TableCell>{contact.phoneNumber}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Email</TableCell>
+                            <TableCell>{contact.email}</TableCell>
+                        </TableRow>
                     </TableBody>
                 </Table>
                 <br></br>
-                <br></br>
-                <Divider> Add Additional Contacts </Divider>
-                <Box component="form" onSubmit={addContact} noValidate sx={{ mt: 1 }}>
+                <Box component="form" onSubmit={changeContact} noValidate sx={{ mt: 1 }}>
+
+                    <Stack alignItems="center">
+
+                    <p id="demo-simple-select-label"><u>Select Contact to Change</u></p>
+
+                    <NativeSelect id="select" sx={{width: 1/5}}
+                    onChange={(e) => setContactType(e.target.value)}>
+                        <option value={"Address"}>Address</option>
+                        <option value={"Phone"}>Phone</option>
+                        <option value={"Email"}>Email</option>
+                    </NativeSelect>
+                    
                     <TextField
+                        //sx={{m:3}}
                         margin="normal"
-                        fullWidth
-                        required
-                        id="question"
-                        label="Contact Type (i.e., Phone Number, email, etc)"
-                        name="contactType"
-                        value={contactType}
-                        autoComplete="Contact Type"
-                        onChange={(e) => setContactType(e.target.value)}
-                    />
-                    <TextField
-                        margin="normal"
-                        fullWidth
                         required
                         name="contact"
                         label="Contact"
@@ -745,12 +755,13 @@ export default function Orders(props) {
                     />
                     <Button
                         type="submit"
-                        fullWidth
                         variant="contained"
-                        sx={{ mt: 3, mb: 2 }}
+                        sx={{ m: 1 }}
                     >
-                        Add Contact
+                        Change Contact
                     </Button>
+
+                    </Stack>
                 </Box>
 
             </React.Fragment >

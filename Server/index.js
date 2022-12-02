@@ -2034,9 +2034,10 @@ app.post("/api/closeShift", (req, res) => {
 app.post("/api/managerGetContact", (req, res) => {
 
     const businessName = req.body.businessName;
+    console.log("HERE");
 
     db.query(
-        "SELECT * FROM managerContacts WHERE businessName = ?",
+        "SELECT * FROM businessContacts WHERE businessName = ?",
         [businessName],
         (err, result) => {
             if (err) {
@@ -2045,36 +2046,70 @@ app.post("/api/managerGetContact", (req, res) => {
             }
             if (result) {
                 console.log(result)
-                res.send({ result: result })
+                res.send(result)
             }
         }
     )
 })
 
-app.post("/api/addManagerContact", (req, res) => {
+app.post("/api/changeContact", (req, res) => {
     const businessName = req.body.businessName;
     const contactType = req.body.contactType;
     const actualContact = req.body.actualContact;
-    db.query(
-        "INSERT INTO managerContacts (businessName, contactType, actualContact) VALUES (?,?,?)",
-        [businessName, contactType, actualContact],
-        (err, result) => {
-            if (err) {
-                console.log(err)
-            }
-            if (result) {
-                console.log({ result })
-                res.send({ result })
-            }
-        }
-    )
+
+    if (contactType == "Address") {
+        db.query(
+            "UPDATE businessContacts SET address = ? WHERE businessName = ?",
+            [actualContact, businessName],
+            (err, result) => {
+                if (err) {
+                    console.log(err)
+                }
+                if (result) {
+                    console.log({ result })
+                    res.send({ result })
+                }
+            })
+
+
+    } else if (contactType == "Phone") {
+
+        db.query(
+            "UPDATE businessContacts SET phoneNumber = ? WHERE businessName = ?",
+            [actualContact, businessName],
+            (err, result) => {
+                if (err) {
+                    console.log(err)
+                }
+                if (result) {
+                    console.log({ result })
+                    res.send({ result })
+                }
+            })
+
+    } else {
+
+        db.query(
+            "UPDATE businessContacts SET email = ? WHERE businessName = ?",
+            [actualContact, businessName],
+            (err, result) => {
+                if (err) {
+                    console.log(err)
+                }
+                if (result) {
+                    console.log({ result })
+                    res.send({ result })
+                }
+            })
+    }
 })
 
-app.post("/api/managerDeleteContact", (req, res) => {
-    const contactID = req.body.contactID;
+app.post("/api/createContacts", (req, res) => {
+    const businessName = req.body.businessName;
+    const def = "none";
     db.query(
-        "DELETE FROM managerContacts WHERE ID = ?",
-        [contactID],
+        "INSERT INTO businessContacts (businessName, email, phoneNumber, address) VALUES (?, ?, ?, ?)",
+        [businessName, def, def, def],
         (err, result) => {
             if (err) {
                 console.log(err)

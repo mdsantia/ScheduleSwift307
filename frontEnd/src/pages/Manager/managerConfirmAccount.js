@@ -127,6 +127,11 @@ const ManagerConfirmAccount = () => {
                     setConfirmStatus("The confirmation code has expired.");
                 } else {
                     alert("Your Account Has Been Successfully Activated!");
+
+                    Axios.post("http://" + getIP() + ":3001/api/createContacts", {
+                        businessName: state.businessName,
+                    })
+
                     navigate("/managerMain", {
                     state: {
                         username: state.username,
