@@ -224,7 +224,7 @@ function DashboardContent() {
                             <ListItemText primary='Reservation Form' />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
-                            navigate("/managerCreateReservation", {
+                            navigate("/managerCreateEvent", {
                                 state: {
                                     username: state.username,
                                     password: state.password,

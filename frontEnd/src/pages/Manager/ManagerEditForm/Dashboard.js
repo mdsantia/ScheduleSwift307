@@ -188,7 +188,7 @@ function DashboardContent() {
                             px: [1],
                         }}
                     >
-                        <img src={Logo} style={styles.logoContainer}/>
+                        <img src={Logo} style={styles.logoContainer} />
                         <IconButton onClick={toggleDrawer}>
                             <ChevronLeftIcon />
                         </IconButton>
@@ -224,7 +224,7 @@ function DashboardContent() {
                             <ListItemText primary='Reservation Form' />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
-                            navigate("/managerCreateReservation", {
+                            navigate("/managerCreateEvent", {
                                 state: {
                                     username: state.username,
                                     password: state.password,
@@ -354,6 +354,6 @@ function DashboardContent() {
     );
 }
 
-export default function ManagerEditForm() {
+export default function ManagerMain() {
     return <DashboardContent />;
 }
