@@ -101,7 +101,7 @@ export default function Orders(props) {
             username: username,
         }).then((result) => {
             console.log(result.data);
-            if (result.data == "No") {
+            if (result.data === "No") {
                 setView("No");
             } else {
                 setView("Yes");
@@ -190,6 +190,8 @@ export default function Orders(props) {
         getReservations(props.businessName)
         checkView(props.username)
     }, []);
+
+    console.log(props);
 
     if (stopView == "No") {
         return (

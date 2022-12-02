@@ -70,11 +70,18 @@ export default function Orders(props) {
             if (result.data === "No") {
                 window.alert("You don't have permissions to edit reservations!");
             } else {
+
+                console.log((event.title).substring(13))
+
                 navigate("/employeeEditForm", {
                     state: {
-                        username: (event.desc).substring(20),
-                        businessName: state.businessName,
-                        ID: (event.title).substring(13)
+                        //username: (event.desc).substring(20),
+                        //businessName: state.businessName,
+                        ID: (event.title).substring(13),
+                        username: props.username,
+                        password: props.password,
+                        businessName: props.businessName,
+                        //ID: reserveID
                     }
                  });
             }
