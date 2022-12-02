@@ -48,6 +48,7 @@ export default function Orders(props) {
     const [answer, setAnswer] = useState('');
     const [allNonReserves, setAllNonReserves] = useState([]);
     const [contact, setContact] = useState([]);
+    const [format, setFormat] = useState('');
 
     function getBusinessHours() {
         Axios.post("http://" + getIP() + ":3001/api/getFacilitysData", {
@@ -152,6 +153,17 @@ export default function Orders(props) {
         }
     }
 
+    function formatPhone(number) {
+        let p1 = number.substring(0, 3);
+        let p2 = number.substring(3,6);
+        let p3 = number.substring(6, 10);
+
+        let finalNum = "(" + p1 + ")" + "-" + p2 + "-" + p3;
+
+        console.log(finalNum);
+        setFormat(finalNum);
+    }
+
     function getFAQ(businessName) {
 
         Axios.post("http://" + getIP() + ":3001/api/managerGetFAQ", {
@@ -219,6 +231,7 @@ export default function Orders(props) {
             businessName: state.businessName
         }).then((result) => {
             const contacts = result.data[0];
+            formatPhone(contacts.phoneNumber);
             setContact(contacts);
         })
     }
@@ -314,7 +327,7 @@ export default function Orders(props) {
                         </TableRow>
                         <TableRow>
                             <TableCell>Phone</TableCell>
-                            <TableCell>{contact.phoneNumber}</TableCell>
+                            <TableCell>{format}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell>Email</TableCell>

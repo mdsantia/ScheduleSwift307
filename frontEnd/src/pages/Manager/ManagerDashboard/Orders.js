@@ -92,6 +92,9 @@ export default function Orders(props) {
     const [contactType, setContactType] = useState('Address');
     const [actualContact, setActualContact] = useState('');
 
+    const [format, setFormat] = useState('');
+
+
     function getBusinessHours() {
         Axios.post("http://" + getIP() + ":3001/api/getFacilitysData", {
             businessName: props.businessName
@@ -166,6 +169,17 @@ export default function Orders(props) {
             }).then((result) => {
                 // alert(`Your reservation has been saved! Your reservation's id is ${result.data.id}`);
             })
+    }
+
+    function formatPhone(number) {
+        let p1 = number.substring(0, 3);
+        let p2 = number.substring(3,6);
+        let p3 = number.substring(6, 10);
+
+        let finalNum = "(" + p1 + ")" + "-" + p2 + "-" + p3;
+
+        console.log(finalNum);
+        setFormat(finalNum);
     }
 
     const col = (day) => {
@@ -453,7 +467,7 @@ export default function Orders(props) {
         Axios.post("http://" + getIP() + ":3001/api/managerGetContact", {
             businessName: businessName,
         }).then((result) => {
-            console.log(result.data[0]);
+            formatPhone(result.data[0].phoneNumber);
             setContact(result.data[0]);
         })
     }
@@ -716,7 +730,7 @@ export default function Orders(props) {
                         </TableRow>
                         <TableRow>
                             <TableCell>Phone</TableCell>
-                            <TableCell>{contact.phoneNumber}</TableCell>
+                            <TableCell>{format}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell>Email</TableCell>
