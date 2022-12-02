@@ -2101,6 +2101,44 @@ app.post("/api/checkDelete", (req, res) => {
     )
 })
 
+app.post("/api/checkEdit", (req, res) => {
+    const username = req.body.username;
+    const del = "Yes";
+    db.query(
+        "SELECT * FROM permissions WHERE username = ? AND editReservations = ?",
+        [username, del],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result.length == 0) {
+                res.send("No");
+            } else {
+                res.send("Yes");
+            }
+        }
+    )
+})
+
+app.post("/api/checkView", (req, res) => {
+    const username = req.body.username;
+    const del = "Yes";
+    db.query(
+        "SELECT * FROM permissions WHERE username = ? AND viewReservations = ?",
+        [username, del],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result.length == 0) {
+                res.send("No");
+            } else {
+                res.send("Yes");
+            }
+        }
+    )
+})
+
 app.post("/api/defaultPermissions", (req, res) => {
     const username = req.body.username;
     const del = "No"

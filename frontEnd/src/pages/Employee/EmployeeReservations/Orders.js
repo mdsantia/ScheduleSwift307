@@ -32,6 +32,8 @@ export default function Orders(props) {
     const [error, setError] = useState('');
     const [reservationIDs, setReservationIDs] = useState('');
     const navigate = useNavigate();
+    const [stopView, setView] = useState('');
+
     function getReservations(business) {
         Axios.post("http://" + getIP() + ":3001/api/getBusinessReservations", {
             businessName: props.businessName
@@ -47,12 +49,21 @@ export default function Orders(props) {
         })
     }
     function editReservation (reserveID) {
-        navigate("/employeeEditForm", {
-            state: {
-                username: props.username,
-                password: props.password,
-                businessName: props.businessName,
-                ID: reserveID
+
+        Axios.post("http://" + getIP() + ":3001/api/checkEdit", {
+            username: props.username,
+        }).then((result) => {
+            if (result.data === "No") {
+                window.alert("You don't have permissions to edit reservations!");
+            } else {
+                navigate("/employeeEditForm", {
+                    state: {
+                        username: props.username,
+                        password: props.password,
+                        businessName: props.businessName,
+                        ID: reserveID
+                    }
+                })
             }
         })
     }
@@ -82,6 +93,19 @@ export default function Orders(props) {
             }
         }
 
+        })
+    }
+
+    function checkView(username) {
+        Axios.post("http://" + getIP() + ":3001/api/checkView", {
+            username: username,
+        }).then((result) => {
+            console.log(result.data);
+            if (result.data == "No") {
+                setView("No");
+            } else {
+                setView("Yes");
+            }
         })
     }
 
@@ -164,8 +188,15 @@ export default function Orders(props) {
 
     useEffect(() => {
         getReservations(props.businessName)
+        checkView(props.username)
     }, []);
-    if (reservations.length > 0) {
+
+    if (stopView == "No") {
+        return (
+            <p>You don't have permissions to view this!</p>
+        )
+
+    } else if (reservations.length > 0) {
         return (
             <React.Fragment>
                 <Title>{props.businessName}'s Active Reservations</Title>

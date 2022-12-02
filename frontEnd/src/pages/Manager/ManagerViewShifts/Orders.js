@@ -92,6 +92,18 @@ export default function Orders(props) {
         })
     }
 
+    const back = (e) => {
+        e.preventDefault();
+            navigate("/managerManageEmployees", {
+                state: {
+                    username: state.username,
+                    password: state.password,
+                    businessName: props.businessName,
+                }
+            })
+        
+    }
+
     useEffect(() => {
         getShifts(props.other);
         getName();
@@ -145,6 +157,7 @@ export default function Orders(props) {
                         ))}
                         </TableBody>
                     </Table>
+                    <Button onClick={back}>Back To My Employees</Button>
                 </Box>
 
             </React.Fragment >

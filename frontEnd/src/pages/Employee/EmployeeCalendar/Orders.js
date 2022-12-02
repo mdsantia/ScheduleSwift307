@@ -63,13 +63,22 @@ export default function Orders(props) {
     }, []);
 
     const handleSelectEvent = (event) => {
-        navigate("/employeeEditForm", {
-            state: {
-                username: (event.desc).substring(20),
-                businessName: state.businessName,
-                ID: (event.title).substring(13)
+
+        Axios.post("http://" + getIP() + ":3001/api/checkEdit", {
+            username: props.username,
+        }).then((result) => {
+            if (result.data === "No") {
+                window.alert("You don't have permissions to edit reservations!");
+            } else {
+                navigate("/employeeEditForm", {
+                    state: {
+                        username: (event.desc).substring(20),
+                        businessName: state.businessName,
+                        ID: (event.title).substring(13)
+                    }
+                 });
             }
-         });
+        })
     }
         
     return (
