@@ -39,7 +39,6 @@ export default function Orders(props) {
             businessName: props.businessName
         }).then((result) => {
             const allReserves = result.data.result;
-            console.log(allReserves);
             setReservations(allReserves);
             let reservationIDs = [];
             for (let i = 0; i < allReserves.length; i++) {
@@ -65,7 +64,6 @@ export default function Orders(props) {
         Axios.post("http://" + getIP() + ":3001/api/checkDelete", {
             username: props.username
         }).then((result) => {
-            console.log(result.data);
             if (result.data === "No") {
                 window.alert("You don't have permissions to delete reservations!");
             } else {
@@ -93,7 +91,6 @@ export default function Orders(props) {
         Axios.post("http://" + getIP() + ":3001/api/checkView", {
             username: username,
         }).then((result) => {
-            console.log(result.data);
             if (result.data === "No") {
                 setView("No");
             } else {
@@ -183,8 +180,6 @@ export default function Orders(props) {
         getReservations(props.businessName)
         checkView(props.username)
     }, []);
-
-    console.log(props);
 
     if (stopView == "No") {
         return (

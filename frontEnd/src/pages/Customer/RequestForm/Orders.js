@@ -421,7 +421,6 @@ export default function Orders(props) {
                             }
                         }
                     }
-                    console.log(closed)
                     setClosed(closed);
                     setOpenTime(open);
                     setCloseTime(close);
@@ -441,6 +440,18 @@ export default function Orders(props) {
                 setNumPeople(result.data.result[0].numPeople);
                 setStartTime(result.data.result[0].startTime);
                 var date = new Date(`${result.data.result[0].reservationDate}T00:00`);
+                Axios.post("http://" + getIP() + ":3001/api/getExceptionDates", {
+                    businessName: state.businessName
+                }).then((result) => {
+                    const datesTemp = result.data.result;
+                    for (let i = 0; i < datesTemp.length; i++) {
+                        if (new Date(datesTemp[i].date + "T00:00").toString() === (new Date(date)).toString() && datesTemp[i].startTime !== "closed") {
+                            setException(parseInt(i));
+                            break;
+                        } else {
+                            setException(parseInt(-1)); 
+                    }}
+                })
                 setEndTime(result.data.result[0].endTime);
                 setCurrentDate(date);
                 getConcurrent(date,
@@ -598,7 +609,6 @@ export default function Orders(props) {
             }
         }
         if (!reservationID) {
-            console.log(ReservedItems);
             Axios.post("http://" + getIP() + ":3001/api/createReservation", {
                 businessName: businessName,
                 reservationDate: currentDate,
@@ -699,11 +709,12 @@ export default function Orders(props) {
                                     onChange={(newValue) => {setCurrentDate(newValue); 
                                         getConcurrent(newValue, startTime, endTime, maxNumPeople, maxArray, nameArray);
                                         for (let i = 0; i < dates.length; i++) {
-                                            if (new Date(dates[i].date + "T00:00").toString() === (new Date(newValue)).toString() && dates[i].startTime !== "closed") {
+                                            if ((new Date(dates[i].date + "T00:00").toString() === (new Date(newValue)).toString() && dates[i].startTime !== "closed")) {
                                                 setException(parseInt(i));
                                                 break;
-                                        }}
-                                        setException(parseInt(-1)); 
+                                            } else {
+                                                setException(parseInt(-1)); 
+                                            }}
                                     }}
                                     renderInput={(params) => <TextField {...params}/>}
                                     shouldDisableDate={(date) => {
@@ -864,7 +875,8 @@ export default function Orders(props) {
                     <Button
                         form='my-form'
                         type='submit'
-                        disabled={ ( validForm()) ? false : true}
+                        disabled={ ( validForm() && !(new Date(currentDate).getTime() === new Date(storedCurrentDate).getTime() && new Date(startTime).getTime() === new Date(storedStartTime).getTime() &&
+                            new Date(endTime).getTime() === new Date(storedEndTime).getTime() && parseInt(numPeople) === parseInt(storedNumPeople) && (numArray.map(Number)).join() === (storedNumArray.map(Number)).join())) ? false : true}
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}

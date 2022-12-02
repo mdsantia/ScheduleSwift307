@@ -49,7 +49,7 @@ export default function Orders(props) {
     const [reservationID, setReservationID] = useState(null);
     const businessName = state.businessName;
     const navigate = useNavigate();
-    const [exception, setException] = useState(-1);
+    var [exception, setException] = useState(null);
     const [dates, setDates] = useState([]);
     const [currentDate, setCurrentDate] = useState(null);
     const [openTime, setOpenTime] = useState(Dayjs | null);
@@ -76,6 +76,7 @@ export default function Orders(props) {
             businessName: businessName
         }).then((result) => {
             setDates(result.data.result);
+            return result.data.result;
         })
     }
 
@@ -88,14 +89,10 @@ export default function Orders(props) {
             } else if (result.data.message) {
                 console.log(result.data.message);
             } else {
-                console.log(result.data.result);
                 setCustomerName(result.data.result[0].firstName + " " + result.data.result[0].lastName);
                 setCustomerEmail(result.data.result[0].emailAddress);
                 setCustomerPhoneNumber("(" + result.data.result[0].phoneNumber.substring(0, 3) + ") " + result.data.result[0].phoneNumber.substring(3, 6) + "-" + result.data.result[0].phoneNumber.substring(6));
             }
-            console.log(customerName);
-            console.log(customerEmail);
-            console.log(customerPhoneNumber);
         })
     }
 
@@ -227,7 +224,6 @@ export default function Orders(props) {
 
                 // BY INCREMENTS OF 5 MINS FILL ARRAY OF AVAILABILITIES
                 var temp = start;
-                // console.log(new Date(temp + 1000000), end);
                 // To improve time we could increase this value, 5 is the most accurate as increasing it would lose precision
                 var interval = 5;
                 var allAvailable = [];
@@ -378,6 +374,18 @@ export default function Orders(props) {
                 setNumPeople(result.data.result[0].numPeople);
                 setStartTime(result.data.result[0].startTime);
                 var date = new Date(`${result.data.result[0].reservationDate}T00:00`);
+                Axios.post("http://" + getIP() + ":3001/api/getExceptionDates", {
+                    businessName: props.businessName
+                }).then((result) => {
+                    const datesTemp = result.data.result;
+                    for (let i = 0; i < datesTemp.length; i++) {
+                        if (new Date(datesTemp[i].date + "T00:00").toString() === date.toString() && datesTemp[i].startTime !== "closed") {
+                            setException(parseInt(i));
+                            break;
+                        } else {
+                            setException(parseInt(-1)); 
+                    }}
+                })
                 setEndTime(result.data.result[0].endTime);
                 setCurrentDate(date);
                 getConcurrent(date,
@@ -537,7 +545,7 @@ export default function Orders(props) {
         }
     }
 
-    if (MAXSTRING) {
+    if (MAXSTRING && exception !== null) {
     return (
         <React.Fragment>
             <Box
@@ -604,8 +612,9 @@ export default function Orders(props) {
                                             if (new Date(dates[i].date + "T00:00").toString() === (new Date(newValue)).toString() && dates[i].startTime !== "closed") {
                                                 setException(parseInt(i));
                                                 break;
+                                            } else {
+                                                setException(parseInt(-1)); 
                                         }}
-                                        setException(parseInt(-1)); 
                                     }}
                                     renderInput={(params) => <TextField {...params}/>}
                                     shouldDisableDate={(date) => {
@@ -636,10 +645,16 @@ export default function Orders(props) {
                                         getConcurrent(currentDate, newValue, endTime, maxNumPeople, maxArray, nameArray); }}}
                                     renderInput={(params) => <TextField {...params} required/>}
                                     shouldDisableTime={(timeValue, clockType) => {
-                                        const openHour = new Date((openTime[new Date(currentDate).getDay()])).getHours()
-                                        const openMinute = new Date((openTime[new Date(currentDate).getDay()])).getMinutes()
-                                        const closeHour = new Date((closeTime[new Date(currentDate).getDay()])).getHours()
-                                        const closeMinute = new Date((closeTime[new Date(currentDate).getDay()])).getMinutes()
+                                        let openHour = new Date((openTime[new Date(currentDate).getDay()])).getHours()
+                                        let openMinute = new Date((openTime[new Date(currentDate).getDay()])).getMinutes()
+                                        let closeHour = new Date((closeTime[new Date(currentDate).getDay()])).getHours()
+                                        let closeMinute = new Date((closeTime[new Date(currentDate).getDay()])).getMinutes()
+                                        if (exception >= 0) {
+                                            openHour = new Date(dates[exception].startTime).getHours();
+                                            openMinute = new Date(dates[exception].startTime).getMinutes();
+                                            closeHour = new Date(dates[exception].endTime).getHours();
+                                            closeMinute = new Date(dates[exception].endTime).getMinutes();
+                                        }
                                     if ((clockType === 'hours' && timeValue < openHour) || (clockType === 'hours' && timeValue >= closeHour && closeMinute === 0) || 
                                         (clockType === 'hours' && timeValue > closeHour && closeMinute > 0)) {
                                             return true;
@@ -667,10 +682,16 @@ export default function Orders(props) {
                                         getConcurrent(currentDate, startTime, newValue, maxNumPeople, maxArray, nameArray) }}
                                     renderInput={(params) => <TextField {...params} required />}
                                     shouldDisableTime={(timeValue, clockType) => {
-                                        const openHour = new Date((openTime[new Date(currentDate).getDay()])).getHours()
-                                        const openMinute = new Date((openTime[new Date(currentDate).getDay()])).getMinutes()
-                                        const closeHour = new Date((closeTime[new Date(currentDate).getDay()])).getHours()
-                                        const closeMinute = new Date((closeTime[new Date(currentDate).getDay()])).getMinutes()
+                                        let openHour = new Date((openTime[new Date(currentDate).getDay()])).getHours()
+                                        let openMinute = new Date((openTime[new Date(currentDate).getDay()])).getMinutes()
+                                        let closeHour = new Date((closeTime[new Date(currentDate).getDay()])).getHours()
+                                        let closeMinute = new Date((closeTime[new Date(currentDate).getDay()])).getMinutes()
+                                        if (exception >= 0) {
+                                            openHour = new Date(dates[exception].startTime).getHours();
+                                            openMinute = new Date(dates[exception].startTime).getMinutes();
+                                            closeHour = new Date(dates[exception].endTime).getHours();
+                                            closeMinute = new Date(dates[exception].endTime).getMinutes();
+                                        }
                                     if ((clockType === 'hours' && timeValue < openHour) || 
                                         (clockType === 'hours' && timeValue > closeHour)) {
                                             return true;
@@ -747,7 +768,8 @@ export default function Orders(props) {
                     </Typography>
                     <Button
                         type="submit"
-                        disabled={ ( validForm()) ? false : true}
+                        disabled={ ( validForm()) && !(new Date(currentDate).getTime() === new Date(storedCurrentDate).getTime() && new Date(startTime).getTime() === new Date(storedStartTime).getTime() &&
+                            new Date(endTime).getTime() === new Date(storedEndTime).getTime() && parseInt(numPeople) === parseInt(storedNumPeople) && (numArray.map(Number)).join() === (storedNumArray.map(Number)).join()) ? false : true}
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}

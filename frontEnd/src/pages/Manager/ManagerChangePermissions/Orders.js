@@ -145,9 +145,9 @@ export default function Orders(props) {
                     <Table size="small">
                         <TableHead>
                             <TableRow>
-                                <TableCell align="center">Delete</TableCell>
-                                <TableCell align="center">Edit</TableCell>
-                                <TableCell align="center">View</TableCell>
+                                <TableCell align="center">Delete Customer Reservations</TableCell>
+                                <TableCell align="center">Edit Customer Reservations</TableCell>
+                                <TableCell align="center">View Facility Reservations and Details</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
