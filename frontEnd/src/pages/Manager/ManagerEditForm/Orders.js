@@ -381,13 +381,16 @@ export default function Orders(props) {
                     businessName: props.businessName
                 }).then((result) => {
                     const datesTemp = result.data.result;
-                    for (let i = 0; i < datesTemp.length; i++) {
-                        if (new Date(datesTemp[i].date + "T00:00").toString() === date.toString() && datesTemp[i].startTime !== "closed") {
-                            setException(parseInt(i));
-                            break;
-                        } else {
+                    if (datesTemp.length > 0) {
+                        for (let i = 0; i < datesTemp.length; i++) {
+                            if (new Date(datesTemp[i].date + "T00:00").toString() === date.toString() && datesTemp[i].startTime !== "closed") {
+                                setException(parseInt(i));
+                                break;
+                            } else {
                             setException(parseInt(-1)); 
-                    }}
+                        }}} else {
+                            setException(parseInt(-1)); 
+                    }
                 })
                 setEndTime(result.data.result[0].endTime);
                 setCurrentDate(date);
