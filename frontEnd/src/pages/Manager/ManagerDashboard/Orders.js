@@ -89,7 +89,7 @@ export default function Orders(props) {
     const [answer, setAnswer] = useState('');
 
     const [contact, setContact] = useState([]);
-    const [contactType, setContactType] = useState('');
+    const [contactType, setContactType] = useState('Address');
     const [actualContact, setActualContact] = useState('');
 
     function getBusinessHours() {
