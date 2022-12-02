@@ -158,6 +158,9 @@ export default function Orders(props) {
         if (endHour > closeHour || (closeHour === endHour && endMinute < closeMinute)) {
             return false;
         }
+        if (startHour > endHour || (endHour === startHour && endMinute < startMinute)) {
+            return false;
+        }
         return true;
     }
 
