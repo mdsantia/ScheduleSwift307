@@ -352,7 +352,8 @@ app.post("/api/managerRegister", (req, res) => {
                 res.send({ message: "Business name has already been taken"});
             }
         } else {
-            db.query("INSERT INTO facilityData (businessName, paymentRequire) VALUES (?, ?)", [businessName, "none"], (err, result) => {
+            db.query("INSERT INTO facilityData (businessName, paymentRequire, Sun, Mon, Tues, Wed, Thurs, Fri, Sat) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+            [businessName, "none", ";", ";", ";", ";", ";", ";", ";"], (err, result) => {
                 if (err) {
                     console.log(err);
                 }

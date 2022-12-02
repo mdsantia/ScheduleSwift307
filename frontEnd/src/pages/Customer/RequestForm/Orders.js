@@ -139,6 +139,13 @@ export default function Orders(props) {
         if (notesBox.length > 0 && !checked) {
             return false;
         }
+        if (!closed[new Date(currentDate).getDay()] && (new Date(currentDate) > new Date())
+        && (timeDiff(new Date(openTime[new Date(currentDate).getDay()]), startTime) <= 0) &&
+        (timeDiff(new Date(closeTime[new Date(currentDate).getDay()]), endTime) >= 0) &&
+        (timeDiff(new Date(new Date(currentDate)), endTime) !== 0) &&
+        (timeDiff(startTime, endTime) < 0) && (new Date(startTime).getMinutes() % 5 === 0) && (new Date(endTime).getMinutes() % 5 === 0)) {
+            return false;
+        }
         if (numPeople > availableNumPeople || numPeople <= 0) {
             return false;
         }
@@ -453,7 +460,7 @@ export default function Orders(props) {
                     let close = [];
                     for (let i = 0; i < 14; i++) {
                         if (i % 2 === 0) {
-                            if (val[i] === 'null') {
+                            if (val[i] === 'null' || val[i] === null || val[i] === undefined) {
                                 closed.push(1);
                                 open.push(currentDate);
                             } else {
@@ -461,13 +468,14 @@ export default function Orders(props) {
                                 open.push(val[i]);
                             }
                         } else {
-                            if (val[i] === 'null') {
+                            if (val[i] === 'null' || val[i] === null || val[i] === undefined) {
                                 close.push(currentDate);
                             } else {
                                 close.push(val[i]);
                             }
                         }
                     }
+                    console.log(closed)
                     setClosed(closed);
                     setOpenTime(open);
                     setCloseTime(close);
@@ -865,13 +873,7 @@ export default function Orders(props) {
                     <Button
                         form='my-form'
                         type='submit'
-                        disabled={ (priceArray[0] && !closed[new Date(currentDate).getDay()] && (new Date(currentDate) > new Date())
-                            && (timeDiff(new Date(openTime[new Date(currentDate).getDay()]), startTime) <= 0) &&
-                            (timeDiff(new Date(closeTime[new Date(currentDate).getDay()]), endTime) >= 0) &&
-                            (timeDiff(new Date(new Date(currentDate)), endTime) !== 0) &&
-                            (timeDiff(startTime, endTime) < 0) && (new Date(startTime).getMinutes() % 5 === 0) && (new Date(endTime).getMinutes() % 5 === 0) &&
-                            validForm()
-                            ) ? false : true}
+                        disabled={ (priceArray[0]&& validForm()) ? false : true}
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
@@ -931,8 +933,9 @@ export default function Orders(props) {
         </React.Fragment>
     );
     } else {
-        <React.Fragment>
-            Awaiting results.
-        </React.Fragment>
+        return(
+            <React.Fragment>
+                Awaiting results or the reservation form for {businessName} is still unformatted.
+            </React.Fragment>);
     }
 }

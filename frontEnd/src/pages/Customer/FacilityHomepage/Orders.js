@@ -67,7 +67,7 @@ export default function Orders(props) {
             let close = [];
             for (let i = 0; i < 14; i++) {
                 if (i % 2 === 0) {
-                    if (val[i] === 'null' || val[i] == null) {
+                    if (val[i] === 'null' || val[i] == "") {
                         closed.push(1);
                         open.push(formattedDate);
                     } else {
@@ -75,7 +75,7 @@ export default function Orders(props) {
                         open.push(val[i]);
                     }
                 } else {
-                    if (val[i] === 'null' || val[i] == null) {
+                    if (val[i] === 'null' || val[i] == "") {
                         close.push(formattedDate);
                     } else {
                         close.push(val[i]);
@@ -242,7 +242,7 @@ export default function Orders(props) {
                     <TableBody>
                         {datesTemp.map((date, index) => (
                             <TableRow>
-                                <TableCell><strong>{(new Date(date.date)).toDateString()}</strong></TableCell>
+                                <TableCell><strong>{(new Date(date.date + "T00:00")).toDateString()}</strong></TableCell>
                                 <TableCell>{(date.startTime === 'closed')?<strong>CLOSED</strong>:(new Date(date.startTime)).toLocaleTimeString()}</TableCell>
                                 <TableCell>{(date.endTime === 'closed')?<strong>CLOSED</strong>:(new Date(date.endTime)).toLocaleTimeString()}</TableCell>
                             </TableRow>
