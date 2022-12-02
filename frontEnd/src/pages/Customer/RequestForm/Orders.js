@@ -626,6 +626,11 @@ export default function Orders(props) {
                 setReservationID(result.data.id);
                 alert(`Your reservation has been saved!\nAn confirmation email has been sent to you containing your Reservation ID and reservation details.`);
                 setOpen(false);
+                setStoredNumArray(numArray);
+                setStoredCurrentDate(currentDate);
+                setStoredNumPeople(numPeople);
+                setStoredStartTime(startTime);
+                setStoredEndTime(endTime);
             })
         } else {
             // UPDATE RESERVATION INSTEAD
