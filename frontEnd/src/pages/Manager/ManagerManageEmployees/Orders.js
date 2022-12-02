@@ -100,7 +100,7 @@ export default function Orders(props) {
                     other: e.currentTarget.id,
                 }
             })
-        } else {
+        } else if (e.currentTarget.name === 'Make') {
             navigate("/managerChangePermissions", {
                 state: {
                     username: state.username,
@@ -110,6 +110,19 @@ export default function Orders(props) {
 
                 }
             })
+        } else {
+
+            Axios.post("http://" + getIP() + ":3001/api/deleteEmployee", {
+                username: e.currentTarget.id,
+
+            }).then((result) => {
+                if (result.data.err) {
+                    alert("Error! Something has gone wrong!")
+                } else {
+                    getNames(props.businessName);
+                }
+            })
+
         }
     }
 
@@ -137,6 +150,8 @@ export default function Orders(props) {
                                     View Shifts</Button></TableCell>
                                     <TableCell align="right"><Button name = {"Make"} id ={names.username} onClick={open}>
                                     Change Permissions</Button></TableCell>
+                                    <TableCell align="right"><Button name = {"Delete"} id ={names.username} onClick={open}>
+                                    Delete Employee</Button></TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

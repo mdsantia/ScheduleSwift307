@@ -10,6 +10,7 @@ const nodemailer = require("nodemailer");
 const { send } = require("process");
 const e = require("express");
 const cron = require('node-cron');
+const { brotliDecompress } = require("zlib");
 const port = 3001;
 
 const db = mysql.createPool({
@@ -2230,6 +2231,51 @@ app.post("/api/changeView", (req, res) => {
             if (result) {
                 console.log({ result })
                 res.send({ result })
+            }
+        }
+    )
+})
+
+app.post("/api/deleteEmployee", (req, res) => {
+    const username = req.body.username;
+
+    db.query(
+        "DELETE FROM employeeData WHERE username = ?",
+        [username],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            if (result) {
+                //console.log({ result })
+                //res.send({ result })
+                db.query(
+                    "DELETE FROM permissions WHERE username = ?",
+                    [username],
+                    (err, result) => {
+                        if (err) {
+                            console.log(err)
+                        }
+                        if (result) {
+                            //console.log({ result })
+                            //res.send({ result })
+                            db.query(
+                                "DELETE FROM shifts WHERE username = ?",
+                                [username],
+                                (err, result) => {
+                                    if (err) {
+                                        console.log(err)
+                                    }
+                                    if (result) {
+                                        console.log({ result })
+                                        res.send({ result })
+                                    }
+                                }
+                            )
+                        }
+                    }
+                )
+
             }
         }
     )
