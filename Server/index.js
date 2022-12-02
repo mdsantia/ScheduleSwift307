@@ -676,24 +676,38 @@ app.post("/api/updateCustomerInfo", (req, res) => {
     const businessName = req.body.businessName;
     var query;
     if (businessName === undefined) {
-        query = "UPDATE userData SET username = ?, emailAddress = ?, password = ? WHERE username = ? AND password = ?";
+        query = "UPDATE userData SET username = ?, emailAddress = ?, phoneNumber = ?, password = ? WHERE username = ? AND password = ?";
+        db.query(
+            query,
+            [username, email, phoneNumber, encryptedPassword, oldUsername, oldPassword],
+            (err, result) => {
+                console.log(result);
+                if (err) {
+                    console.log(err);
+                    res.send({ err: err })
+                }
+                if (result) {
+                    res.send({ result })
+                }
+            }
+        )
     } else {
         query = "UPDATE managerData SET username = ?, emailAddress = ?, password = ? WHERE username = ? AND password = ?";
+        db.query(
+            query,
+            [username, email, encryptedPassword, oldUsername, oldPassword],
+            (err, result) => {
+                console.log(result);
+                if (err) {
+                    console.log(err);
+                    res.send({ err: err })
+                }
+                if (result) {
+                    res.send({ result })
+                }
+            }
+        )
     }
-    db.query(
-        query,
-        [username, email, encryptedPassword, oldUsername, oldPassword],
-        (err, result) => {
-            console.log(result);
-            if (err) {
-                console.log(err);
-                res.send({ err: err })
-            }
-            if (result) {
-                res.send({ result })
-            }
-        }
-    )
 })
 
 app.post("/api/getCustomerStats", (req, res) => {
