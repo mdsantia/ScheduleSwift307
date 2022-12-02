@@ -903,13 +903,15 @@ app.post("/api/updateReservation", (req, res) => {
                                         "<tr><td>Customer Username:</td><td>" + result2[0].username + "</td></tr>" +
                                         "<tr><td>Customer Name:</td><td>" + result2[0].firstName + " " + result2[0].lastName + "</td></tr>" +
                                         "<tr><td>Customer Email:</td><td>" + result2[0].emailAddress + "</td></tr>" +
+                                        "<tr><td>Customer Phone Number:</td><td>" + result2[0].phoneNumber + "</td></tr>" +
                                         // "<tr><td colspan=\"2\"><p>Payment Method: Credit Card<br /></p>" +
                                         "<tr><td colspan=\"2\"><p><br /></p>" +
                                         // IF POLICIES
                                         "<p>" + policiesString + "</p>" +
                                         "<strong>RESERVATION DETAILS</strong>" +
                                         "<br />Date of Reservation: <strong>" + reservationSubstring + "</strong>" +
-                                        "<br />Time of Reservation: <strong>" + new Date(startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(endTime).toLocaleTimeString() + "</td></tr>" +
+                                        "<br />Time of Reservation: <strong>" + new Date(startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(endTime).toLocaleTimeString() + "</strong>" +
+                                        "<br />Party Size: <strong>" + numPeople + "</strong></td></tr>" +
                                         "<tr><td colspan=\"2\"></td></tr>" +
                                         "<tr /></table><br /><table style=\"border-top:solid 3px black;\" cellspacing=\"0\" cellpadding=\"3\" width=\"600\">" +
                                         allReservableItemsString +
@@ -972,13 +974,15 @@ app.post("/api/updateReservation", (req, res) => {
                                             "<tr><td>Customer Username:</td><td>" + result2[0].username + "</td></tr>" +
                                             "<tr><td>Customer Name:</td><td>" + result2[0].firstName + " " + result2[0].lastName + "</td></tr>" +
                                             "<tr><td>Customer Email:</td><td>" + result2[0].emailAddress + "</td></tr>" +
+                                            "<tr><td>Customer Phone Number:</td><td>" + result2[0].phoneNumber + "</td></tr>" +
                                             // "<tr><td colspan=\"2\"><p>Payment Method: Credit Card<br /></p>" +
                                             "<tr><td colspan=\"2\"><p><br /></p>" +
                                             // IF POLICIES
                                             "<p>" + policiesString + "</p>" +
                                             "<strong>RESERVATION DETAILS</strong>" +
                                             "<br />Date of Reservation: <strong>" + reservationSubstring + "</strong>" +
-                                            "<br />Time of Reservation: <strong>" + new Date(startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(endTime).toLocaleTimeString() + "</td></tr>" +
+                                            "<br />Time of Reservation: <strong>" + new Date(startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(endTime).toLocaleTimeString() + "</strong>" +
+                                            "<br />Party Size: <strong>" + numPeople + "</strong></td></tr>" +
                                             "<tr><td colspan=\"2\"></td></tr>" +
                                             "<tr /></table><br /><table style=\"border-top:solid 3px black;\" cellspacing=\"0\" cellpadding=\"3\" width=\"600\">" +
                                             allReservableItemsString +
@@ -1129,13 +1133,15 @@ app.post("/api/createReservation", (req, res) => {
                                         "<tr><td>Customer Username:</td><td>" + result2[0].username + "</td></tr>" +
                                         "<tr><td>Customer Name:</td><td>" + result2[0].firstName + " " + result2[0].lastName + "</td></tr>" +
                                         "<tr><td>Customer Email:</td><td>" + result2[0].emailAddress + "</td></tr>" +
+                                        "<tr><td>Customer Phone Number:</td><td>" + result2[0].phoneNumber + "</td></tr>" +
                                         // "<tr><td colspan=\"2\"><p>Payment Method: Credit Card<br /></p>" +
                                         "<tr><td colspan=\"2\"><p><br /></p>" +
                                         // IF POLICIES
                                         "<p>" + policiesString + "</p>" +
                                         "<strong>RESERVATION DETAILS</strong>" +
                                         "<br />Date of Reservation: <strong>" + reservationSubstring + "</strong>" +
-                                        "<br />Time of Reservation: <strong>" + new Date(startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(endTime).toLocaleTimeString() + "</td></tr>" +
+                                        "<br />Time of Reservation: <strong>" + new Date(startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(endTime).toLocaleTimeString() + "</strong>" +
+                                        "<br />Party Size: <strong>" + numPeople + "</strong></td></tr>" +
                                         "<tr><td colspan=\"2\"></td></tr>" +
                                         "<tr /></table><br /><table style=\"border-top:solid 3px black;\" cellspacing=\"0\" cellpadding=\"3\" width=\"600\">" +
                                         allReservableItemsString +
@@ -1185,13 +1191,15 @@ app.post("/api/createReservation", (req, res) => {
                                         "<tr><td>Customer Username:</td><td>" + result2[0].username + "</td></tr>" +
                                         "<tr><td>Customer Name:</td><td>" + result2[0].firstName + " " + result2[0].lastName + "</td></tr>" +
                                         "<tr><td>Customer Email:</td><td>" + result2[0].emailAddress + "</td></tr>" +
+                                        "<tr><td>Customer Phone Number:</td><td>" + result2[0].phoneNumber + "</td></tr>" +
                                         // "<tr><td colspan=\"2\"><p>Payment Method: Credit Card<br /></p>" +
                                         "<tr><td colspan=\"2\"><p><br /></p>" +
                                         // IF POLICIES
                                         "<p>" + policiesString + "</p>" +
                                         "<strong>RESERVATION DETAILS</strong>" +
                                         "<br />Date of Reservation: <strong>" + reservationSubstring + "</strong>" +
-                                        "<br />Time of Reservation: <strong>" + new Date(startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(endTime).toLocaleTimeString() + "</td></tr>" +
+                                        "<br />Time of Reservation: <strong>" + new Date(startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(endTime).toLocaleTimeString() + "</strong>" +
+                                        "<br />Party Size: <strong>" + numPeople + "</strong></td></tr>" +
                                         "<tr><td colspan=\"2\"></td></tr>" +
                                         "<tr /></table><br /><table style=\"border-top:solid 3px black;\" cellspacing=\"0\" cellpadding=\"3\" width=\"600\">" +
                                         allReservableItemsString +
@@ -1420,13 +1428,15 @@ app.post("/api/managerDeleteReservation", (req, res) => {
                                                     "<tr><td>Customer Username:</td><td>" + result2[0].username + "</td></tr>" +
                                                     "<tr><td>Customer Name:</td><td>" + result2[0].firstName + " " + result2[0].lastName + "</td></tr>" +
                                                     "<tr><td>Customer Email:</td><td>" + result2[0].emailAddress + "</td></tr>" +
+                                                    "<tr><td>Customer Phone Number:</td><td>" + result2[0].phoneNumber + "</td></tr>" +
                                                     // "<tr><td colspan=\"2\"><p>Payment Method: Credit Card<br /></p>" +
                                                     "<tr><td colspan=\"2\"><p><br /></p>" +
                                                     // IF POLICIES
                                                     "<p>" + policiesString + "</p>" +                                                
                                                     "<strong>RESERVATION DETAILS</strong>" +
                                                     "<br />Date of Reservation: <strong>" + result3[0].reservationDate.substring(0, 10) + "</strong>" +
-                                                    "<br />Time of Reservation: <strong>" + new Date(result3[0].startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(result3[0].endTime).toLocaleTimeString() + "</td></tr>" +
+                                                    "<br />Time of Reservation: <strong>" + new Date(result3[0].startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(result3[0].endTime).toLocaleTimeString() + "</strong>" +
+                                                    "<br />Party Size: <strong>" + result3[0].numPeople + "</strong></td></tr>" +
                                                     "<tr><td colspan=\"2\"></td></tr>" +
                                                     "<tr /></table><br /><table style=\"border-top:solid 3px black;\" cellspacing=\"0\" cellpadding=\"3\" width=\"600\">" +
                                                     allReservableItemsString +
@@ -2416,13 +2426,15 @@ app.listen(port, () => {
                                                     "<tr><td>Customer Username:</td><td>" + result2[0].username + "</td></tr>" +
                                                     "<tr><td>Customer Name:</td><td>" + result2[0].firstName + " " + result2[0].lastName + "</td></tr>" +
                                                     "<tr><td>Customer Email:</td><td>" + result2[0].emailAddress + "</td></tr>" +
+                                                    "<tr><td>Customer Phone Number:</td><td>" + result2[0].phoneNumber + "</td></tr>" +
                                                     // "<tr><td colspan=\"2\"><p>Payment Method: Credit Card<br /></p>" +
                                                     "<tr><td colspan=\"2\"><p><br /></p>" +
                                                     // IF POLICIES
                                                     "<p>" + policiesString + "</p>" +
                                                     "<strong>RESERVATION DETAILS</strong>" +
                                                     "<br />Date of Reservation: <strong>" + result[i].reservationDate + "</strong>" +
-                                                    "<br />Time of Reservation: <strong>" + new Date(result[i].startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(result[i].endTime).toLocaleTimeString() + "</td></tr>" +
+                                                    "<br />Time of Reservation: <strong>" + new Date(result[i].startTime).toLocaleTimeString() + "</strong> to <strong>" + new Date(result[i].endTime).toLocaleTimeString() + "</strong>" +
+                                                    "<br />Party Size: <strong>" + result[i].numPeople + "</strong></td></tr>" +
                                                     "<tr><td colspan=\"2\"></td></tr>" +
                                                     "<tr /></table><br /><table style=\"border-top:solid 3px black;\" cellspacing=\"0\" cellpadding=\"3\" width=\"600\">" +
                                                     allReservableItemsString +
