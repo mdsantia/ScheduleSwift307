@@ -62,10 +62,27 @@ export default function Orders(props) {
     const [customerName, setCustomerName] = useState(null);
     const [customerEmail, setCustomerEmail] = useState(null);
     const [customerPhoneNumber, setCustomerPhoneNumber] = useState(null);
+    const [stopEdit, setStop] = useState('');
     
     useEffect(() => {
         insertValues();
+        checkEdit();
     }, [])
+
+    function checkEdit() {
+
+        console.log(props);
+
+        Axios.post("http://" + getIP() + ":3001/api/checkEdit", {
+            username: props.username,
+        }).then((result) => {
+            if (result.data === "No") {
+                setStop("Yes");
+            } else {
+                setStop("No");
+            }
+        })
+    }
 
     function getContactInfo(reservedBy) {
         Axios.post("http://" + getIP() + ":3001/api/getContactInfo", {
@@ -813,12 +830,12 @@ export default function Orders(props) {
                     </p></Grid>
                     <Button
                         type="submit"
-                        disabled={ (priceArray[0] && !closed[new Date(currentDate).getDay()] && (new Date(currentDate) > new Date())
+                        disabled={( (priceArray[0] && !closed[new Date(currentDate).getDay()] && (new Date(currentDate) > new Date())
                             && (timeDiff(new Date(openTime[new Date(currentDate).getDay()]), startTime) <= 0) &&
                             (timeDiff(new Date(closeTime[new Date(currentDate).getDay()]), endTime) >= 0) &&
                             (timeDiff(new Date(new Date(currentDate)), endTime) !== 0) &&
                             (timeDiff(startTime, endTime) < 0) && (new Date(startTime).getMinutes() % 5 === 0) && (new Date(endTime).getMinutes() % 5 === 0)
-                            ) ? false : true}
+                            ) ? false : true) || stopEdit == "Yes"}
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
