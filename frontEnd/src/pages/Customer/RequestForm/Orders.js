@@ -578,7 +578,6 @@ export default function Orders(props) {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        makeReceipt();
         let tot = 0;
         for (let i = 0; i < numReservableItems; i++) {
             tot = tot + numArray[i];
@@ -627,6 +626,11 @@ export default function Orders(props) {
                 setReservationID(result.data.id);
                 alert(`Your reservation has been saved!\nAn confirmation email has been sent to you containing your Reservation ID and reservation details.`);
                 setOpen(false);
+                setStoredNumArray(numArray);
+                setStoredCurrentDate(currentDate);
+                setStoredNumPeople(numPeople);
+                setStoredStartTime(startTime);
+                setStoredEndTime(endTime);
             })
         } else {
             // UPDATE RESERVATION INSTEAD
@@ -895,6 +899,7 @@ export default function Orders(props) {
                         aria-describedby='modal-modal-description'
                     >
                     <Box sx={style}>
+                        {makeReceipt()}
                         <Typography id="modal-modal-title" align="center">Itemized Receipt</Typography>
                         <Grid item xs={12} sm={6}>
                                 {receiptTypo[0]}
