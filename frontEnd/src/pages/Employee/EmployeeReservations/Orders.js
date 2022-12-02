@@ -71,7 +71,7 @@ export default function Orders(props) {
             } else {
 
             if(window.confirm("ID: " + resID + "\nAre you sure you want to cancel this reservation?")) {
-                Axios.post("http://" + getIP() + ":3001/api/employeeDeleteReservation", {
+                Axios.post("http://" + getIP() + ":3001/api/managerDeleteReservation", {
                     reservationID: resID
                 }).then((result) => {
                     if (result.data.result.affectedRows === 0) {

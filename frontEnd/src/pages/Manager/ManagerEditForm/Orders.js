@@ -58,6 +58,11 @@ export default function Orders(props) {
     const [customerName, setCustomerName] = useState(null);
     const [customerEmail, setCustomerEmail] = useState(null);
     const [customerPhoneNumber, setCustomerPhoneNumber] = useState(null);
+    const [storedNumPeople, setStoredNumPeople] = useState(null);
+    const [storedStartTime, setStoredStartTime] = useState(null);
+    const [storedEndTime, setStoredEndTime] = useState(null);
+    const [storedCurrentDate, setStoredCurrentDate] = useState(null);
+    const [storedNumArray, setStoredNumArray] = useState([]);
     
     useEffect(() => {
         insertValues();
@@ -333,6 +338,11 @@ export default function Orders(props) {
                     maxPeople, maxs, ReservedItems);
                 setReservedBy(result.data.result[0].reservedBy);
                 getContactInfo(result.data.result[0].reservedBy);
+                setStoredNumPeople(result.data.result[0].numPeople);
+                setStoredStartTime(result.data.result[0].startTime);
+                setStoredEndTime(result.data.result[0].endTime);
+                setStoredNumArray(numValues);
+                setStoredCurrentDate(date);
             })
         } else {
             getConcurrent(null, null, null, null, maxPeople, maxs, ReservedItems)
@@ -452,21 +462,31 @@ export default function Orders(props) {
             })
         } else{
             // UPDATE RESERVATION INSTEAD
-            Axios.post("http://" + getIP() + ":3001/api/updateReservation", {
-                ID: reservationID,
-                businessName: businessName,
-                reservationDate: currentDate,
-                reservable: ReservedItems,
-                price: prices,
-                startTime: startTime,
-                endTime: endTime,
-                reservedBy: reservedBy,
-                numPeople: numPeople,
-                numReservable: numReserved,
-                modifiedBy: "a manager or an employee"
-            }).then((result) => {
-                alert(`The reservation has been updated!\nAn confirmation email has been sent to the customer containing their Reservation ID and updated reservation details.`);
-            })
+            if (new Date(currentDate).getTime() === new Date(storedCurrentDate).getTime() && new Date(startTime).getTime() === new Date(storedStartTime).getTime() &&
+            new Date(endTime).getTime() === new Date(storedEndTime).getTime() && parseInt(numPeople) === parseInt(storedNumPeople) && (numArray.map(Number)).join() === (storedNumArray.map(Number)).join()) {
+                    alert("Please modify the reservation before submitting the form.");
+            } else {
+                Axios.post("http://" + getIP() + ":3001/api/updateReservation", {
+                    ID: reservationID,
+                    businessName: businessName,
+                    reservationDate: currentDate,
+                    reservable: ReservedItems,
+                    price: prices,
+                    startTime: startTime,
+                    endTime: endTime,
+                    reservedBy: reservedBy,
+                    numPeople: numPeople,
+                    numReservable: numReserved,
+                    modifiedBy: "a manager or an employee"
+                }).then((result) => {
+                    alert(`The reservation has been updated!\nAn confirmation email has been sent to the customer containing their Reservation ID and updated reservation details.`);
+                })
+                setStoredNumArray(numArray);
+                setStoredCurrentDate(currentDate);
+                setStoredNumPeople(numPeople);
+                setStoredStartTime(startTime);
+                setStoredEndTime(endTime);
+            }
         }
     }
 
