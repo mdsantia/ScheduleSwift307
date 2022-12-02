@@ -218,7 +218,7 @@ export default function Orders(props) {
         Axios.post("http://" + getIP() + ":3001/api/managerGetContact", {
             businessName: state.businessName
         }).then((result) => {
-            const contacts = result.data.result;
+            const contacts = result.data[0];
             setContact(contacts);
         })
     }
@@ -308,14 +308,18 @@ export default function Orders(props) {
                             <TableCell>Contact:</TableCell>
                         </TableRow>
                     </TableHead> */}
-                    <TableBody>
-                        {contact[0]?contact.map((contact, index) => (
-                            <TableRow>
-                                <TableCell><strong>{contact.contactType}</strong></TableCell>
-                                <TableCell>{contact.actualContact}</TableCell>
-                            </TableRow>
-                        )):<text>No contact information given by the manager of {state.businessName}.</text>}
-                    </TableBody>
+                    <TableRow>
+                            <TableCell>Address</TableCell>
+                            <TableCell>{contact.address}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Phone</TableCell>
+                            <TableCell>{contact.phoneNumber}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Email</TableCell>
+                            <TableCell>{contact.email}</TableCell>
+                        </TableRow>
                 </Table>
                 <Button
                             type="submit"
