@@ -696,13 +696,13 @@ app.post("/api/updateCustomerInfo", (req, res) => {
     )
 })
 
-app.post("/api/memberSince", (req, res) => {
+app.post("/api/getCustomerStats", (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     console.log(password);
     const encrypted = encrypt(password);
     db.query(
-        "SELECT creationDate FROM userData WHERE username = ? and password = ?",
+        "SELECT * FROM userData WHERE username = ? and password = ?",
         [username, encrypted],
         (err, result) => {
             console.log(result);
@@ -1028,6 +1028,13 @@ app.post("/api/createReservation", (req, res) => {
     const endTime = reservationSubstring + req.body.endTime.substring(10,);
     const numPeople = req.body.numPeople;
     const numReservable = req.body.numReservable;
+    db.query("UPDATE userData SET `numActiveReservations` = `numActiveReservations` + 1 WHERE username = ?", [reservedBy], (err4, result4) => {
+        if (err4) {
+            console.log("Error updating numActiveReservations");
+        } else {
+            console.log("Successfully updated numActiveReservations");
+        }
+    });
     db.query(
         "INSERT INTO reservations (numReservable, startTime, endTime, reservedBy, \
             numPeople, businessName, reservationDate, reservableItem, price, isReserved) VALUES (?,?,?,?,?,?,?,?,?,?)",
@@ -1301,6 +1308,13 @@ app.post("/api/managerDeleteReservation", (req, res) => {
                 console.log(err3);
                 console.log("Unable to find reservation");
             } else {
+                db.query("UPDATE userData SET `numCancelledReservations` = `numCancelledReservations` + 1, `numActiveReservations` = `numActiveReservations` - 1 WHERE username = ?", [result3[0].reservedBy], (err4, result4) => {
+                    if (err4) {
+                        console.log("Error updating numCancelledReservations & numActiveReservations");
+                    } else {
+                        console.log("Successfully updated numCancelledReservations & numActiveReservations");
+                    }
+                });
                 db.query(
                     "DELETE FROM reservations WHERE ID = ?",
                     [reservationID],

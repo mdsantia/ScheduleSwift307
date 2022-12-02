@@ -19,17 +19,24 @@ function preventDefault(event) {
 
 export default function Orders(props) {
     const [memberSince, setMemberSince] = useState('');
+    const [numActiveReservations, setNumActiveReservations] = useState('');
+    const [numCancelledReservations, setNumCancelledReservations] = useState('');
+    const [numCompletedReservations, setNumCompletedReservations] = useState('');
+
     useEffect(() => {
-        getMemberSince();
+        getCustomerStats();
     }, []);
-    function getMemberSince() {
-        Axios.post("http://" + getIP() + ":3001/api/memberSince", {
+    function getCustomerStats() {
+        Axios.post("http://" + getIP() + ":3001/api/getCustomerStats", {
             username: props.username,
             password: props.password
         })
             .then((response) => {
                 const responseData = response.data;
                 setMemberSince(responseData.result[0].creationDate)
+                setNumActiveReservations(responseData.result[0].numActiveReservations);
+                setNumCancelledReservations(responseData.result[0].numCancelledReservations);
+                setNumCompletedReservations(responseData.result[0].numCompletedReservations);
             })
     }
     const navigate = useNavigate();
@@ -45,6 +52,33 @@ export default function Orders(props) {
                     </TableHead>
                     <TableBody>
                         <TableCell align='center'>{memberSince}</TableCell>
+                    </TableBody>
+                    <br></br>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell align='center'>Active Reservations</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        <TableCell align='center'>{numActiveReservations}</TableCell>
+                    </TableBody>
+                    <br></br>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell align='center'>Cancelled Reservations</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        <TableCell align='center'>{numCancelledReservations}</TableCell>
+                    </TableBody>
+                    <br></br>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell align='center'>Completed Reservations</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        <TableCell align='center'>{numCompletedReservations}</TableCell>
                     </TableBody>
                 </tbody>
             </Table>

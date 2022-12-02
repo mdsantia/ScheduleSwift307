@@ -154,13 +154,13 @@ export default function Orders(props) {
         if (notesBox.length > 0 && !checked) {
             return false;
         }
-        if (!closed[new Date(currentDate).getDay()] && (new Date(currentDate) > new Date())
-        && (timeDiff(new Date(openTime[new Date(currentDate).getDay()]), startTime) <= 0) &&
-        (timeDiff(new Date(closeTime[new Date(currentDate).getDay()]), endTime) >= 0) &&
-        (timeDiff(new Date(new Date(currentDate)), endTime) !== 0) &&
-        (timeDiff(startTime, endTime) < 0) && (new Date(startTime).getMinutes() % 5 === 0) && (new Date(endTime).getMinutes() % 5 === 0)) {
-            return false;
-        }
+        // if (!closed[new Date(currentDate).getDay()] && (new Date(currentDate) > new Date())
+        // && (timeDiff(new Date(openTime[new Date(currentDate).getDay()]), startTime) <= 0) &&
+        // (timeDiff(new Date(closeTime[new Date(currentDate).getDay()]), endTime) >= 0) &&
+        // (timeDiff(new Date(new Date(currentDate)), endTime) !== 0) &&
+        // (timeDiff(startTime, endTime) < 0) && (new Date(startTime).getMinutes() % 5 === 0) && (new Date(endTime).getMinutes() % 5 === 0)) {
+        //     return false;
+        // }
         if (numPeople > availableNumPeople || numPeople <= 0) {
             return false;
         }
@@ -929,7 +929,7 @@ export default function Orders(props) {
                     <Button
                         form='my-form'
                         type='submit'
-                        disabled={ (priceArray[0]&& validForm()) ? false : true}
+                        disabled={ (priceArray[0] && validForm()) ? false : true}
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
