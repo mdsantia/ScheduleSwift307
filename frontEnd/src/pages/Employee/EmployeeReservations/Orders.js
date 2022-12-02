@@ -33,6 +33,8 @@ export default function Orders(props) {
     const [reservationIDs, setReservationIDs] = useState('');
     const navigate = useNavigate();
     const [stopView, setView] = useState('');
+    const [stopEdit, setEdit] = useState('');
+    const [deletePer, setDelete] = useState('');
 
     function getReservations(business) {
         Axios.post("http://" + getIP() + ":3001/api/getBusinessReservations", {
@@ -92,9 +94,27 @@ export default function Orders(props) {
             username: username,
         }).then((result) => {
             if (result.data === "No") {
-                setView("No");
-            } else {
                 setView("Yes");
+            } else {
+                setView("No");
+            }
+        })
+        Axios.post("http://" + getIP() + ":3001/api/checkEdit", {
+            username: username,
+        }).then((result) => {
+            if (result.data === "No") {
+                setEdit(true);
+            } else {
+                setEdit(false);
+            }
+        })
+        Axios.post("http://" + getIP() + ":3001/api/checkDelete", {
+            username: username,
+        }).then((result) => {
+            if (result.data === "No") {
+                setDelete(false);
+            } else {
+                setDelete(true);
             }
         })
     }
@@ -181,7 +201,7 @@ export default function Orders(props) {
         checkView(props.username)
     }, []);
 
-    if (stopView == "No") {
+    if (stopView == "Yes") {
         return (
             <p>You don't have permissions to view this!</p>
         )
@@ -250,8 +270,8 @@ export default function Orders(props) {
                                 {/* <TableCell>{reserve.reservableItem}</TableCell> */}
                                 <TableCell>{reserve.isReserved}</TableCell>
                                 <TableCell align="right">{`$${parseFloat(total(reserve.numReservable, reserve.price)).toFixed(2)}`}</TableCell>
-                                <TableCell align="right"><Button onClick={() => editReservation(reserve.ID)}>VIEW/EDIT</Button></TableCell>
-                                <TableCell align="right"><Button onClick={() => deleteReservation(reserve.ID)}>CANCEL</Button></TableCell>
+                                <TableCell align="right"><Button onClick={() => editReservation(reserve.ID)}>{stopEdit?"VIEW":"VIEW/EDIT"}</Button></TableCell>
+                                {deletePer?<TableCell align="right"><Button onClick={() => deleteReservation(reserve.ID)}>CANCEL</Button></TableCell>:true}
                             </TableRow>
                         ))}
                     </TableBody>
