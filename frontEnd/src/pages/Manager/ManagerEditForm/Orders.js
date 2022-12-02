@@ -23,6 +23,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Logo from '../Logo.png';
+import Title from './Title';
+import {TableCell, Table, TableBody, TableRow} from '@mui/material';
 import EventIcon from '@mui/icons-material/Event';
 import { getDate } from 'date-fns';
 
@@ -32,6 +34,8 @@ function preventDefault(event) {
 
 export default function Orders(props) {
     const box = [];
+    const notesBox = [];
+    const [notes, setNotes] = useState([]);
     const { state } = useLocation();
     const [startTime, setStartTime] = useState(null);
     const [endTime, setEndTime] = useState(null);
@@ -93,6 +97,36 @@ export default function Orders(props) {
                 setCustomerEmail(result.data.result[0].emailAddress);
                 setCustomerPhoneNumber("(" + result.data.result[0].phoneNumber.substring(0, 3) + ") " + result.data.result[0].phoneNumber.substring(3, 6) + "-" + result.data.result[0].phoneNumber.substring(6));
             }
+        })
+    }
+
+    function updateNotesBox() {
+        if (notesBox.length === 0 && notes.length > 0) {
+            notesBox.push(<Title>Reservation Policies and Notes</Title>);
+            notesBox.push(
+            <Table size="small">
+                <TableBody>
+                    {notes.map((note, index) => (
+                        <TableRow>
+                            <TableCell><strong>{note.note}</strong></TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>);
+            notesBox.push(
+                <Grid container><Checkbox required checked={true}/><p style={{color:"#98622E"}} component="h5" variant="h8">
+                    *{reservedBy}'s agreed with all the policies set by the facility for their reservations.
+                </p></Grid>
+            );
+        }
+    }
+
+    function getNotes(businessName) {
+        Axios.post("http://" + getIP() + ":3001/api/reservationGetNotes", {
+            businessName: state.businessName
+        }).then((result) => {
+            const notes = result.data.result;
+            setNotes(notes);
         })
     }
 
@@ -292,6 +326,7 @@ export default function Orders(props) {
         let maxs = "";
         let maxPeople = 0;
         let prices = "";
+        getNotes(props.businessName);
         Axios.post("http://" + getIP() + ":3001/api/getFacilitysData", {
             businessName: businessName
         }).then((result) => {
@@ -772,6 +807,10 @@ export default function Orders(props) {
                     <Typography component="p" variant="p">
                         Total: ${parseFloat(total).toFixed(2)}
                     </Typography>
+                    {updateNotesBox()}
+                    {notesBox[0]}
+                    {notesBox[1]}
+                    {notesBox[2]}
                     <Button
                         type="submit"
                         disabled={ ( validForm()) && !(new Date(currentDate).getTime() === new Date(storedCurrentDate).getTime() && new Date(startTime).getTime() === new Date(storedStartTime).getTime() &&
