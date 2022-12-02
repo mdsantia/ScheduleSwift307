@@ -154,14 +154,20 @@ export default function Orders(props) {
     }
 
     function formatPhone(number) {
-        let p1 = number.substring(0, 3);
-        let p2 = number.substring(3,6);
-        let p3 = number.substring(6, 10);
 
-        let finalNum = "(" + p1 + ")" + "-" + p2 + "-" + p3;
+        if (number === "none") {
+            setFormat("none");
+        } else {
 
-        console.log(finalNum);
-        setFormat(finalNum);
+            let p1 = number.substring(0, 3);
+            let p2 = number.substring(3,6);
+            let p3 = number.substring(6, 10);
+
+            let finalNum = "(" + p1 + ")" + "-" + p2 + "-" + p3;
+
+            console.log(finalNum);
+            setFormat(finalNum);
+        }
     }
 
     function getFAQ(businessName) {
@@ -231,7 +237,11 @@ export default function Orders(props) {
             businessName: state.businessName
         }).then((result) => {
             const contacts = result.data[0];
+            if (contacts.phoneNumber != "none") {
             formatPhone(contacts.phoneNumber);
+            } else {
+                setFormat("none");
+            }
             setContact(contacts);
         })
     }
