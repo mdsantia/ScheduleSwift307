@@ -50,22 +50,15 @@ export default function Orders(props) {
     }
     function editReservation (reserveID) {
 
-        Axios.post("http://" + getIP() + ":3001/api/checkEdit", {
-            username: props.username,
-        }).then((result) => {
-            if (result.data === "No") {
-                window.alert("You don't have permissions to edit reservations!");
-            } else {
-                navigate("/employeeEditForm", {
-                    state: {
-                        username: props.username,
-                        password: props.password,
-                        businessName: props.businessName,
-                        ID: reserveID
-                    }
-                })
+        navigate("/employeeEditForm", {
+            state: {
+                username: props.username,
+                password: props.password,
+                businessName: props.businessName,
+                ID: reserveID
             }
         })
+
     }
     function deleteReservation(resID) {
 
@@ -101,7 +94,7 @@ export default function Orders(props) {
             username: username,
         }).then((result) => {
             console.log(result.data);
-            if (result.data == "No") {
+            if (result.data === "No") {
                 setView("No");
             } else {
                 setView("Yes");
@@ -190,6 +183,8 @@ export default function Orders(props) {
         getReservations(props.businessName)
         checkView(props.username)
     }, []);
+
+    console.log(props);
 
     if (stopView == "No") {
         return (

@@ -2135,6 +2135,7 @@ app.post("/api/checkEdit", (req, res) => {
 
 app.post("/api/checkView", (req, res) => {
     const username = req.body.username;
+    console.log(username);
     const del = "Yes";
     db.query(
         "SELECT * FROM permissions WHERE username = ? AND viewReservations = ?",
@@ -2143,6 +2144,9 @@ app.post("/api/checkView", (req, res) => {
             if (err) {
                 console.log(err)
             }
+            console.log("HERE");
+            console.log(result);
+            console.log("HERE");
             if (result.length == 0) {
                 res.send("No");
             } else {
