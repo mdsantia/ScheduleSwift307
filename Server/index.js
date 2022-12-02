@@ -878,15 +878,22 @@ app.post("/api/updateReservation", (req, res) => {
                                 modificationMessage = "You have modified/updated the following reservation.";
                             }
                             let businessContactInfo = "";
-                            db.query("SELECT * FROM managerContacts WHERE businessName = ?",
+                            db.query("SELECT * FROM businessContacts WHERE businessName = ?",
                             [businessName], (err4, result4) => {
                                 if (err4) {
                                     console.log(err4);
                                     console.log("Unable to get the business's contact information.");
                                 }
-                                if (result4.length) {
-                                    for (let i = 0; i < result4.length; i++) {
-                                        businessContactInfo += "<br />" + result4[i].contactType + ": " + result4[i].actualContact;
+                                for (let i = 0; i < result4.length; i++) {
+                                    if (result4[i].address.localeCompare("none") !== 0) {
+                                        businessContactInfo += "<br />Address: " + result4[i].address;
+                                    }
+                                    if (result4[i].phoneNumber.localeCompare("none") !== 0) {
+                                        businessContactInfo += "<br />Phone Number: " + result4[i].phoneNumber;
+
+                                    }
+                                    if (result4[i].email.localeCompare("none") !== 0) {
+                                        businessContactInfo += "<br />Email: " + result4[i].email;
                                     }
                                 }
                                 const mailOptions = {
@@ -1108,15 +1115,22 @@ app.post("/api/createReservation", (req, res) => {
                                 }
                             }
                             let businessContactInfo = "";
-                            db.query("SELECT * FROM managerContacts WHERE businessName = ?",
+                            db.query("SELECT * FROM businessContacts WHERE businessName = ?",
                             [businessName], (err4, result4) => {
                                 if (err4) {
                                     console.log(err4);
                                     console.log("Unable to get the business's contact information.");
                                 }
-                                if (result4.length) {
-                                    for (let i = 0; i < result4.length; i++) {
-                                        businessContactInfo += "<br />" + result4[i].contactType + ": " + result4[i].actualContact;
+                                for (let i = 0; i < result4.length; i++) {
+                                    if (result4[i].address.localeCompare("none") !== 0) {
+                                        businessContactInfo += "<br />Address: " + result4[i].address;
+                                    }
+                                    if (result4[i].phoneNumber.localeCompare("none") !== 0) {
+                                        businessContactInfo += "<br />Phone Number: " + result4[i].phoneNumber;
+
+                                    }
+                                    if (result4[i].email.localeCompare("none") !== 0) {
+                                        businessContactInfo += "<br />Email: " + result4[i].email;
                                     }
                                 }
                                 const mailOptions = {
@@ -1398,19 +1412,26 @@ app.post("/api/managerDeleteReservation", (req, res) => {
                                             if (result4.length) {
                                                 policiesString += "<strong>RESERVATION POLICIES AGREED</strong>";
                                                 for (let i = 0; i < result4.length; i++) {
-                                                    policiesString += `<br />${i + 1}. ${result3[i].note}`;
+                                                    policiesString += `<br />${i + 1}. ${result4[i].note}`;
                                                 }
                                             }
                                             let businessContactInfo = "";
-                                            db.query("SELECT * FROM managerContacts WHERE businessName = ?",
-                                            [result3[0].businessName], (err4, result4) => {
-                                                if (err4) {
-                                                    console.log(err4);
+                                            db.query("SELECT * FROM businessContacts WHERE businessName = ?",
+                                            [result3[0].businessName], (err5, result5) => {
+                                                if (err5) {
+                                                    console.log(err5);
                                                     console.log("Unable to get the business's contact information.");
                                                 }
-                                                if (result4.length) {
-                                                    for (let i = 0; i < result4.length; i++) {
-                                                        businessContactInfo += "<br />" + result4[i].contactType + ": " + result4[i].actualContact;
+                                                for (let i = 0; i < result5.length; i++) {
+                                                    if (result5[i].address.localeCompare("none") !== 0) {
+                                                        businessContactInfo += "<br />Address: " + result5[i].address;
+                                                    }
+                                                    if (result5[i].phoneNumber.localeCompare("none") !== 0) {
+                                                        businessContactInfo += "<br />Phone Number: " + result5[i].phoneNumber;
+                
+                                                    }
+                                                    if (result5[i].email.localeCompare("none") !== 0) {
+                                                        businessContactInfo += "<br />Email: " + result5[i].email;
                                                     }
                                                 }
                                                 const mailOptions = {
@@ -2436,15 +2457,22 @@ app.listen(port, () => {
                                             }
                                         }
                                         let businessContactInfo = "";
-                                        db.query("SELECT * FROM managerContacts WHERE businessName = ?",
+                                        db.query("SELECT * FROM businessContacts WHERE businessName = ?",
                                         [result[i].businessName], (err4, result4) => {
                                             if (err4) {
                                                 console.log(err4);
                                                 console.log("Unable to get the business's contact information.")
                                             }
-                                            if (result4.length) {
-                                                for (let i = 0; i < result4.length; i++) {
-                                                    businessContactInfo += "<br />" + result4[i].contactType + ": " + result4[i].actualContact;
+                                            for (let i = 0; i < result4.length; i++) {
+                                                if (result4[i].address.localeCompare("none") !== 0) {
+                                                    businessContactInfo += "<br />Address: " + result4[i].address;
+                                                }
+                                                if (result4[i].phoneNumber.localeCompare("none") !== 0) {
+                                                    businessContactInfo += "<br />Phone Number: " + result4[i].phoneNumber;
+            
+                                                }
+                                                if (result4[i].email.localeCompare("none") !== 0) {
+                                                    businessContactInfo += "<br />Email: " + result4[i].email;
                                                 }
                                             }
                                             const mailOptionsReminder = {
