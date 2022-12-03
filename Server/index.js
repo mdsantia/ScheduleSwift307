@@ -1923,7 +1923,12 @@ app.post("/api/getDailyReservations", (req, res) => {
     const year = new Date().getFullYear();
     const month = new Date().getMonth() + 1;
     const day  = new Date().getDate();
-    const formatted = `${year}-${month}-${day}`;
+    var newDay = day;
+    if (day < 10) {
+        newDay = "0" + day;
+    }
+    const formatted = `${year}-${month}-${newDay}`;
+    console.log(formatted);
     const isReserved = 'Yes';
     db.query(
         "SELECT * FROM reservations WHERE businessName = ? AND reservationDate = ? AND isReserved = ?",
@@ -1934,6 +1939,7 @@ app.post("/api/getDailyReservations", (req, res) => {
                 res.send({err: err})
             }
             if (result) {
+                console.log("HELLO");
                 console.log(result);
                 res.send({result})
             }
