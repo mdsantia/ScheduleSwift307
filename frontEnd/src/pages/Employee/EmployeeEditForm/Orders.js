@@ -71,6 +71,7 @@ export default function Orders(props) {
     const [storedCurrentDate, setStoredCurrentDate] = useState(null);
     const [storedNumArray, setStoredNumArray] = useState([]);
     const [stopEdit, setStop] = useState('');
+    const _ = require('lodash');
     
     useEffect(() => {
         insertValues();
@@ -164,8 +165,13 @@ export default function Orders(props) {
         if (numPeople > availableNumPeople || numPeople <= 0 || numPeople === undefined) {
             return false;
         }
-        for (let i = 0; i < numReservableItems; i ++) {
-            if (numArray[i] > maxArray[i] || numArray[i] < minArray[i] || numArray[i] === undefined) {
+        let totReservables = 0;
+        for (let i = 0; i < numReservableItems; i++) {
+            if (parseInt(numArray[i]) > parseInt(maxArray[i]) || parseInt(numArray[i]) < parseInt(minArray[i]) || parseInt(numArray[i]) === undefined) {
+                return false;
+            }
+            totReservables += parseInt(numArray[i]);
+            if (i === numReservableItems - 1 && totReservables === 0) {
                 return false;
             }
         }
@@ -192,7 +198,7 @@ export default function Orders(props) {
         if (endHour > closeHour || (closeHour === endHour && endMinute > closeMinute)) {
             return false;
         }
-        if (startHour > endHour || (endHour === startHour && endMinute < startMinute)) {
+        if (startHour > endHour || (endHour === startHour && endMinute <= startMinute)) {
             return false;
         }
         return true;
@@ -504,7 +510,7 @@ export default function Orders(props) {
                         value={numArray[element - 1]}
                         onChange={(newValue) => { 
                             let newArr = [...numArray];
-                            newArr[element - 1] = (newValue.target.value !== ""?parseInt(newValue.target.value):parseInt(0));
+                            newArr[element - 1] = (newValue.target.value !== ""?newValue.target.value:"0");
                             setNumArray(newArr);
                             calculateTotal(priceArray.length, priceArray, newArr);
                         }}
@@ -573,7 +579,7 @@ export default function Orders(props) {
         } else {
             // UPDATE RESERVATION INSTEAD
             if (new Date(currentDate).getTime() === new Date(storedCurrentDate).getTime() && new Date(startTime).getTime() === new Date(storedStartTime).getTime() &&
-            new Date(endTime).getTime() === new Date(storedEndTime).getTime() && parseInt(numPeople) === parseInt(storedNumPeople) && (numArray.map(Number)).join() === (storedNumArray.map(Number)).join()) {
+            new Date(endTime).getTime() === new Date(storedEndTime).getTime() && parseInt(numPeople) === parseInt(storedNumPeople) && (numArray.join() === storedNumArray.join())) {
                     alert("Please modify the reservation before submitting the form.");
             } else {
                 Axios.post("http://" + getIP() + ":3001/api/updateReservation", {
@@ -826,8 +832,8 @@ export default function Orders(props) {
                     {notesBox[2]}
                     <Button
                         type="submit"
-                        disabled={ (( validForm()) && !(new Date(currentDate).getTime() === new Date(storedCurrentDate).getTime() && new Date(startTime).getTime() === new Date(storedStartTime).getTime() &&
-                            new Date(endTime).getTime() === new Date(storedEndTime).getTime() && parseInt(numPeople) === parseInt(storedNumPeople) && (numArray.map(Number)).join() === (storedNumArray.map(Number)).join()) ? false : true) || stopEdit === "Yes"}
+                        disabled={ (validForm() && !(new Date(currentDate).getTime() === new Date(storedCurrentDate).getTime() && new Date(startTime).getTime() === new Date(storedStartTime).getTime() &&
+                            new Date(endTime).getTime() === new Date(storedEndTime).getTime() && parseInt(numPeople) === parseInt(storedNumPeople) && (_.isEqual(numArray, storedNumArray)))) ? false : true || stopEdit === "Yes"}
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
