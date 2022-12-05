@@ -145,7 +145,7 @@ export default function Orders() {
                         <EventIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
-                        Make Reservation
+                        Make Reservation for {businessName}'s Event on {new Date(reservationDetails.reservationDate+"T00:00").toDateString().substring(4)}
                     </Typography>
                     <Box component="form" validate="true" onSubmit={handleSubmit} sx={{ mt: 3 }}>
                         <Grid container spacing={2}>
