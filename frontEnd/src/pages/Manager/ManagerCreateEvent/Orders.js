@@ -41,17 +41,12 @@ export default function Orders(props) {
     const [editPolicy, setEditPolicy] = useState([]);
     const [numReservableItems, setNumReservableItems] = useState(1);
     const [nameArray, setNameArray] = useState([]);
-    const [minArray, setMinArray] = useState([]);
-    const [maxArray, setMaxArray] = useState([]);
+    const [numArray, setNumArray] = useState([]);
     const [priceArray, setPriceArray] = useState([]);
     const [numPeople, setNumPeople] = useState([]);
     const businessName = props.businessName;
-    const year = new Date().getFullYear();
-    const month = new Date().getMonth() + 1;
-    const day = new Date().getDate();
     const navigate = useNavigate();
-    const formattedDate = `${year}-${month}-${day}`;
-    const [currentDate, setCurrentDate] = useState(Dayjs | null);
+    const [currentDate, setCurrentDate] = useState(null);
     var paymentDetails = [];
     const [paymentStatus, setPaymentStatus] = useState("none");
     const [isPayment, setIsPayment] = useState(false);
@@ -59,7 +54,7 @@ export default function Orders(props) {
     const [notes, setNotes] = useState([]);
     const [note, setNote] = useState('');
     useEffect(() => {
-        setCurrentDate(formattedDate);
+        insertValues();
     }, [])
 
     function getNotes(businessName) {
@@ -238,37 +233,20 @@ export default function Orders(props) {
                         }}
                     />
                     </Grid>
-                    <Grid  item xs={12} sm={3}>
+                    <Grid  item xs={12} sm={4}>
                     <TextField
                         required
                         fullWidth
-                        name={'Min' + element}
-                        label={'Min ' + element}
+                        name={'Reserved' + element}
+                        label={'#Reserved ' + element}
                         InputProps={{ inputProps: { min: 0, step: 1 } }}
                         type="number"
                         id={element}
-                        value={minArray[element - 1]}
+                        value={numArray[element - 1]}
                         onChange={(newValue) => { 
-                            let newArr = [...minArray];
-                            newArr[parseInt(newValue.target.id) - 1] = parseInt(newValue.target.value);
-                            setMinArray(newArr);
-                        }}
-                    />
-                    </Grid>
-                    <Grid  item xs={12} sm={3}>
-                    <TextField
-                        required
-                        fullWidth
-                        name={"Max" + element}
-                        label={"Max " + element}
-                        InputProps={{ inputProps: { min: minArray[element - 1], step: 1 } }}
-                        type="number"
-                        id={element}
-                        value={maxArray[element - 1]}
-                        onChange={(newValue) => { 
-                            let newArr = [...maxArray];
-                            newArr[parseInt(newValue.target.id) - 1] = parseInt(newValue.target.value);
-                            setMaxArray(newArr);
+                            let newArr = [...numArray];
+                            newArr[parseInt(newValue.target.id) - 1] = newValue.target.value;
+                            setNumArray(newArr);
                         }}
                     />
                     </Grid>
@@ -291,8 +269,51 @@ export default function Orders(props) {
         }
     }
 
+    function insertValues() {
+        let ReservedItems = "";
+        let maxPeople = 0;
+        let prices = "";
+        getNotes(props.businessName);
+        Axios.post("http://" + getIP() + ":3001/api/getFacilitysData", {
+            businessName: businessName
+        }).then((result) => {
+            if (result.data.err) {
+                alert("Facility data missing!");
+            } else {
+                // UPDATE NUM OF RESERVABLES
+                if (!result.data.result[0].numReservable) {
+                    setNumReservableItems(1);
+                } else {
+                    setNumReservableItems(parseInt(result.data.result[0].numReservable));
+    
+                    // UPDATE NAMES
+                    ReservedItems = String(result.data.result[0].reservableItem).split(";");
+                    setNameArray(ReservedItems);
+    
+                    // UPDATE PRICES
+                    prices = String(result.data.result[0].prices).split(";");
+                    setPriceArray(prices);
+                }
+            }
+        })
+    }
+    
+    function disableSave() {
+        const startHour = new Date(startTime).getHours();
+        const startMinute = new Date(startTime).getMinutes();
+        const endHour = new Date(endTime).getHours();
+        const endMinute = new Date(endTime).getMinutes();
+        if (startHour > endHour || (endHour === startHour && endMinute <= startMinute) || currentDate === null || endTime === null) {
+            return true;
+        }
+    }
+
     const handleSubmit = (event) => {
         event.preventDefault();
+        if (startTime === null || endTime === null) {
+            alert("Enter time constraints");
+            return;
+        }
         const data = new FormData(event.currentTarget);
         let ReservedItems = "";
         for (let element = 1; element <= numReservableItems; element++) {
@@ -303,6 +324,13 @@ export default function Orders(props) {
             }
         }
         let prices = "";
+        for (let element = 0; element < numReservableItems; element++) {
+            if (prices === "") {
+                prices = prices.concat(priceArray[element]);
+            } else {
+                prices = prices.concat(";", priceArray[element]);
+            }
+        }
         let maximums = "";
         for (let element = 1; element <= numReservableItems; element++) {
             if (maximums === "") {
@@ -311,28 +339,26 @@ export default function Orders(props) {
                 maximums = maximums.concat(";", data.get("Max" + element));
             }
         }
-        let minimums = "";
-        for (let element = 1; element <= numReservableItems; element++) {
-            if (minimums === "") {
-                minimums = minimums.concat(data.get("Min" + element));
+        let numReserved = "";
+        for (let element = 0; element < numReservableItems; element++) {
+            if (numReserved === "") {
+                numReserved = numReserved.concat(numArray[element]);
             } else {
-                minimums = minimums.concat(";", data.get("Min" + element));
+                numReserved = numReserved.concat(";", numArray[element]);
             }
         }
-        for (let element = 1; element <= numReservableItems; element++) {
-            if (prices === "") {
-                prices = prices.concat(data.get("Price" + element));
-            } else {
-                prices = prices.concat(";", data.get("Price" + element));
-            }
-        }
-        Axios.post("http://" + getIP() + ":3001/api/managerCreateReservation", {
+        alert("Event created! Waiting on customers to accept.");
+        Axios.post("http://" + getIP() + ":3001/api/managerCreateEvent", {
             businessName: data.get('business'),
             reservationDate: currentDate,
             reservable: ReservedItems,
-            price: prices
+            numReserved: numReserved,
+            startTime: startTime,
+            endTime: endTime,
+            price: prices,
+            numPeople: numPeople
         })
-        navigate("/managerMain", {
+        navigate("/facilityReservations", {
             state: {
                 username: props.username,
                 password: props.password,
@@ -359,7 +385,10 @@ export default function Orders(props) {
                     <EventIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    {props.businessName} Reservation Form Template
+                    {props.businessName} Event Creation
+                </Typography>
+                <Typography style={{color:"#98622E"}} component="h5" variant="h8">
+                    * Prices are assigned per unit of reservable item.
                 </Typography>
                 <Box component="form" validate="true" onSubmit={handleSubmit} sx={{ mt: 3 }}>
                     <Grid container spacing={2}>
@@ -381,8 +410,15 @@ export default function Orders(props) {
                                     id="reservationDate"
                                     label="Select Date"
                                     value={currentDate}
+                                    InputProps={{ onKeyDown: (event) => { event.preventDefault();} } }
                                     onChange={(newValue) => { setCurrentDate(newValue) }}
                                     renderInput={(params) => <TextField {...params} />}
+                                    shouldDisableDate={(date) => {
+                                        if (date < new Date()) {
+                                            return true;
+                                        }
+                                        return false;
+                                    }}
                                 />
                             </LocalizationProvider>
                         </Grid>
@@ -390,6 +426,7 @@ export default function Orders(props) {
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <TimePicker
                                     label="Start Time"
+                                    InputProps={{ onKeyDown: (event) => { event.preventDefault();} } }
                                     value={startTime}
                                     fullWidth
                                     onChange={(newValue) => { setStartTime(newValue) }}
@@ -402,9 +439,18 @@ export default function Orders(props) {
                                 <TimePicker
                                     label="End Time"
                                     value={endTime}
+                                    InputProps={{ onKeyDown: (event) => { event.preventDefault();} } }
                                     fullWidth
                                     onChange={(newValue) => { setEndTime(newValue) }}
                                     renderInput={(params) => <TextField {...params} />}
+                                    shouldDisableTime={(timeValue, clockType) => {
+                                    if ((clockType === 'hours' && timeValue < (new Date(startTime).getHours()))
+                                        || ((new Date(startTime).getHours()) === (new Date(endTime).getHours()) && 
+                                            clockType === 'minutes' && timeValue <= (new Date(startTime).getMinutes()) )) {
+                                            return true;
+                                        }
+                                    return false;
+                                    }}
                                 />
                             </LocalizationProvider>
                         </Grid>
@@ -525,7 +571,6 @@ export default function Orders(props) {
                     <TextField
                         margin="normal"
                         fullWidth
-                        // id={}
                         label="Note/Policy"
                         name="Note"
                         value={note}
@@ -541,9 +586,9 @@ export default function Orders(props) {
                 >
                     Add Notes/Policies
                 </Button>
-
                     <Button
                         type="submit"
+                        disabled={disableSave()?true:false}
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}

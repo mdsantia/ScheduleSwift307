@@ -1272,16 +1272,21 @@ app.post("/api/createReservation", (req, res) => {
     });
 });
 
-app.post("/api/managerCreateReservation", (req, res) => {
+app.post("/api/managerCreateEvent", (req, res) => {
     const businessName = req.body.businessName;
-    const isReserved = "No";
     let reservationDate = req.body.reservationDate;
     let reservationSubstring = reservationDate.substring(0, 10);
+    console.log(req.body.startTime)
+    const startTime = reservationSubstring + req.body.startTime.substring(10,);
+    const endTime = reservationSubstring + req.body.endTime.substring(10,);
+    const numPeople = req.body.numPeople;
+    const isReserved = "No";
     const reservable = req.body.reservable;
     const price = req.body.price;
+    const numReserved = req.body.numReserved;
     db.query(
-        "INSERT INTO reservations (businessName, reservationDate, reservableItem, price, isReserved) VALUES (?,?,?,?,?)",
-        [businessName, reservationSubstring, reservable, price, isReserved],
+        "INSERT INTO reservations (businessName, reservationDate, reservableItem, price, isReserved, startTime, endTime, numPeople, numReservable) VALUES (?, ?,?,?,?,?,?,?,?)",
+        [businessName, reservationSubstring, reservable, price, isReserved, startTime, endTime, numPeople, numReserved],
         (err, result) => {
             if (err) {
                 console.log(err)
