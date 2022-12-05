@@ -430,7 +430,12 @@ export default function Orders(props) {
                                     value={startTime}
                                     fullWidth
                                     onChange={(newValue) => { setStartTime(newValue) }}
-                                    renderInput={(params) => <TextField {...params} />}
+                                    renderInput={(params) => <TextField {...params} />}shouldDisableTime={(timeValue, clockType) => {
+                                        if (clockType === 'minutes' && timeValue % 5) {
+                                            return true;
+                                        }
+                                        return false;
+                                    }}
                                 />
                             </LocalizationProvider>
                         </Grid>
@@ -449,7 +454,10 @@ export default function Orders(props) {
                                             clockType === 'minutes' && timeValue <= (new Date(startTime).getMinutes()) )) {
                                             return true;
                                         }
-                                    return false;
+                                        if (clockType === 'minutes' && timeValue % 5) {
+                                            return true;
+                                        }
+                                        return false;
                                     }}
                                 />
                             </LocalizationProvider>

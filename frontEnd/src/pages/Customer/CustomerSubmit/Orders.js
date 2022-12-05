@@ -32,13 +32,33 @@ export default function Orders() {
     const { state } = useLocation();
     const [startTime, setStartTime] = useState(null);
     const [endTime, setEndTime] = useState(null);
+    const [openTime, setOpenTime] = useState(null);
+    const [closeTime, setCloseTime] = useState(null);
     const navigate = useNavigate();
     const [reservationDetails, setReservationDetails] = useState(null);
     const [reservableItems, setReservableItems] = useState(null);
+    const [numArray, setNumArray] = useState(null);
+    const [maxArray, setMaxArray] = useState(null);
+    const [numPeople, setNumPeople] = useState(null);
+    const [maxNumPeople, setMaxNumPeople] = useState(null);
     const box = [];
+    const businessName = state.businessName;
+
+    function disableSave() {
+        if (parseInt(numArray.join('')) === 0) {
+            return true;
+        }
+        const startHour = new Date(startTime).getHours();
+        const startMinute = new Date(startTime).getMinutes();
+        const endHour = new Date(endTime).getHours();
+        const endMinute = new Date(endTime).getMinutes();
+        if (startHour > endHour || (endHour === startHour && endMinute <= startMinute) || endTime === null) {
+            return true;
+        }
+    }
 
     function makeBox() {
-        for (const element in reservableItems) {
+        for (let element = 0; element < reservableItems.length; element++) {
             // Then the code pushes each time it loops to the empty array I initiated.
             box.push(
                 <Grid>
@@ -47,8 +67,15 @@ export default function Orders() {
                         fullWidth
                         name={reservableItems[element]}
                         label={reservableItems[element]}
-                        type={reservableItems[element]}
-                        id={reservableItems[element]}
+                        value={parseInt(numArray[element])}
+                        type="number"
+                        InputProps={{ inputProps: { min: 0, max: maxArray[element], step: 1
+                        } } }
+                        onChange={(newValue) => { 
+                            let newArr = [...numArray];
+                            newArr[parseInt(element)] = newValue.target.value;
+                            setNumArray(newArr);
+                        }}
                     />
                 </Grid>
             );
@@ -62,6 +89,15 @@ export default function Orders() {
         }).then((result) => {
             setReservationDetails(result.data.result[0]);
             setReservableItems(result.data.result[0].reservableItem.split(";"));
+            setStartTime(result.data.result[0].startTime);
+            setOpenTime(result.data.result[0].startTime);
+            setEndTime(result.data.result[0].endTime);
+            setCloseTime(result.data.result[0].endTime);
+            setNumPeople(parseInt(result.data.result[0].numPeople));
+            setMaxNumPeople(parseInt(result.data.result[0].numPeople));
+            const numArray = result.data.result[0].numReservable.split(";");
+            setNumArray(numArray);
+            setMaxArray(numArray);
         })
     }
     useEffect(() => {
@@ -95,7 +131,6 @@ export default function Orders() {
         })
     }
     if (reservationDetails) {
-        console.log(reservationDetails[0])
         return (
             <React.Fragment>
                 <Box
@@ -146,6 +181,24 @@ export default function Orders() {
                                         fullWidth
                                         onChange={(newValue) => { setStartTime(newValue) }}
                                         renderInput={(params) => <TextField {...params} />}
+                                        shouldDisableTime={(timeValue, clockType) => {
+                                            let openHour = new Date(openTime).getHours();
+                                            let openMinute = new Date(openTime).getMinutes();
+                                            let closeHour = new Date(closeTime).getHours();
+                                            let closeMinute = new Date(closeTime).getMinutes();
+                                            if ((clockType === 'hours' && timeValue < openHour) || (clockType === 'hours' && timeValue >= closeHour && closeMinute === 0) || 
+                                            (clockType === 'hours' && timeValue > closeHour && closeMinute > 0)) {
+                                                return true;
+                                            }
+                                        if (((new Date(startTime).getHours()) === openHour && clockType === 'minutes' && timeValue < openMinute)
+                                            || ((new Date(startTime).getHours()) === closeHour && clockType === 'minutes' && timeValue >= closeMinute)) {
+                                                return true;
+                                            }
+                                        if (clockType === 'minutes' && timeValue % 5) {
+                                                return true;
+                                            }
+                                        return false;
+                                        }}
                                     />
                                 </LocalizationProvider>
                             </Grid>
@@ -157,6 +210,29 @@ export default function Orders() {
                                         fullWidth
                                         onChange={(newValue) => { setEndTime(newValue) }}
                                         renderInput={(params) => <TextField {...params} />}
+                                        shouldDisableTime={(timeValue, clockType) => {
+                                            let openHour = new Date(openTime).getHours();
+                                            let openMinute = new Date(openTime).getMinutes();
+                                            let closeHour = new Date(closeTime).getHours();
+                                            let closeMinute = new Date(closeTime).getMinutes();
+                                            if ((clockType === 'hours' && timeValue < openHour) || 
+                                                (clockType === 'hours' && timeValue > closeHour)) {
+                                                    return true;
+                                                }
+                                            if ((clockType === 'minutes' && (new Date(endTime).getHours()) === openHour && timeValue <= openMinute)
+                                                || ((new Date(endTime).getHours()) === closeHour && clockType === 'minutes' && timeValue > closeMinute)) {
+                                                    return true;
+                                                }
+                                            if ((clockType === 'hours' && timeValue < (new Date(startTime).getHours()))
+                                                || ((new Date(startTime).getHours()) === (new Date(endTime).getHours()) && 
+                                                    clockType === 'minutes' && timeValue <= (new Date(startTime).getMinutes()) )) {
+                                                    return true;
+                                                }
+                                            if (clockType === 'minutes' && timeValue % 5) {
+                                                    return true;
+                                                }
+                                            return false;
+                                        }}
                                     />
                                 </LocalizationProvider>
                             </Grid>
@@ -181,7 +257,11 @@ export default function Orders() {
                                     fullWidth
                                     name="numPeople"
                                     label="Party Size"
-                                    type="numPeople"
+                                    value={numPeople}
+                                    InputProps={{ inputProps: { min: 1, max: maxNumPeople, step: 1
+                                    } } }
+                                    onChange={(newValue) => setNumPeople(newValue.target.value)}
+                                    type="number"
                                     id="numPeople"
                                 />
                             </Grid>
@@ -221,11 +301,12 @@ export default function Orders() {
                         </Grid>
                         <Button
                             type="submit"
+                            disabled={disableSave()?true:false}
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                         >
-                            Make Reservation
+                            Make Reservation for {businessName}'s Event
                         </Button>
                     </Box>
                 </Box>

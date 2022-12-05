@@ -32,7 +32,7 @@ export default function Orders(props) {
     useEffect(() => {
         getReservations()
     }, []);
-    function makeReservation(resID) {
+    function makeReservation(resID, index) {
         const username = props.username;
         const password = props.password;
         const reservationID = resID;
@@ -40,7 +40,8 @@ export default function Orders(props) {
             state: {
                 username: username,
                 password: password,
-                reservationID: reservationID
+                reservationID: reservationID,
+                businessName: allReservations[index].businessName
             }
         })
 
@@ -67,7 +68,7 @@ export default function Orders(props) {
                                 <TableCell>{reserve.businessName}</TableCell>
                                 <TableCell>{reserve.reservableItem}</TableCell>
                                 <TableCell align="right">{`$${reserve.price}`}</TableCell>
-                                <TableCell><Button onClick={() => makeReservation(reserve.ID)}>Reserve</Button></TableCell>
+                                <TableCell><Button onClick={() => makeReservation(reserve.ID, index)}>Reserve</Button></TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
