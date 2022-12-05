@@ -665,6 +665,7 @@ export default function Orders(props) {
                         type="submit"
                         fullWidth
                         variant="contained"
+                        disabled={nonReservable.length === 0 || nonReservablePrice.length === 0}
                         sx={{ mt: 3, mb: 2 }}
                     >
                         Add Non-Reservable
