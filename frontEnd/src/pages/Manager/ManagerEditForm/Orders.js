@@ -70,6 +70,7 @@ export default function Orders(props) {
     const [storedEndTime, setStoredEndTime] = useState(null);
     const [storedCurrentDate, setStoredCurrentDate] = useState(null);
     const [storedNumArray, setStoredNumArray] = useState([]);
+    const [checked, setChecked] = useState(true);
     const _ = require('lodash');
     
     useEffect(() => {
@@ -148,12 +149,16 @@ export default function Orders(props) {
     }
 
     const validForm = () => {
-        if (numPeople > availableNumPeople || numPeople <= 0 || numPeople === undefined) {
+        if (notesBox.length > 0 && !checked) {
+            return false;
+        }
+        if (parseInt(numPeople) > parseInt(availableNumPeople) || parseInt(numPeople) <= 0 || numPeople === undefined) {
             return false;
         }
         let totReservables = 0;
         for (let i = 0; i < numReservableItems; i++) {
-            if (parseInt(numArray[i]) > parseInt(maxArray[i]) || parseInt(numArray[i]) < parseInt(minArray[i]) || parseInt(numArray[i]) === undefined) {
+            console.log(numArray[i]);
+            if (parseInt(numArray[i]) > parseInt(maxArray[i]) || parseInt(numArray[i]) < parseInt(minArray[i]) || numArray[i] === undefined) {
                 return false;
             }
             totReservables += parseInt(numArray[i]);
