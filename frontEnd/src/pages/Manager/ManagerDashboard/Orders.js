@@ -279,7 +279,6 @@ export default function Orders(props) {
     }
 
     function getFAQ(businessName) {
-
         Axios.post("http://" + getIP() + ":3001/api/managerGetFAQ", {
             businessName: props.businessName
         }).then((result) => {
@@ -298,7 +297,6 @@ export default function Orders(props) {
     }
 
     const addFAQ = (event) => {
-
         event.preventDefault();
         Axios.post("http://" + getIP() + ":3001/api/addManagerFAQ", {
             businessName: props.businessName,
@@ -724,6 +722,7 @@ export default function Orders(props) {
                         type="submit"
                         fullWidth
                         variant="contained"
+                        disabled={question.length === 0 || answer.length === 0}
                         sx={{ mt: 3, mb: 2 }}
                     >
                         Add FAQ
