@@ -153,7 +153,7 @@ export default function Orders(props) {
         if (notesBox.length > 0 && !checked) {
             return false;
         }
-        if (numPeople > availableNumPeople || numPeople <= 0 || numPeople === undefined) {
+        if (parseInt(numPeople) > parseInt(availableNumPeople) || parseInt(numPeople) <= 0 || numPeople === undefined) {
             return false;
         }
         let totReservables = 0;
