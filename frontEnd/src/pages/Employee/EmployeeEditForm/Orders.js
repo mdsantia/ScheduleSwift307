@@ -71,6 +71,7 @@ export default function Orders(props) {
     const [storedCurrentDate, setStoredCurrentDate] = useState(null);
     const [storedNumArray, setStoredNumArray] = useState([]);
     const [stopEdit, setStop] = useState('');
+    const [checked, setChecked] = useState(false);
     const _ = require('lodash');
     
     useEffect(() => {
