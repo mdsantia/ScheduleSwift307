@@ -158,7 +158,8 @@ export default function Orders(props) {
         }
         let totReservables = 0;
         for (let i = 0; i < numReservableItems; i++) {
-            if (parseInt(numArray[i]) > parseInt(maxArray[i]) || parseInt(numArray[i]) < parseInt(minArray[i]) || parseInt(numArray[i]) === undefined) {
+            console.log(numArray[i]);
+            if (parseInt(numArray[i]) > parseInt(maxArray[i]) || parseInt(numArray[i]) < parseInt(minArray[i]) || numArray[i] === undefined) {
                 return false;
             }
             totReservables += parseInt(numArray[i]);
