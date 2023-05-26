@@ -1,5 +1,11 @@
 # Goal
-Create a Web IDE that can save, type check, compile, and run Java files 
+Create a Web IDE that can save, type check, compile, and run Java files.
+
+## Mision
+A user friendly and efficient Java IDE for document edition and management. Most Web IDE do not support command line arguments and we which to build a simple and efficient compiler that does.
+
+## Vision
+We envision a VSCode like web IDE which would be more efficient than usual API calls made in Web Java compilers.
 
 # Background
 Existing code worked on independently to create a ARM file from a Java file in a limited simple language was ran through the personal terminal. The ARM .s file was then compiled in a Raspberry Pi virtual machine.
@@ -154,6 +160,11 @@ In the RaspberryPi enter
     c. Increase grammar
     d. Object-Oriented implementation
 
+# How to Run
+1. cd to Web UI
+2. npm init
+3. npm i mongodb
+4. npm run dev
 
 # Developers
 ## Micky Santiago-Zayas
