@@ -2,7 +2,7 @@ import './App.css';
 import logo from './logo.svg';
 import React from 'react';
 import ToggleButton from '@mui/material/ToggleButton';
-import AddIcon from '@mui/icons-material/Add';
+// import AddIcon from '@mui/icons-material/Add';
 
 function App() {
   const [value, setValue] = React.useState('option1');
@@ -20,7 +20,7 @@ function App() {
         // setSelected(!selected);
       }}
     >
-      <AddIcon />
+      {/* <AddIcon /> */}
     </ToggleButton>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
