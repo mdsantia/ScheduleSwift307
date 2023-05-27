@@ -164,7 +164,8 @@ In the RaspberryPi enter
 1. cd to Web UI
 2. npm init
 3. npm i mongodb
-4. npm run dev
+4. npm i express
+5. npm run dev
 
 # Developers
 ## Micky Santiago-Zayas
